@@ -1,31 +1,60 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "motion/react";
-import dynamic from "next/dynamic";
 import { ArrowRight, MoveDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// 3D scene is client-only (WebGL) — load it lazily after hydration.
-const HeroScene = dynamic(
-  () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
-  { ssr: false },
-);
-
 const ease = [0.22, 1, 0.36, 1] as const;
+
+// Drop a file at /public/hero/estate.mp4 to use a background video instead of
+// the still image (Christie's-style). Leave null to use the image.
+const HERO_VIDEO: string | null = null;
 
 export function Hero() {
   return (
-    <section id="top" className="relative isolate min-h-screen overflow-hidden gradient-navy">
-      {/* Texture + depth layers */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:38px_38px]" />
-      <div className="pointer-events-none absolute -left-40 top-1/4 size-[34rem] rounded-full bg-navy-soft/40 blur-[120px]" />
-      <div className="pointer-events-none absolute -right-20 bottom-0 size-[30rem] rounded-full bg-crimson/15 blur-[120px]" />
+    <section
+      id="top"
+      className="relative isolate flex min-h-screen flex-col overflow-hidden gradient-navy"
+    >
+      {/* Full-bleed background media (image or video) */}
+      <div className="absolute inset-0 -z-10">
+        {HERO_VIDEO ? (
+          <video
+            className="size-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/hero/estate.jpg"
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
+        ) : (
+          <motion.div
+            initial={{ scale: 1.08 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 12, ease: "easeOut" }}
+            className="relative size-full"
+          >
+            <Image
+              src="/hero/estate.jpg"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+          </motion.div>
+        )}
+      </div>
 
-      {/* 3D form */}
-      <HeroScene className="absolute inset-y-0 right-[-8%] z-0 hidden w-[55%] md:block" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-[55%] bg-gradient-to-l from-transparent via-transparent to-navy md:block" />
+      {/* Legibility scrims — darken toward the bottom and left over the photo */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-navy-deep/45" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-t from-navy-deep via-navy-deep/40 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-navy-deep/80 via-navy-deep/25 to-transparent" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-5 pb-20 pt-32 sm:px-8">
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col justify-center px-5 pb-20 pt-32 sm:px-8">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -52,7 +81,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease, delay: 0.2 }}
-          className="mt-8 max-w-xl text-base leading-relaxed text-white/75 text-pretty sm:text-lg"
+          className="mt-8 max-w-xl text-base leading-relaxed text-white/80 text-pretty sm:text-lg"
         >
           A white-glove advisory firm trusted by affluent families, expatriates, and
           businesses across East Africa — combining valuation, marketing, sale, and
@@ -89,7 +118,7 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="mt-20 flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-white/45"
+          className="mt-20 flex items-center gap-3 text-xs uppercase tracking-[0.25em] text-white/50"
         >
           <MoveDown className="size-4 animate-bounce" />
           Scroll to explore

@@ -64,7 +64,7 @@ export default function AboutPage() {
             <div>
               <p className="eyebrow mb-4">Our Story</p>
               <h2 className="font-display text-3xl font-light text-navy sm:text-4xl text-balance">
-                Not an auction house. A transition partner.
+                A new standard for estate transitions.
               </h2>
               <div className="mt-6 space-y-5 text-muted-foreground text-pretty">
                 <p>
@@ -74,7 +74,7 @@ export default function AboutPage() {
                   premium brand.
                 </p>
                 <p>
-                  We serve high-net-worth individuals, luxury homeowners, estate executors, business
+                  We serve individuals, homeowners, estate executors, business
                   owners, and expatriate families — each guided by a discreet, senior team that treats
                   every estate as a portfolio of fine-art lots, not a database of listings.
                 </p>

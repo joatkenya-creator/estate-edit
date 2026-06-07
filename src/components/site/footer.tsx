@@ -8,6 +8,7 @@ const columns = [
     links: [
       { label: "Estate Sales", href: "/estate-sales" },
       { label: "Commercial Liquidation", href: "/commercial-liquidation" },
+      { label: "Concierge Transition", href: "/concierge" },
       { label: "Expat Services", href: "/expat-services" },
       { label: "The Collection", href: "/collection" },
     ],
@@ -88,6 +89,14 @@ export function SiteFooter() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row">
           <p>© {new Date().getFullYear()} The Estate Edit. All rights reserved.</p>
+          <nav className="flex items-center gap-4">
+            <Link href="/privacy" className="transition-colors hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="transition-colors hover:text-white">
+              Terms of Service
+            </Link>
+          </nav>
           <p className="flex items-center gap-2">
             <span>{siteConfig.phone}</span>
             <span className="text-white/25">·</span>

@@ -13,7 +13,7 @@ export const siteConfig = {
     "A luxury estate advisory and transition management firm trusted by affluent families, expatriates, and businesses across East Africa.",
   location: "Nairobi, Kenya",
   email: "concierge@theestateedit.co.ke",
-  phone: "+254 700 000 000",
+  phone: "+254 142 378 150",
   social: {
     instagram: "https://instagram.com",
     linkedin: "https://linkedin.com",
@@ -23,6 +23,7 @@ export const siteConfig = {
 export const navLinks = [
   { label: "Estate Sales", href: "/estate-sales" },
   { label: "Commercial Liquidation", href: "/commercial-liquidation" },
+  { label: "Concierge", href: "/concierge" },
   { label: "Expat Services", href: "/expat-services" },
   { label: "Collection", href: "/collection" },
   { label: "About", href: "/about" },
@@ -232,6 +233,8 @@ export const processSteps: ProcessStep[] = [
 ];
 
 export const clientTypes = [
+  { title: "High-Net-Worth Individuals", description: "Discreet management and sale of significant personal assets and collections." },
+  { title: "Luxury Homeowners", description: "Downsizing, relocating, or curating the contents of distinguished homes." },
   { title: "Families", description: "Navigating downsizing or inherited estates with dignity." },
   { title: "Estate Executors", description: "Settling estates efficiently and transparently." },
   { title: "Business Owners", description: "Closing, relocating, or reducing commercial assets." },
@@ -272,7 +275,8 @@ export const testimonials: Testimonial[] = [
 ];
 
 export const clientSegments = [
-  { value: "family", label: "Family / Individual" },
+  { value: "individual", label: "High-Net-Worth Individual / Luxury Homeowner" },
+  { value: "family", label: "Family" },
   { value: "estate_executor", label: "Estate Executor" },
   { value: "business_owner", label: "Business Owner" },
   { value: "expat", label: "Expat (Arriving / Leaving)" },
