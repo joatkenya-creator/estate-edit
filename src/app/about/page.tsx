@@ -1,0 +1,117 @@
+import type { Metadata } from "next";
+import { ShieldCheck, Sparkles, Medal, Globe2, Banknote, Handshake } from "lucide-react";
+import { PageHero } from "@/components/site/page-hero";
+import { CategoryGrid } from "@/components/sections/category-grid";
+import { Stats } from "@/components/sections/stats";
+import { CtaBand } from "@/components/sections/cta-band";
+import { Reveal } from "@/components/motion/reveal";
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description:
+    "The Estate Edit is a veteran-owned luxury estate and transition management firm in Nairobi, combining valuation, marketing, sale, and logistics under one premium brand.",
+};
+
+export const revalidate = 600;
+
+const values = [
+  {
+    icon: ShieldCheck,
+    title: "Discretion",
+    description: "Every engagement is handled in the strictest confidence — your affairs stay private.",
+  },
+  {
+    icon: Sparkles,
+    title: "White-Glove Service",
+    description: "A single, accountable team manages every detail from first call to final handover.",
+  },
+  {
+    icon: Medal,
+    title: "Veteran-Owned Leadership",
+    description: "Disciplined, mission-first leadership with a bias for clarity and follow-through.",
+  },
+  {
+    icon: Globe2,
+    title: "International Experience",
+    description: "Cross-border business expertise serving expatriates, embassies, and global firms.",
+  },
+  {
+    icon: Banknote,
+    title: "Maximised Value",
+    description: "Professional valuation and a private buyer network that realise the best outcomes.",
+  },
+  {
+    icon: Handshake,
+    title: "Trusted Network",
+    description: "Vetted logistics, storage, and vendor partners across Nairobi and East Africa.",
+  },
+];
+
+export default function AboutPage() {
+  return (
+    <main className="flex-1">
+      <PageHero
+        eyebrow="About The Estate Edit"
+        title="A luxury estate & transition management firm"
+        subtitle="Headquartered in Nairobi, we help individuals, families, businesses, and expatriates navigate major life transitions — simplifying the complex while maximising value."
+        crumbs={[{ label: "About" }]}
+      />
+
+      {/* Story + mission */}
+      <section className="bg-white py-24 sm:py-32">
+        <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20">
+          <Reveal>
+            <div>
+              <p className="eyebrow mb-4">Our Story</p>
+              <h2 className="font-display text-3xl font-light text-navy sm:text-4xl text-balance">
+                Not an auction house. A transition partner.
+              </h2>
+              <div className="mt-6 space-y-5 text-muted-foreground text-pretty">
+                <p>
+                  The Estate Edit was founded to bring a genuinely white-glove standard to estate
+                  transitions in East Africa. Where others run a single service, we combine valuation,
+                  inventory management, marketing, sales, logistics, and transition support under one
+                  premium brand.
+                </p>
+                <p>
+                  We serve high-net-worth individuals, luxury homeowners, estate executors, business
+                  owners, and expatriate families — each guided by a discreet, senior team that treats
+                  every estate as a portfolio of fine-art lots, not a database of listings.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={1}>
+            <div className="relative h-full overflow-hidden rounded-2xl gradient-navy p-9 text-white">
+              <div className="pointer-events-none absolute -right-12 -top-12 size-56 rounded-full bg-gold/10 blur-3xl" />
+              <div className="relative flex h-full flex-col">
+                <p className="eyebrow mb-5">Our Mission</p>
+                <p className="font-display text-2xl font-light leading-relaxed text-white text-pretty sm:text-3xl">
+                  &ldquo;To simplify complex transitions while maximising value for our clients — with
+                  discretion, care, and uncommon attention to detail.&rdquo;
+                </p>
+                <div className="mt-auto pt-10">
+                  <div className="h-px w-24 gradient-hairline" />
+                  <p className="mt-5 text-sm text-white/65">
+                    Luxury estates. Commercial liquidations. Seamless transitions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <CategoryGrid
+        eyebrow="Why Clients Trust Us"
+        heading="The standards behind every engagement"
+        items={values}
+        tone="stone"
+      />
+
+      <Stats />
+      <CtaBand />
+    </main>
+  );
+}
