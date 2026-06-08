@@ -12,11 +12,11 @@ export const siteConfig = {
   description:
     "A luxury estate advisory and transition management firm trusted by affluent families, expatriates, and businesses across East Africa.",
   location: "Nairobi, Kenya",
-  email: "concierge@theestateedit.co.ke",
+  email: "joatkenya120@gmail.com",
   phone: "+254 142 378 150",
   social: {
-    instagram: "https://instagram.com",
-    linkedin: "https://linkedin.com",
+    instagram: "https://www.instagram.com/joat.kenya?igsh=MXZraTR5enF4OTVpaQ==",
+    linkedin: "https://www.linkedin.com/company/joat-kenya-jack-urban-services-ltd/",
   },
 };
 

@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "node:path";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 
 const nextConfig: NextConfig = {
   // Pin the workspace root so Turbopack ignores stray lockfiles higher up
@@ -22,3 +23,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Makes Cloudflare bindings available during `next dev` (no-op in production).
+initOpenNextCloudflareForDev();

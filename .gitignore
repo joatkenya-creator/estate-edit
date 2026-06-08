@@ -43,3 +43,9 @@ next-env.d.ts
 # supabase (local CLI state)
 supabase/.temp/
 supabase/.branches/
+
+# cloudflare / opennext
+.open-next/
+.wrangler/
+.dev.vars
+cloudflare-env.d.ts

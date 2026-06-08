@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "estate-edit",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-08-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "estate-edit"
+    }
+  ]
+
+  // --- Optional: persistent ISR / Next cache via R2 ------------------------
+  // Your pages use `revalidate = 600`. Without a cache binding, revalidation
+  // still works but isn't shared across Worker instances. To enable it:
+  //   1) wrangler r2 bucket create estate-edit-cache
+  //   2) uncomment the block below
+  //   3) in open-next.config.ts, set incrementalCache: r2IncrementalCache
+  // "r2_buckets": [
+  //   { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "estate-edit-cache" }
+  // ]
+}
