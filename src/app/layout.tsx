@@ -21,7 +21,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://theestateedit.co.ke"),
   title: {
-    default: "The Estate Edit — Luxury Estate & Transition Management",
+    default: "The Estate Edit: Luxury Estate & Transition Management",
     template: "%s · The Estate Edit",
   },
   description:
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "asset valuation Kenya",
   ],
   openGraph: {
-    title: "The Estate Edit — Luxury Estate & Transition Management",
+    title: "The Estate Edit: Luxury Estate & Transition Management",
     description:
       "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
     type: "website",

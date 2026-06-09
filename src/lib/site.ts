@@ -77,7 +77,7 @@ export const services: Service[] = [
     icon: "concierge",
     title: "Concierge Transition",
     summary:
-      "White-glove support for major life changes — downsizing, relocation, cleanouts, and complete property preparation.",
+      "White-glove support for major life changes: downsizing, relocation, cleanouts, and complete property preparation.",
     offerings: [
       "Downsizing & relocation",
       "Estate cleanouts",
@@ -133,7 +133,7 @@ export type FeaturedAsset = {
   imageUrl?: string;
 };
 
-/** A catalogue row — a FeaturedAsset plus the raw enum keys used for filtering. */
+/** A catalogue row: a FeaturedAsset plus the raw enum keys used for filtering. */
 export type CatalogueItem = FeaturedAsset & {
   categoryKey: string;
   division: string;
@@ -157,7 +157,7 @@ export const featuredAssets: FeaturedAsset[] = [
   },
   {
     slug: "land-cruiser-vx",
-    title: "Land Cruiser VX — 2022",
+    title: "Land Cruiser VX 2022",
     category: "Vehicles",
     meta: "Single owner · 18,000 km",
     status: "reserved",
@@ -228,7 +228,7 @@ export const processSteps: ProcessStep[] = [
     index: "05",
     title: "Transition Support",
     description:
-      "Logistics, cleanouts, donations, and property preparation — handled end to end.",
+      "Logistics, cleanouts, donations, and property preparation, handled end to end.",
   },
 ];
 
@@ -253,7 +253,7 @@ export type Testimonial = {
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "They turned an overwhelming family estate into a calm, dignified process — and realised far more than we expected.",
+      "They turned an overwhelming family estate into a calm, dignified process, and realised far more than we expected.",
     author: "A. Mwangi",
     role: "Estate Executor",
     location: "Muthaiga",

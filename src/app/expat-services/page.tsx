@@ -8,7 +8,7 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata: Metadata = {
   title: "Expat Services",
   description:
-    "Relocation support for expatriates moving to or from Kenya — furnished housing, sourcing, school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
+    "Relocation support for expatriates moving to or from Kenya: furnished housing, sourcing, school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
 };
 
 const directions = [
@@ -56,7 +56,7 @@ export default function ExpatServicesPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Expat Services"
-        title="Relocation, simplified — in both directions"
+        title="Relocation, simplified: in both directions"
         subtitle="For individuals and families moving to or from Kenya, we manage the estate, the logistics, and the everyday details, so your relocation feels effortless."
         crumbs={[{ label: "Expat Services" }]}
       />

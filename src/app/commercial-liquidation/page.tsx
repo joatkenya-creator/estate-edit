@@ -19,7 +19,7 @@ import { Reveal } from "@/components/motion/reveal";
 export const metadata: Metadata = {
   title: "Commercial Liquidation",
   description:
-    "Discreet commercial liquidation in Nairobi — asset inventory, equipment and fleet liquidation, online auctions, and warehouse clearance for closures, relocations, and downsizing.",
+    "Discreet commercial liquidation in Nairobi: asset inventory, equipment and fleet liquidation, online auctions, and warehouse clearance for closures, relocations, and downsizing.",
 };
 
 export const revalidate = 600;
@@ -48,7 +48,7 @@ export default function CommercialLiquidationPage() {
       <PageHero
         eyebrow="Commercial Liquidation"
         title="Business asset sales & liquidation"
-        subtitle="Value-maximising, discreet disposal of commercial assets for closures, relocations, downsizing, and bankruptcy — across construction, hospitality, education, and beyond."
+        subtitle="Value-maximising, discreet disposal of commercial assets for closures, relocations, downsizing, and bankruptcy, across construction, hospitality, education, and beyond."
         crumbs={[{ label: "Commercial Liquidation" }]}
       />
 

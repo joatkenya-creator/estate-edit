@@ -68,7 +68,7 @@ export default function TermsPage() {
 
       <LegalSection title="Intellectual Property">
         <p>
-          All content on this website — including text, branding, photography, and design — is owned
+          All content on this website, including text, branding, photography, and design, is owned
           by or licensed to {siteConfig.name} and may not be reproduced without our written
           permission.
         </p>

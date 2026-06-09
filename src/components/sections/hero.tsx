@@ -49,7 +49,7 @@ export function Hero() {
         )}
       </div>
 
-      {/* Legibility scrims — darken toward the bottom and left over the photo */}
+      {/* Legibility scrims that darken toward the bottom and left over the photo */}
       <div className="pointer-events-none absolute inset-0 -z-10 bg-navy-deep/45" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-t from-navy-deep via-navy-deep/40 to-transparent" />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-navy-deep/80 via-navy-deep/25 to-transparent" />
@@ -84,7 +84,7 @@ export function Hero() {
           className="mt-8 max-w-xl text-base leading-relaxed text-white/80 text-pretty sm:text-lg"
         >
           A white-glove advisory firm trusted by affluent families, expatriates, and
-          businesses across East Africa — combining valuation, marketing, sale, and
+          businesses across East Africa, combining valuation, marketing, sale, and
           logistics under one premium brand.
         </motion.p>
 

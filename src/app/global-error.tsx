@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Global error boundary — replaces the root layout when a top-level error is
+ * Global error boundary: replaces the root layout when a top-level error is
  * thrown. It must be a Client Component and render its own <html>/<body>.
  * Styles are inlined because the root layout (and its fonts/CSS variables) are
  * not applied here.
@@ -53,7 +53,7 @@ export default function GlobalError({
             Something went wrong
           </h1>
           <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.6, margin: "0 0 2rem" }}>
-            An unexpected error occurred. Please try again, or return to the homepage — our team is
+            An unexpected error occurred. Please try again, or return to the homepage. Our team is
             always reachable if you need assistance.
           </p>
           <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>

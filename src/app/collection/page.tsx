@@ -7,7 +7,7 @@ import { getCatalogueAssets } from "@/lib/queries";
 export const metadata: Metadata = {
   title: "The Collection",
   description:
-    "Browse the current collection of luxury estate and commercial assets — furniture, vehicles, fine art, jewellery, and equipment available across Nairobi.",
+    "Browse the current collection of luxury estate and commercial assets: furniture, vehicles, fine art, jewellery, and equipment available across Nairobi.",
 };
 
 export const revalidate = 600;

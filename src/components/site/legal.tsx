@@ -1,6 +1,6 @@
 import { PageHero } from "@/components/site/page-hero";
 
-/** Shared shell for legal pages (Privacy, Terms) — consistent typographic layout. */
+/** Shared shell for legal pages (Privacy, Terms) with consistent typographic layout. */
 export function LegalShell({
   eyebrow = "Legal",
   title,

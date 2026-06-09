@@ -16,7 +16,7 @@ import {
 /**
  * Data-access layer for the public site. Each function reads published content
  * from Supabase and falls back to the curated static content in `site.ts` if
- * the table is empty or the request fails — so the page always renders.
+ * the table is empty or the request fails, so the page always renders.
  */
 
 export async function getServices(): Promise<Service[]> {

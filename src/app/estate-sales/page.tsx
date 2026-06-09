@@ -9,7 +9,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 export const metadata: Metadata = {
   title: "Estate Sales",
   description:
-    "Full-service luxury estate sales in Nairobi — household sales, inherited estates, collectibles, vehicles, artwork, and jewellery, with editorial photography and private buyer outreach.",
+    "Full-service luxury estate sales in Nairobi: household sales, inherited estates, collectibles, vehicles, artwork, and jewellery, with editorial photography and private buyer outreach.",
 };
 
 export const revalidate = 600;
@@ -53,7 +53,7 @@ export default function EstateSalesPage() {
       <PageHero
         eyebrow="Estate Sales"
         title="Full-service estate management & sales"
-        subtitle="From inventory and valuation to editorial marketing and curated estate events — we manage the entire sale, maximising value while you focus on what matters."
+        subtitle="From inventory and valuation to editorial marketing and curated estate events, we manage the entire sale, maximising value while you focus on what matters."
         crumbs={[{ label: "Estate Sales" }]}
       />
 

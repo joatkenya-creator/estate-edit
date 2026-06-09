@@ -8,7 +8,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 export const metadata: Metadata = {
   title: "Concierge Transition Services",
   description:
-    "White-glove concierge transition support in Nairobi — downsizing, relocation, estate cleanouts, property preparation, donation coordination, and vendor management, handled end to end.",
+    "White-glove concierge transition support in Nairobi: downsizing, relocation, estate cleanouts, property preparation, donation coordination, and vendor management, handled end to end.",
 };
 
 export const revalidate = 600;
@@ -17,7 +17,7 @@ const services = [
   {
     icon: Boxes,
     title: "Downsizing & Relocation",
-    description: "A calm, fully managed move to a smaller home or new chapter — packed, sorted, and settled.",
+    description: "A calm, fully managed move to a smaller home or new chapter, packed, sorted, and settled.",
   },
   {
     icon: Sparkles,
@@ -52,7 +52,7 @@ export default function ConciergePage() {
       <PageHero
         eyebrow="Concierge Transition Services"
         title="White-glove support for major life changes"
-        subtitle="When life shifts — a downsize, a relocation, settling an estate — a single accountable team handles every detail, so the transition feels effortless and dignified."
+        subtitle="When life shifts (a downsize, a relocation, settling an estate), a single accountable team handles every detail, so the transition feels effortless and dignified."
         crumbs={[{ label: "Concierge" }]}
       />
 
@@ -67,7 +67,7 @@ export default function ConciergePage() {
 
       <CtaBand
         title="Facing a major transition?"
-        subtitle="Tell us your timeline and we'll build a concierge plan tailored to you — with discretion at every step."
+        subtitle="Tell us your timeline and we'll build a concierge plan tailored to you, with discretion at every step."
       />
     </main>
   );

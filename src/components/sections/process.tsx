@@ -11,7 +11,7 @@ export function Process() {
             A composed, five-step process
           </h2>
           <p className="mt-5 text-muted-foreground">
-            From first conversation to final handover — every detail managed on your behalf.
+            From first conversation to final handover, every detail managed on your behalf.
           </p>
         </Reveal>
 

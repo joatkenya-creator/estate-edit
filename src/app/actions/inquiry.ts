@@ -87,8 +87,8 @@ export async function submitInquiry(
       status: "success",
       message:
         inquiryType === "asset_review"
-          ? "Thank you — our team will be in touch to arrange your asset review."
-          : "Thank you — we will contact you shortly to schedule your consultation.",
+          ? "Thank you. Our team will be in touch to arrange your asset review."
+          : "Thank you. We will contact you shortly to schedule your consultation.",
     };
   } catch (err) {
     console.error("Inquiry action error:", err);

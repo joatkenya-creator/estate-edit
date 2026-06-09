@@ -48,8 +48,8 @@ export default function PrivacyPage() {
       <LegalSection title="Sharing & Disclosure">
         <p>
           We treat your affairs with the strictest confidence. We do not sell your personal
-          information. We may share it only with trusted partners — such as logistics, storage, and
-          vendor providers — strictly as needed to deliver your engagement, or where required by law.
+          information. We may share it only with trusted partners, such as logistics, storage, and
+          vendor providers, strictly as needed to deliver your engagement, or where required by law.
         </p>
       </LegalSection>
 

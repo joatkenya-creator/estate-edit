@@ -18,7 +18,7 @@ const values = [
   {
     icon: ShieldCheck,
     title: "Discretion",
-    description: "Every engagement is handled in the strictest confidence — your affairs stay private.",
+    description: "Every engagement is handled in the strictest confidence. Your affairs stay private.",
   },
   {
     icon: Sparkles,
@@ -53,7 +53,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About The Estate Edit"
         title="A luxury estate & transition management firm"
-        subtitle="Headquartered in Nairobi, we help individuals, families, businesses, and expatriates navigate major life transitions — simplifying the complex while maximising value."
+        subtitle="Headquartered in Nairobi, we help individuals, families, businesses, and expatriates navigate major life transitions, simplifying the complex while maximising value."
         crumbs={[{ label: "About" }]}
       />
 
@@ -75,7 +75,7 @@ export default function AboutPage() {
                 </p>
                 <p>
                   We serve individuals, homeowners, estate executors, business
-                  owners, and expatriate families — each guided by a discreet, senior team that treats
+                  owners, and expatriate families, each guided by a discreet, senior team that treats
                   every estate as a portfolio of fine-art lots, not a database of listings.
                 </p>
               </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
               <div className="relative flex h-full flex-col">
                 <p className="eyebrow mb-5">Our Mission</p>
                 <p className="font-display text-2xl font-light leading-relaxed text-white text-pretty sm:text-3xl">
-                  &ldquo;To simplify complex transitions while maximising value for our clients — with
+                  &ldquo;To simplify complex transitions while maximising value for our clients, with
                   discretion, care, and uncommon attention to detail.&rdquo;
                 </p>
                 <div className="mt-auto pt-10">

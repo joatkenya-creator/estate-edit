@@ -4,7 +4,7 @@ import type { Database } from "@/lib/supabase/database.types";
 /**
  * Read-only Supabase client for PUBLIC content (anon key, no cookies). Because
  * it never touches request cookies, pages that use it can still be statically
- * generated / ISR-cached. Row Level Security still applies — only published
+ * generated / ISR-cached. Row Level Security still applies, only published
  * rows are returned.
  */
 export function createPublicClient() {
