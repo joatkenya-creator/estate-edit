@@ -57,6 +57,10 @@ export async function submitInquiry(
   const inquiryType = pick(clean(formData.get("inquiry_type")), INQUIRY_TYPES) ?? "consultation";
 
   const payload = {
+    // `status` is a NOT NULL column on the Payload-owned inquiries table; its
+    // Payload defaultValue is app-level only, so set it explicitly for the
+    // direct (Supabase) insert.
+    status: "new" as const,
     inquiry_type: inquiryType,
     full_name: fullName,
     email,

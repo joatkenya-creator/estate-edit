@@ -11,6 +11,8 @@ import {
   type Testimonial,
   type FeaturedAsset,
   type CatalogueItem,
+  type AssetDetail,
+  type AssetImage,
 } from "@/lib/site";
 
 /**
@@ -25,18 +27,18 @@ export async function getServices(): Promise<Service[]> {
     const { data, error } = await supabase
       .from("services")
       .select("slug, division, title, summary, icon, offerings")
-      .eq("is_published", true)
+      .eq("_status", "published")
       .order("sort_order");
 
     if (error || !data?.length) return staticServices;
 
     return data.map((s) => ({
-      slug: s.slug,
-      division: s.division,
+      slug: s.slug ?? "",
+      division: (s.division ?? "estate_sales") as Service["division"],
       icon: (s.icon ?? "estate") as Service["icon"],
-      title: s.title,
+      title: s.title ?? "",
       summary: s.summary ?? "",
-      offerings: s.offerings ?? [],
+      offerings: (s.offerings as string[] | null) ?? [],
     }));
   } catch {
     return staticServices;
@@ -49,7 +51,7 @@ export async function getStats(): Promise<Metric[]> {
     const { data, error } = await supabase
       .from("site_stats")
       .select("label, value, prefix, suffix")
-      .eq("is_published", true)
+      .eq("_status", "published")
       .order("sort_order");
 
     if (error || !data?.length) return staticMetrics;
@@ -61,7 +63,7 @@ export async function getStats(): Promise<Metric[]> {
         prefix: s.prefix ?? undefined,
         suffix: s.suffix ?? undefined,
         decimals: Number.isInteger(value) ? 0 : 1,
-        label: s.label,
+        label: s.label ?? "",
       };
     });
   } catch {
@@ -75,14 +77,14 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     const { data, error } = await supabase
       .from("testimonials")
       .select("quote, author_name, author_role, location")
-      .eq("is_published", true)
+      .eq("_status", "published")
       .order("sort_order");
 
     if (error || !data?.length) return staticTestimonials;
 
     return data.map((t) => ({
-      quote: t.quote,
-      author: t.author_name,
+      quote: t.quote ?? "",
+      author: t.author_name ?? "",
       role: t.author_role ?? "",
       location: t.location ?? "",
     }));
@@ -99,7 +101,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
     const { data, error } = await supabase
       .from("assets")
       .select("slug, title, category, division, status, primary_image_url, metadata, sort_order")
-      .eq("is_published", true)
+      .eq("_status", "published")
       .order("sort_order");
 
     if (error || !data?.length) {
@@ -115,11 +117,11 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
       const status =
         a.status === "reserved" || a.status === "sold" ? a.status : "available";
       return {
-        slug: a.slug,
-        title: a.title,
-        category: assetCategoryLabel[a.category] ?? a.category,
-        categoryKey: a.category,
-        division: a.division,
+        slug: a.slug ?? "",
+        title: a.title ?? "",
+        category: a.category ? assetCategoryLabel[a.category] ?? a.category : "Other",
+        categoryKey: a.category ?? "other",
+        division: a.division ?? "estate_sales",
         meta: meta.meta ?? "",
         status,
         tone: meta.tone ?? tones[i % tones.length],
@@ -131,13 +133,85 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
   }
 }
 
+export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> {
+  // Build a graceful detail record from the curated static content when the
+  // database is empty or unreachable, so links never 404 in local/dev.
+  const fallback = (): AssetDetail | null => {
+    const a = staticAssets.find((x) => x.slug === slug);
+    if (!a) return null;
+    return {
+      ...a,
+      categoryKey: "other",
+      division: "estate_sales",
+      currency: "KES",
+      priceOnRequest: true,
+      tags: [],
+      images: [],
+    };
+  };
+
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("assets")
+      .select(
+        "id, slug, title, description, division, category, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata",
+      )
+      .eq("slug", slug)
+      .eq("_status", "published")
+      .maybeSingle();
+
+    if (error || !data) return fallback();
+
+    const meta = (data.metadata ?? {}) as { meta?: string; tone?: FeaturedAsset["tone"] };
+    const status =
+      data.status === "reserved" || data.status === "sold" ? data.status : "available";
+
+    // Gallery is denormalized onto the asset row by Payload (jsonb: [{url, alt}]),
+    // so there's no separate image table to query.
+    const galleryRows = (data.gallery ?? []) as { url: string; alt?: string }[];
+    const images: AssetImage[] = galleryRows
+      .filter((im) => im?.url)
+      .map((im) => ({
+        url: im.url,
+        alt: im.alt ?? data.title ?? "",
+      }));
+
+    return {
+      slug: data.slug ?? "",
+      title: data.title ?? "",
+      category: data.category ? assetCategoryLabel[data.category] ?? data.category : "Other",
+      categoryKey: data.category ?? "other",
+      division: data.division ?? "estate_sales",
+      status,
+      tone: meta.tone ?? "navy",
+      meta: meta.meta ?? "",
+      imageUrl: data.primary_image_url ?? undefined,
+      description: data.description ?? undefined,
+      condition: data.condition ?? undefined,
+      brand: data.brand ?? undefined,
+      era: data.era ?? undefined,
+      provenance: data.provenance ?? undefined,
+      dimensions: data.dimensions ?? undefined,
+      location: data.location ?? undefined,
+      price: data.price ?? undefined,
+      currency: data.currency ?? "KES",
+      priceOnRequest: data.price_on_request ?? false,
+      tags: (data.tags as string[] | null) ?? [],
+      images,
+    };
+  } catch {
+    return fallback();
+  }
+}
+
 export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
       .select("slug, title, category, status, primary_image_url, metadata, sort_order")
-      .eq("is_published", true)
+      .eq("_status", "published")
       .eq("is_featured", true)
       .order("sort_order");
 
@@ -148,9 +222,9 @@ export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
       const status =
         a.status === "reserved" || a.status === "sold" ? a.status : "available";
       return {
-        slug: a.slug,
-        title: a.title,
-        category: assetCategoryLabel[a.category] ?? a.category,
+        slug: a.slug ?? "",
+        title: a.title ?? "",
+        category: a.category ? assetCategoryLabel[a.category] ?? a.category : "Other",
         meta: meta.meta ?? "",
         status,
         tone: meta.tone ?? tones[i % tones.length],

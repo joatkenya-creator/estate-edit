@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -12,427 +12,1394 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
-      asset_images: {
+      _assets_v: {
         Row: {
-          alt: string | null
-          asset_id: string
           created_at: string
           id: string
-          sort_order: number
-          url: string
+          latest: boolean | null
+          parent_id: string | null
+          updated_at: string
+          version__status:
+            | Database["public"]["Enums"]["enum__assets_v_version_status"]
+            | null
+          version_brand: string | null
+          version_category:
+            | Database["public"]["Enums"]["enum__assets_v_version_category"]
+            | null
+          version_condition:
+            | Database["public"]["Enums"]["enum__assets_v_version_condition"]
+            | null
+          version_created_at: string | null
+          version_currency: string | null
+          version_description: string | null
+          version_dimensions: string | null
+          version_division:
+            | Database["public"]["Enums"]["enum__assets_v_version_division"]
+            | null
+          version_era: string | null
+          version_gallery: Json | null
+          version_is_featured: boolean | null
+          version_location: string | null
+          version_metadata: Json | null
+          version_price: number | null
+          version_price_on_request: boolean | null
+          version_primary_image_url: string | null
+          version_provenance: string | null
+          version_slug: string | null
+          version_sort_order: number | null
+          version_status:
+            | Database["public"]["Enums"]["enum_asset_availability"]
+            | null
+          version_tags: Json | null
+          version_title: string | null
+          version_updated_at: string | null
         }
         Insert: {
-          alt?: string | null
-          asset_id: string
           created_at?: string
           id?: string
-          sort_order?: number
-          url: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__assets_v_version_status"]
+            | null
+          version_brand?: string | null
+          version_category?:
+            | Database["public"]["Enums"]["enum__assets_v_version_category"]
+            | null
+          version_condition?:
+            | Database["public"]["Enums"]["enum__assets_v_version_condition"]
+            | null
+          version_created_at?: string | null
+          version_currency?: string | null
+          version_description?: string | null
+          version_dimensions?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__assets_v_version_division"]
+            | null
+          version_era?: string | null
+          version_gallery?: Json | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_metadata?: Json | null
+          version_price?: number | null
+          version_price_on_request?: boolean | null
+          version_primary_image_url?: string | null
+          version_provenance?: string | null
+          version_slug?: string | null
+          version_sort_order?: number | null
+          version_status?:
+            | Database["public"]["Enums"]["enum_asset_availability"]
+            | null
+          version_tags?: Json | null
+          version_title?: string | null
+          version_updated_at?: string | null
         }
         Update: {
-          alt?: string | null
-          asset_id?: string
           created_at?: string
           id?: string
-          sort_order?: number
-          url?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__assets_v_version_status"]
+            | null
+          version_brand?: string | null
+          version_category?:
+            | Database["public"]["Enums"]["enum__assets_v_version_category"]
+            | null
+          version_condition?:
+            | Database["public"]["Enums"]["enum__assets_v_version_condition"]
+            | null
+          version_created_at?: string | null
+          version_currency?: string | null
+          version_description?: string | null
+          version_dimensions?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__assets_v_version_division"]
+            | null
+          version_era?: string | null
+          version_gallery?: Json | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_metadata?: Json | null
+          version_price?: number | null
+          version_price_on_request?: boolean | null
+          version_primary_image_url?: string | null
+          version_provenance?: string | null
+          version_slug?: string | null
+          version_sort_order?: number | null
+          version_status?:
+            | Database["public"]["Enums"]["enum_asset_availability"]
+            | null
+          version_tags?: Json | null
+          version_title?: string | null
+          version_updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "asset_images_asset_id_fkey"
-            columns: ["asset_id"]
+            foreignKeyName: "_assets_v_parent_id_assets_id_fk"
+            columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "assets"
             referencedColumns: ["id"]
           },
         ]
       }
+      _assets_v_version_images: {
+        Row: {
+          _order: number
+          _parent_id: string
+          _uuid: string | null
+          alt: string | null
+          id: string
+          image_id: string | null
+        }
+        Insert: {
+          _order: number
+          _parent_id: string
+          _uuid?: string | null
+          alt?: string | null
+          id?: string
+          image_id?: string | null
+        }
+        Update: {
+          _order?: number
+          _parent_id?: string
+          _uuid?: string | null
+          alt?: string | null
+          id?: string
+          image_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "_assets_v_version_images_image_id_media_id_fk"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "_assets_v_version_images_parent_id_fk"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "_assets_v"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      _sale_events_v: {
+        Row: {
+          created_at: string
+          id: string
+          latest: boolean | null
+          parent_id: string | null
+          updated_at: string
+          version__status:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_status"]
+            | null
+          version_address: string | null
+          version_cover_image_url: string | null
+          version_created_at: string | null
+          version_description: string | null
+          version_division:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_division"]
+            | null
+          version_ends_at: string | null
+          version_event_type:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_event_type"]
+            | null
+          version_is_featured: boolean | null
+          version_location: string | null
+          version_metadata: Json | null
+          version_slug: string | null
+          version_starts_at: string | null
+          version_status:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          version_title: string | null
+          version_updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_status"]
+            | null
+          version_address?: string | null
+          version_cover_image_url?: string | null
+          version_created_at?: string | null
+          version_description?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_division"]
+            | null
+          version_ends_at?: string | null
+          version_event_type?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_event_type"]
+            | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_metadata?: Json | null
+          version_slug?: string | null
+          version_starts_at?: string | null
+          version_status?:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          version_title?: string | null
+          version_updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_status"]
+            | null
+          version_address?: string | null
+          version_cover_image_url?: string | null
+          version_created_at?: string | null
+          version_description?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_division"]
+            | null
+          version_ends_at?: string | null
+          version_event_type?:
+            | Database["public"]["Enums"]["enum__sale_events_v_version_event_type"]
+            | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_metadata?: Json | null
+          version_slug?: string | null
+          version_starts_at?: string | null
+          version_status?:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          version_title?: string | null
+          version_updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "_sale_events_v_parent_id_sale_events_id_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "sale_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      _services_v: {
+        Row: {
+          created_at: string
+          id: string
+          latest: boolean | null
+          parent_id: string | null
+          updated_at: string
+          version__status:
+            | Database["public"]["Enums"]["enum__services_v_version_status"]
+            | null
+          version_created_at: string | null
+          version_description: string | null
+          version_division:
+            | Database["public"]["Enums"]["enum__services_v_version_division"]
+            | null
+          version_hero_image_url: string | null
+          version_icon:
+            | Database["public"]["Enums"]["enum__services_v_version_icon"]
+            | null
+          version_offerings: Json | null
+          version_slug: string | null
+          version_sort_order: number | null
+          version_summary: string | null
+          version_title: string | null
+          version_updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__services_v_version_status"]
+            | null
+          version_created_at?: string | null
+          version_description?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__services_v_version_division"]
+            | null
+          version_hero_image_url?: string | null
+          version_icon?:
+            | Database["public"]["Enums"]["enum__services_v_version_icon"]
+            | null
+          version_offerings?: Json | null
+          version_slug?: string | null
+          version_sort_order?: number | null
+          version_summary?: string | null
+          version_title?: string | null
+          version_updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__services_v_version_status"]
+            | null
+          version_created_at?: string | null
+          version_description?: string | null
+          version_division?:
+            | Database["public"]["Enums"]["enum__services_v_version_division"]
+            | null
+          version_hero_image_url?: string | null
+          version_icon?:
+            | Database["public"]["Enums"]["enum__services_v_version_icon"]
+            | null
+          version_offerings?: Json | null
+          version_slug?: string | null
+          version_sort_order?: number | null
+          version_summary?: string | null
+          version_title?: string | null
+          version_updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "_services_v_parent_id_services_id_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      _site_stats_v: {
+        Row: {
+          created_at: string
+          id: string
+          latest: boolean | null
+          parent_id: string | null
+          updated_at: string
+          version__status:
+            | Database["public"]["Enums"]["enum__site_stats_v_version_status"]
+            | null
+          version_created_at: string | null
+          version_key: string | null
+          version_label: string | null
+          version_prefix: string | null
+          version_sort_order: number | null
+          version_suffix: string | null
+          version_updated_at: string | null
+          version_value: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__site_stats_v_version_status"]
+            | null
+          version_created_at?: string | null
+          version_key?: string | null
+          version_label?: string | null
+          version_prefix?: string | null
+          version_sort_order?: number | null
+          version_suffix?: string | null
+          version_updated_at?: string | null
+          version_value?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__site_stats_v_version_status"]
+            | null
+          version_created_at?: string | null
+          version_key?: string | null
+          version_label?: string | null
+          version_prefix?: string | null
+          version_sort_order?: number | null
+          version_suffix?: string | null
+          version_updated_at?: string | null
+          version_value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "_site_stats_v_parent_id_site_stats_id_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "site_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      _testimonials_v: {
+        Row: {
+          created_at: string
+          id: string
+          latest: boolean | null
+          parent_id: string | null
+          updated_at: string
+          version__status:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_status"]
+            | null
+          version_author_name: string | null
+          version_author_role: string | null
+          version_avatar_url: string | null
+          version_client_segment:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_client_segment"]
+            | null
+          version_created_at: string | null
+          version_is_featured: boolean | null
+          version_location: string | null
+          version_quote: string | null
+          version_rating: number | null
+          version_sort_order: number | null
+          version_updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_status"]
+            | null
+          version_author_name?: string | null
+          version_author_role?: string | null
+          version_avatar_url?: string | null
+          version_client_segment?:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_client_segment"]
+            | null
+          version_created_at?: string | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_quote?: string | null
+          version_rating?: number | null
+          version_sort_order?: number | null
+          version_updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          latest?: boolean | null
+          parent_id?: string | null
+          updated_at?: string
+          version__status?:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_status"]
+            | null
+          version_author_name?: string | null
+          version_author_role?: string | null
+          version_avatar_url?: string | null
+          version_client_segment?:
+            | Database["public"]["Enums"]["enum__testimonials_v_version_client_segment"]
+            | null
+          version_created_at?: string | null
+          version_is_featured?: boolean | null
+          version_location?: string | null
+          version_quote?: string | null
+          version_rating?: number | null
+          version_sort_order?: number | null
+          version_updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "_testimonials_v_parent_id_testimonials_id_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "testimonials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assets: {
         Row: {
+          _status: Database["public"]["Enums"]["enum_assets_status"] | null
           brand: string | null
-          category: Database["public"]["Enums"]["asset_category"]
-          condition: Database["public"]["Enums"]["asset_condition"] | null
+          category: Database["public"]["Enums"]["enum_assets_category"] | null
+          condition: Database["public"]["Enums"]["enum_assets_condition"] | null
           created_at: string
-          currency: string
+          currency: string | null
           description: string | null
           dimensions: string | null
-          division: Database["public"]["Enums"]["service_division"]
+          division: Database["public"]["Enums"]["enum_assets_division"] | null
           era: string | null
+          gallery: Json | null
           id: string
-          is_featured: boolean
-          is_published: boolean
+          is_featured: boolean | null
           location: string | null
-          metadata: Json
+          metadata: Json | null
           price: number | null
-          price_on_request: boolean
+          price_on_request: boolean | null
           primary_image_url: string | null
           provenance: string | null
-          slug: string
-          sort_order: number
-          status: Database["public"]["Enums"]["asset_status"]
-          tags: string[]
-          title: string
+          slug: string | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["enum_asset_availability"] | null
+          tags: Json | null
+          title: string | null
           updated_at: string
         }
         Insert: {
+          _status?: Database["public"]["Enums"]["enum_assets_status"] | null
           brand?: string | null
-          category?: Database["public"]["Enums"]["asset_category"]
-          condition?: Database["public"]["Enums"]["asset_condition"] | null
+          category?: Database["public"]["Enums"]["enum_assets_category"] | null
+          condition?:
+            | Database["public"]["Enums"]["enum_assets_condition"]
+            | null
           created_at?: string
-          currency?: string
+          currency?: string | null
           description?: string | null
           dimensions?: string | null
-          division?: Database["public"]["Enums"]["service_division"]
+          division?: Database["public"]["Enums"]["enum_assets_division"] | null
           era?: string | null
+          gallery?: Json | null
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          metadata?: Json
+          metadata?: Json | null
           price?: number | null
-          price_on_request?: boolean
+          price_on_request?: boolean | null
           primary_image_url?: string | null
           provenance?: string | null
-          slug: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["asset_status"]
-          tags?: string[]
-          title: string
+          slug?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["enum_asset_availability"] | null
+          tags?: Json | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
+          _status?: Database["public"]["Enums"]["enum_assets_status"] | null
           brand?: string | null
-          category?: Database["public"]["Enums"]["asset_category"]
-          condition?: Database["public"]["Enums"]["asset_condition"] | null
+          category?: Database["public"]["Enums"]["enum_assets_category"] | null
+          condition?:
+            | Database["public"]["Enums"]["enum_assets_condition"]
+            | null
           created_at?: string
-          currency?: string
+          currency?: string | null
           description?: string | null
           dimensions?: string | null
-          division?: Database["public"]["Enums"]["service_division"]
+          division?: Database["public"]["Enums"]["enum_assets_division"] | null
           era?: string | null
+          gallery?: Json | null
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          metadata?: Json
+          metadata?: Json | null
           price?: number | null
-          price_on_request?: boolean
+          price_on_request?: boolean | null
           primary_image_url?: string | null
           provenance?: string | null
-          slug?: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["asset_status"]
-          tags?: string[]
-          title?: string
+          slug?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["enum_asset_availability"] | null
+          tags?: Json | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
       }
+      assets_images: {
+        Row: {
+          _order: number
+          _parent_id: string
+          alt: string | null
+          id: string
+          image_id: string | null
+        }
+        Insert: {
+          _order: number
+          _parent_id: string
+          alt?: string | null
+          id: string
+          image_id?: string | null
+        }
+        Update: {
+          _order?: number
+          _parent_id?: string
+          alt?: string | null
+          id?: string
+          image_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assets_images_image_id_media_id_fk"
+            columns: ["image_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assets_images_parent_id_fk"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inquiries: {
         Row: {
-          asset_category: Database["public"]["Enums"]["asset_category"] | null
+          asset_category:
+            | Database["public"]["Enums"]["enum_inquiries_asset_category"]
+            | null
           asset_description: string | null
-          client_segment: Database["public"]["Enums"]["client_segment"] | null
+          client_segment:
+            | Database["public"]["Enums"]["enum_inquiries_client_segment"]
+            | null
           company: string | null
-          consent: boolean
+          consent: boolean | null
           created_at: string
           email: string
-          estimated_currency: string
+          estimated_currency: string | null
           estimated_value: number | null
           expat_direction: string | null
           full_name: string
           id: string
-          inquiry_type: Database["public"]["Enums"]["inquiry_type"]
+          inquiry_type: Database["public"]["Enums"]["enum_inquiries_inquiry_type"]
           location: string | null
           message: string | null
-          metadata: Json
+          metadata: Json | null
           phone: string | null
           preferred_contact: string | null
           service_division:
-            | Database["public"]["Enums"]["service_division"]
+            | Database["public"]["Enums"]["enum_inquiries_service_division"]
             | null
           source: string | null
-          status: Database["public"]["Enums"]["inquiry_status"]
+          status: Database["public"]["Enums"]["enum_inquiries_status"]
           subject: string | null
           updated_at: string
         }
         Insert: {
-          asset_category?: Database["public"]["Enums"]["asset_category"] | null
+          asset_category?:
+            | Database["public"]["Enums"]["enum_inquiries_asset_category"]
+            | null
           asset_description?: string | null
-          client_segment?: Database["public"]["Enums"]["client_segment"] | null
+          client_segment?:
+            | Database["public"]["Enums"]["enum_inquiries_client_segment"]
+            | null
           company?: string | null
-          consent?: boolean
+          consent?: boolean | null
           created_at?: string
           email: string
-          estimated_currency?: string
+          estimated_currency?: string | null
           estimated_value?: number | null
           expat_direction?: string | null
           full_name: string
           id?: string
-          inquiry_type: Database["public"]["Enums"]["inquiry_type"]
+          inquiry_type?: Database["public"]["Enums"]["enum_inquiries_inquiry_type"]
           location?: string | null
           message?: string | null
-          metadata?: Json
+          metadata?: Json | null
           phone?: string | null
           preferred_contact?: string | null
           service_division?:
-            | Database["public"]["Enums"]["service_division"]
+            | Database["public"]["Enums"]["enum_inquiries_service_division"]
             | null
           source?: string | null
-          status?: Database["public"]["Enums"]["inquiry_status"]
+          status?: Database["public"]["Enums"]["enum_inquiries_status"]
           subject?: string | null
           updated_at?: string
         }
         Update: {
-          asset_category?: Database["public"]["Enums"]["asset_category"] | null
+          asset_category?:
+            | Database["public"]["Enums"]["enum_inquiries_asset_category"]
+            | null
           asset_description?: string | null
-          client_segment?: Database["public"]["Enums"]["client_segment"] | null
+          client_segment?:
+            | Database["public"]["Enums"]["enum_inquiries_client_segment"]
+            | null
           company?: string | null
-          consent?: boolean
+          consent?: boolean | null
           created_at?: string
           email?: string
-          estimated_currency?: string
+          estimated_currency?: string | null
           estimated_value?: number | null
           expat_direction?: string | null
           full_name?: string
           id?: string
-          inquiry_type?: Database["public"]["Enums"]["inquiry_type"]
+          inquiry_type?: Database["public"]["Enums"]["enum_inquiries_inquiry_type"]
           location?: string | null
           message?: string | null
-          metadata?: Json
+          metadata?: Json | null
           phone?: string | null
           preferred_contact?: string | null
           service_division?:
-            | Database["public"]["Enums"]["service_division"]
+            | Database["public"]["Enums"]["enum_inquiries_service_division"]
             | null
           source?: string | null
-          status?: Database["public"]["Enums"]["inquiry_status"]
+          status?: Database["public"]["Enums"]["enum_inquiries_status"]
           subject?: string | null
           updated_at?: string
         }
         Relationships: []
       }
+      media: {
+        Row: {
+          alt: string | null
+          created_at: string
+          credit: string | null
+          filename: string | null
+          filesize: number | null
+          focal_x: number | null
+          focal_y: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          prefix: string | null
+          sizes_card_filename: string | null
+          sizes_card_filesize: number | null
+          sizes_card_height: number | null
+          sizes_card_mime_type: string | null
+          sizes_card_url: string | null
+          sizes_card_width: number | null
+          sizes_hero_filename: string | null
+          sizes_hero_filesize: number | null
+          sizes_hero_height: number | null
+          sizes_hero_mime_type: string | null
+          sizes_hero_url: string | null
+          sizes_hero_width: number | null
+          sizes_thumbnail_filename: string | null
+          sizes_thumbnail_filesize: number | null
+          sizes_thumbnail_height: number | null
+          sizes_thumbnail_mime_type: string | null
+          sizes_thumbnail_url: string | null
+          sizes_thumbnail_width: number | null
+          thumbnail_u_r_l: string | null
+          updated_at: string
+          url: string | null
+          width: number | null
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          credit?: string | null
+          filename?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          prefix?: string | null
+          sizes_card_filename?: string | null
+          sizes_card_filesize?: number | null
+          sizes_card_height?: number | null
+          sizes_card_mime_type?: string | null
+          sizes_card_url?: string | null
+          sizes_card_width?: number | null
+          sizes_hero_filename?: string | null
+          sizes_hero_filesize?: number | null
+          sizes_hero_height?: number | null
+          sizes_hero_mime_type?: string | null
+          sizes_hero_url?: string | null
+          sizes_hero_width?: number | null
+          sizes_thumbnail_filename?: string | null
+          sizes_thumbnail_filesize?: number | null
+          sizes_thumbnail_height?: number | null
+          sizes_thumbnail_mime_type?: string | null
+          sizes_thumbnail_url?: string | null
+          sizes_thumbnail_width?: number | null
+          thumbnail_u_r_l?: string | null
+          updated_at?: string
+          url?: string | null
+          width?: number | null
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          credit?: string | null
+          filename?: string | null
+          filesize?: number | null
+          focal_x?: number | null
+          focal_y?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          prefix?: string | null
+          sizes_card_filename?: string | null
+          sizes_card_filesize?: number | null
+          sizes_card_height?: number | null
+          sizes_card_mime_type?: string | null
+          sizes_card_url?: string | null
+          sizes_card_width?: number | null
+          sizes_hero_filename?: string | null
+          sizes_hero_filesize?: number | null
+          sizes_hero_height?: number | null
+          sizes_hero_mime_type?: string | null
+          sizes_hero_url?: string | null
+          sizes_hero_width?: number | null
+          sizes_thumbnail_filename?: string | null
+          sizes_thumbnail_filesize?: number | null
+          sizes_thumbnail_height?: number | null
+          sizes_thumbnail_mime_type?: string | null
+          sizes_thumbnail_url?: string | null
+          sizes_thumbnail_width?: number | null
+          thumbnail_u_r_l?: string | null
+          updated_at?: string
+          url?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
+      payload_kv: {
+        Row: {
+          data: Json
+          id: string
+          key: string
+        }
+        Insert: {
+          data: Json
+          id?: string
+          key: string
+        }
+        Update: {
+          data?: Json
+          id?: string
+          key?: string
+        }
+        Relationships: []
+      }
+      payload_locked_documents: {
+        Row: {
+          created_at: string
+          global_slug: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          global_slug?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          global_slug?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payload_locked_documents_rels: {
+        Row: {
+          assets_id: string | null
+          id: number
+          inquiries_id: string | null
+          media_id: string | null
+          order: number | null
+          parent_id: string
+          path: string
+          sale_events_id: string | null
+          services_id: string | null
+          site_stats_id: string | null
+          testimonials_id: string | null
+          users_id: string | null
+        }
+        Insert: {
+          assets_id?: string | null
+          id?: number
+          inquiries_id?: string | null
+          media_id?: string | null
+          order?: number | null
+          parent_id: string
+          path: string
+          sale_events_id?: string | null
+          services_id?: string | null
+          site_stats_id?: string | null
+          testimonials_id?: string | null
+          users_id?: string | null
+        }
+        Update: {
+          assets_id?: string | null
+          id?: number
+          inquiries_id?: string | null
+          media_id?: string | null
+          order?: number | null
+          parent_id?: string
+          path?: string
+          sale_events_id?: string | null
+          services_id?: string | null
+          site_stats_id?: string | null
+          testimonials_id?: string | null
+          users_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_locked_documents_rels_assets_fk"
+            columns: ["assets_id"]
+            isOneToOne: false
+            referencedRelation: "assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_inquiries_fk"
+            columns: ["inquiries_id"]
+            isOneToOne: false
+            referencedRelation: "inquiries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_media_fk"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_parent_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "payload_locked_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_sale_events_fk"
+            columns: ["sale_events_id"]
+            isOneToOne: false
+            referencedRelation: "sale_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_services_fk"
+            columns: ["services_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_site_stats_fk"
+            columns: ["site_stats_id"]
+            isOneToOne: false
+            referencedRelation: "site_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_testimonials_fk"
+            columns: ["testimonials_id"]
+            isOneToOne: false
+            referencedRelation: "testimonials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_locked_documents_rels_users_fk"
+            columns: ["users_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payload_migrations: {
+        Row: {
+          batch: number | null
+          created_at: string
+          id: string
+          name: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch?: number | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch?: number | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payload_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          key: string | null
+          updated_at: string
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key?: string | null
+          updated_at?: string
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string | null
+          updated_at?: string
+          value?: Json | null
+        }
+        Relationships: []
+      }
+      payload_preferences_rels: {
+        Row: {
+          id: number
+          order: number | null
+          parent_id: string
+          path: string
+          users_id: string | null
+        }
+        Insert: {
+          id?: number
+          order?: number | null
+          parent_id: string
+          path: string
+          users_id?: string | null
+        }
+        Update: {
+          id?: number
+          order?: number | null
+          parent_id?: string
+          path?: string
+          users_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payload_preferences_rels_parent_fk"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "payload_preferences"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payload_preferences_rels_users_fk"
+            columns: ["users_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sale_events: {
         Row: {
+          _status: Database["public"]["Enums"]["enum_sale_events_status"] | null
           address: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
-          division: Database["public"]["Enums"]["service_division"]
+          division:
+            | Database["public"]["Enums"]["enum_sale_events_division"]
+            | null
           ends_at: string | null
-          event_type: Database["public"]["Enums"]["event_type"]
+          event_type:
+            | Database["public"]["Enums"]["enum_sale_events_event_type"]
+            | null
           id: string
-          is_featured: boolean
-          is_published: boolean
+          is_featured: boolean | null
           location: string | null
-          metadata: Json
-          slug: string
+          metadata: Json | null
+          slug: string | null
           starts_at: string | null
-          status: Database["public"]["Enums"]["event_status"]
-          title: string
+          status:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          title: string | null
           updated_at: string
         }
         Insert: {
+          _status?:
+            | Database["public"]["Enums"]["enum_sale_events_status"]
+            | null
           address?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
-          division?: Database["public"]["Enums"]["service_division"]
+          division?:
+            | Database["public"]["Enums"]["enum_sale_events_division"]
+            | null
           ends_at?: string | null
-          event_type?: Database["public"]["Enums"]["event_type"]
+          event_type?:
+            | Database["public"]["Enums"]["enum_sale_events_event_type"]
+            | null
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          metadata?: Json
-          slug: string
+          metadata?: Json | null
+          slug?: string | null
           starts_at?: string | null
-          status?: Database["public"]["Enums"]["event_status"]
-          title: string
+          status?:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
+          _status?:
+            | Database["public"]["Enums"]["enum_sale_events_status"]
+            | null
           address?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
-          division?: Database["public"]["Enums"]["service_division"]
+          division?:
+            | Database["public"]["Enums"]["enum_sale_events_division"]
+            | null
           ends_at?: string | null
-          event_type?: Database["public"]["Enums"]["event_type"]
+          event_type?:
+            | Database["public"]["Enums"]["enum_sale_events_event_type"]
+            | null
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          metadata?: Json
-          slug?: string
+          metadata?: Json | null
+          slug?: string | null
           starts_at?: string | null
-          status?: Database["public"]["Enums"]["event_status"]
-          title?: string
+          status?:
+            | Database["public"]["Enums"]["enum_sale_event_lifecycle"]
+            | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
       }
       services: {
         Row: {
+          _status: Database["public"]["Enums"]["enum_services_status"] | null
           created_at: string
           description: string | null
-          division: Database["public"]["Enums"]["service_division"]
+          division: Database["public"]["Enums"]["enum_services_division"] | null
           hero_image_url: string | null
-          icon: string | null
+          icon: Database["public"]["Enums"]["enum_services_icon"] | null
           id: string
-          is_published: boolean
-          offerings: string[]
-          slug: string
-          sort_order: number
+          offerings: Json | null
+          slug: string | null
+          sort_order: number | null
           summary: string | null
-          title: string
+          title: string | null
           updated_at: string
         }
         Insert: {
+          _status?: Database["public"]["Enums"]["enum_services_status"] | null
           created_at?: string
           description?: string | null
-          division: Database["public"]["Enums"]["service_division"]
+          division?:
+            | Database["public"]["Enums"]["enum_services_division"]
+            | null
           hero_image_url?: string | null
-          icon?: string | null
+          icon?: Database["public"]["Enums"]["enum_services_icon"] | null
           id?: string
-          is_published?: boolean
-          offerings?: string[]
-          slug: string
-          sort_order?: number
+          offerings?: Json | null
+          slug?: string | null
+          sort_order?: number | null
           summary?: string | null
-          title: string
+          title?: string | null
           updated_at?: string
         }
         Update: {
+          _status?: Database["public"]["Enums"]["enum_services_status"] | null
           created_at?: string
           description?: string | null
-          division?: Database["public"]["Enums"]["service_division"]
+          division?:
+            | Database["public"]["Enums"]["enum_services_division"]
+            | null
           hero_image_url?: string | null
-          icon?: string | null
+          icon?: Database["public"]["Enums"]["enum_services_icon"] | null
           id?: string
-          is_published?: boolean
-          offerings?: string[]
-          slug?: string
-          sort_order?: number
+          offerings?: Json | null
+          slug?: string | null
+          sort_order?: number | null
           summary?: string | null
-          title?: string
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
       }
       site_stats: {
         Row: {
+          _status: Database["public"]["Enums"]["enum_site_stats_status"] | null
           created_at: string
           id: string
-          is_published: boolean
-          key: string
-          label: string
+          key: string | null
+          label: string | null
           prefix: string | null
-          sort_order: number
+          sort_order: number | null
           suffix: string | null
           updated_at: string
-          value: number
+          value: number | null
         }
         Insert: {
+          _status?: Database["public"]["Enums"]["enum_site_stats_status"] | null
           created_at?: string
           id?: string
-          is_published?: boolean
-          key: string
-          label: string
+          key?: string | null
+          label?: string | null
           prefix?: string | null
-          sort_order?: number
+          sort_order?: number | null
           suffix?: string | null
           updated_at?: string
-          value: number
+          value?: number | null
         }
         Update: {
+          _status?: Database["public"]["Enums"]["enum_site_stats_status"] | null
           created_at?: string
           id?: string
-          is_published?: boolean
-          key?: string
-          label?: string
+          key?: string | null
+          label?: string | null
           prefix?: string | null
-          sort_order?: number
+          sort_order?: number | null
           suffix?: string | null
           updated_at?: string
-          value?: number
+          value?: number | null
         }
         Relationships: []
       }
       testimonials: {
         Row: {
-          author_name: string
+          _status:
+            | Database["public"]["Enums"]["enum_testimonials_status"]
+            | null
+          author_name: string | null
           author_role: string | null
           avatar_url: string | null
-          client_segment: Database["public"]["Enums"]["client_segment"] | null
+          client_segment:
+            | Database["public"]["Enums"]["enum_testimonials_client_segment"]
+            | null
           created_at: string
           id: string
-          is_featured: boolean
-          is_published: boolean
+          is_featured: boolean | null
           location: string | null
-          quote: string
+          quote: string | null
           rating: number | null
-          sort_order: number
+          sort_order: number | null
           updated_at: string
         }
         Insert: {
-          author_name: string
+          _status?:
+            | Database["public"]["Enums"]["enum_testimonials_status"]
+            | null
+          author_name?: string | null
           author_role?: string | null
           avatar_url?: string | null
-          client_segment?: Database["public"]["Enums"]["client_segment"] | null
+          client_segment?:
+            | Database["public"]["Enums"]["enum_testimonials_client_segment"]
+            | null
           created_at?: string
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          quote: string
+          quote?: string | null
           rating?: number | null
-          sort_order?: number
+          sort_order?: number | null
           updated_at?: string
         }
         Update: {
-          author_name?: string
+          _status?:
+            | Database["public"]["Enums"]["enum_testimonials_status"]
+            | null
+          author_name?: string | null
           author_role?: string | null
           avatar_url?: string | null
-          client_segment?: Database["public"]["Enums"]["client_segment"] | null
+          client_segment?:
+            | Database["public"]["Enums"]["enum_testimonials_client_segment"]
+            | null
           created_at?: string
           id?: string
-          is_featured?: boolean
-          is_published?: boolean
+          is_featured?: boolean | null
           location?: string | null
-          quote?: string
+          quote?: string | null
           rating?: number | null
-          sort_order?: number
+          sort_order?: number | null
           updated_at?: string
         }
         Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string
+          hash: string | null
+          id: string
+          lock_until: string | null
+          login_attempts: number | null
+          name: string | null
+          reset_password_expiration: string | null
+          reset_password_token: string | null
+          role: Database["public"]["Enums"]["enum_users_role"]
+          salt: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          hash?: string | null
+          id?: string
+          lock_until?: string | null
+          login_attempts?: number | null
+          name?: string | null
+          reset_password_expiration?: string | null
+          reset_password_token?: string | null
+          role?: Database["public"]["Enums"]["enum_users_role"]
+          salt?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          hash?: string | null
+          id?: string
+          lock_until?: string | null
+          login_attempts?: number | null
+          name?: string | null
+          reset_password_expiration?: string | null
+          reset_password_token?: string | null
+          role?: Database["public"]["Enums"]["enum_users_role"]
+          salt?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      users_sessions: {
+        Row: {
+          _order: number
+          _parent_id: string
+          created_at: string | null
+          expires_at: string
+          id: string
+        }
+        Insert: {
+          _order: number
+          _parent_id: string
+          created_at?: string | null
+          expires_at: string
+          id: string
+        }
+        Update: {
+          _order?: number
+          _parent_id?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_sessions_parent_id_fk"
+            columns: ["_parent_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -467,6 +1434,155 @@ export type Database = {
         | "expat"
         | "embassy"
         | "corporation"
+      enum__assets_v_version_category:
+        | "furniture"
+        | "fine_art"
+        | "jewelry"
+        | "vehicles"
+        | "collectibles"
+        | "designer"
+        | "lighting"
+        | "rugs"
+        | "antiques"
+        | "equipment"
+        | "fleet"
+        | "inventory"
+        | "office"
+        | "other"
+      enum__assets_v_version_condition:
+        | "new"
+        | "excellent"
+        | "very_good"
+        | "good"
+        | "fair"
+      enum__assets_v_version_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum__assets_v_version_status: "draft" | "published"
+      enum__sale_events_v_version_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum__sale_events_v_version_event_type:
+        | "estate_sale"
+        | "online_auction"
+        | "liquidation"
+        | "private_event"
+      enum__sale_events_v_version_status: "draft" | "published"
+      enum__services_v_version_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum__services_v_version_icon: "estate" | "commercial" | "concierge"
+      enum__services_v_version_status: "draft" | "published"
+      enum__site_stats_v_version_status: "draft" | "published"
+      enum__testimonials_v_version_client_segment:
+        | "individual"
+        | "family"
+        | "estate_executor"
+        | "business_owner"
+        | "expat"
+        | "embassy"
+        | "corporation"
+      enum__testimonials_v_version_status: "draft" | "published"
+      enum_asset_availability:
+        | "available"
+        | "reserved"
+        | "pending"
+        | "sold"
+        | "withdrawn"
+      enum_assets_category:
+        | "furniture"
+        | "fine_art"
+        | "jewelry"
+        | "vehicles"
+        | "collectibles"
+        | "designer"
+        | "lighting"
+        | "rugs"
+        | "antiques"
+        | "equipment"
+        | "fleet"
+        | "inventory"
+        | "office"
+        | "other"
+      enum_assets_condition: "new" | "excellent" | "very_good" | "good" | "fair"
+      enum_assets_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum_assets_status: "draft" | "published"
+      enum_inquiries_asset_category:
+        | "furniture"
+        | "fine_art"
+        | "jewelry"
+        | "vehicles"
+        | "collectibles"
+        | "designer"
+        | "lighting"
+        | "rugs"
+        | "antiques"
+        | "equipment"
+        | "fleet"
+        | "inventory"
+        | "office"
+        | "other"
+      enum_inquiries_client_segment:
+        | "individual"
+        | "family"
+        | "estate_executor"
+        | "business_owner"
+        | "expat"
+        | "embassy"
+        | "corporation"
+      enum_inquiries_inquiry_type: "consultation" | "asset_review"
+      enum_inquiries_service_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum_inquiries_status:
+        | "new"
+        | "contacted"
+        | "qualified"
+        | "won"
+        | "lost"
+        | "archived"
+      enum_sale_event_lifecycle: "upcoming" | "live" | "ended" | "cancelled"
+      enum_sale_events_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum_sale_events_event_type:
+        | "estate_sale"
+        | "online_auction"
+        | "liquidation"
+        | "private_event"
+      enum_sale_events_status: "draft" | "published"
+      enum_services_division:
+        | "estate_sales"
+        | "commercial_liquidation"
+        | "concierge"
+        | "expat_services"
+      enum_services_icon: "estate" | "commercial" | "concierge"
+      enum_services_status: "draft" | "published"
+      enum_site_stats_status: "draft" | "published"
+      enum_testimonials_client_segment:
+        | "individual"
+        | "family"
+        | "estate_executor"
+        | "business_owner"
+        | "expat"
+        | "embassy"
+        | "corporation"
+      enum_testimonials_status: "draft" | "published"
+      enum_users_role: "admin" | "editor"
       event_status: "upcoming" | "live" | "ended" | "cancelled"
       event_type:
         | "estate_sale"
@@ -611,9 +1727,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       asset_category: [
@@ -643,6 +1756,173 @@ export const Constants = {
         "embassy",
         "corporation",
       ],
+      enum__assets_v_version_category: [
+        "furniture",
+        "fine_art",
+        "jewelry",
+        "vehicles",
+        "collectibles",
+        "designer",
+        "lighting",
+        "rugs",
+        "antiques",
+        "equipment",
+        "fleet",
+        "inventory",
+        "office",
+        "other",
+      ],
+      enum__assets_v_version_condition: [
+        "new",
+        "excellent",
+        "very_good",
+        "good",
+        "fair",
+      ],
+      enum__assets_v_version_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum__assets_v_version_status: ["draft", "published"],
+      enum__sale_events_v_version_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum__sale_events_v_version_event_type: [
+        "estate_sale",
+        "online_auction",
+        "liquidation",
+        "private_event",
+      ],
+      enum__sale_events_v_version_status: ["draft", "published"],
+      enum__services_v_version_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum__services_v_version_icon: ["estate", "commercial", "concierge"],
+      enum__services_v_version_status: ["draft", "published"],
+      enum__site_stats_v_version_status: ["draft", "published"],
+      enum__testimonials_v_version_client_segment: [
+        "individual",
+        "family",
+        "estate_executor",
+        "business_owner",
+        "expat",
+        "embassy",
+        "corporation",
+      ],
+      enum__testimonials_v_version_status: ["draft", "published"],
+      enum_asset_availability: [
+        "available",
+        "reserved",
+        "pending",
+        "sold",
+        "withdrawn",
+      ],
+      enum_assets_category: [
+        "furniture",
+        "fine_art",
+        "jewelry",
+        "vehicles",
+        "collectibles",
+        "designer",
+        "lighting",
+        "rugs",
+        "antiques",
+        "equipment",
+        "fleet",
+        "inventory",
+        "office",
+        "other",
+      ],
+      enum_assets_condition: ["new", "excellent", "very_good", "good", "fair"],
+      enum_assets_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum_assets_status: ["draft", "published"],
+      enum_inquiries_asset_category: [
+        "furniture",
+        "fine_art",
+        "jewelry",
+        "vehicles",
+        "collectibles",
+        "designer",
+        "lighting",
+        "rugs",
+        "antiques",
+        "equipment",
+        "fleet",
+        "inventory",
+        "office",
+        "other",
+      ],
+      enum_inquiries_client_segment: [
+        "individual",
+        "family",
+        "estate_executor",
+        "business_owner",
+        "expat",
+        "embassy",
+        "corporation",
+      ],
+      enum_inquiries_inquiry_type: ["consultation", "asset_review"],
+      enum_inquiries_service_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum_inquiries_status: [
+        "new",
+        "contacted",
+        "qualified",
+        "won",
+        "lost",
+        "archived",
+      ],
+      enum_sale_event_lifecycle: ["upcoming", "live", "ended", "cancelled"],
+      enum_sale_events_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum_sale_events_event_type: [
+        "estate_sale",
+        "online_auction",
+        "liquidation",
+        "private_event",
+      ],
+      enum_sale_events_status: ["draft", "published"],
+      enum_services_division: [
+        "estate_sales",
+        "commercial_liquidation",
+        "concierge",
+        "expat_services",
+      ],
+      enum_services_icon: ["estate", "commercial", "concierge"],
+      enum_services_status: ["draft", "published"],
+      enum_site_stats_status: ["draft", "published"],
+      enum_testimonials_client_segment: [
+        "individual",
+        "family",
+        "estate_executor",
+        "business_owner",
+        "expat",
+        "embassy",
+        "corporation",
+      ],
+      enum_testimonials_status: ["draft", "published"],
+      enum_users_role: ["admin", "editor"],
       event_status: ["upcoming", "live", "ended", "cancelled"],
       event_type: [
         "estate_sale",
