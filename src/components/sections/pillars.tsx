@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { Crown, Building2, ConciergeBell, ArrowUpRight, Check } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
-import { type Service } from "@/lib/site";
+import { divisionHref, type Service } from "@/lib/site";
 import { getServices } from "@/lib/queries";
 
 const icons: Record<Service["icon"], LucideIcon> = {
@@ -37,7 +38,14 @@ export async function Pillars() {
                     <Icon className="size-7" strokeWidth={1.4} />
                   </div>
 
-                  <h3 className="font-display text-2xl text-navy">{service.title}</h3>
+                  <h3 className="font-display text-2xl text-navy">
+                    <Link
+                      href={divisionHref[service.division] ?? "#contact"}
+                      className="transition-colors hover:text-crimson"
+                    >
+                      {service.title}
+                    </Link>
+                  </h3>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                     {service.summary}
                   </p>

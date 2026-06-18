@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,7 @@ export async function FeaturedAssets() {
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {assets.map((asset, i) => (
             <Reveal key={asset.slug} delay={i % 3}>
-              <a href="#contact" className="group block">
+              <Link href={`/collection/${asset.slug}`} className="group block">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
                   {/* Scaling media layer: gradient base + optional photo */}
                   <div className="absolute inset-0 scale-100 transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110">
@@ -84,7 +85,7 @@ export async function FeaturedAssets() {
                     {asset.meta && <p className="mt-1 text-xs text-white/70">{asset.meta}</p>}
                   </div>
                 </div>
-              </a>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -96,10 +97,10 @@ export async function FeaturedAssets() {
             size="lg"
             className="group h-12 border-navy/20 px-8 text-navy hover:bg-navy hover:text-white"
           >
-            <a href="#contact">
-              Request the full catalogue
+            <Link href="/collection">
+              Full Catalogue
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
           </Button>
         </Reveal>
       </div>

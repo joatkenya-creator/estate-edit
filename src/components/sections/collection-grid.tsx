@@ -108,7 +108,7 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
             {filtered.map((asset) => (
               <motion.a
                 key={asset.slug}
-                href="/contact"
+                href={`/collection/${asset.slug}`}
                 layout
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}

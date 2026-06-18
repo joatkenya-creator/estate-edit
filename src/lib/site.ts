@@ -139,11 +139,37 @@ export type CatalogueItem = FeaturedAsset & {
   division: string;
 };
 
+export type AssetImage = { url: string; alt: string };
+
+/** Full asset record powering the individual asset detail page. */
+export type AssetDetail = CatalogueItem & {
+  description?: string;
+  condition?: string;
+  brand?: string;
+  era?: string;
+  provenance?: string;
+  dimensions?: string;
+  location?: string;
+  price?: number;
+  currency: string;
+  priceOnRequest: boolean;
+  tags: string[];
+  images: AssetImage[];
+};
+
 export const divisionLabel: Record<string, string> = {
   estate_sales: "Estate Sales",
   commercial_liquidation: "Commercial Liquidation",
   concierge: "Concierge",
   expat_services: "Expat Services",
+};
+
+/** Maps a service division to its dedicated marketing page. */
+export const divisionHref: Record<string, string> = {
+  estate_sales: "/estate-sales",
+  commercial_liquidation: "/commercial-liquidation",
+  concierge: "/concierge",
+  expat_services: "/expat-services",
 };
 
 export const featuredAssets: FeaturedAsset[] = [

@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 export function CtaBand({
   title = "Ready to simplify your transition?",
   subtitle = "Begin with a private, no-obligation consultation. Our concierge team responds within one business day.",
+  secondary = { label: "Request an Asset Review", href: "/contact" },
 }: {
   title?: string;
   subtitle?: string;
+  /** Optional secondary CTA. Pass `null` to show only the primary button. */
+  secondary?: { label: string; href: string } | null;
 }) {
   return (
     <section className="bg-white py-20 sm:py-28">
@@ -29,14 +32,16 @@ export function CtaBand({
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-13 border-white/30 bg-white/5 px-8 text-base text-white hover:bg-white/10 hover:text-white"
-                >
-                  <Link href="/contact">Request an Asset Review</Link>
-                </Button>
+                {secondary && (
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-13 border-white/30 bg-white/5 px-8 text-base text-white hover:bg-white/10 hover:text-white"
+                  >
+                    <Link href={secondary.href}>{secondary.label}</Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PlaneLanding, PlaneTakeoff, ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
@@ -82,10 +83,10 @@ export function Clients() {
 
         <Reveal className="mt-10 flex justify-center">
           <Button asChild size="lg" className="group h-12 bg-navy px-8 text-white hover:bg-navy-soft">
-            <a href="#contact">
+            <Link href="/expat-services">
               Discuss your relocation
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
+            </Link>
           </Button>
         </Reveal>
       </div>

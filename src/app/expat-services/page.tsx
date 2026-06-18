@@ -102,6 +102,7 @@ export default function ExpatServicesPage() {
       <CtaBand
         title="Relocating to or from Kenya?"
         subtitle="Tell us your timeline and we will build a relocation plan tailored to your family or assignment."
+        secondary={null}
       />
     </main>
   );
