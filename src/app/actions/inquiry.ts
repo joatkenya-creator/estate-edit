@@ -56,6 +56,16 @@ export async function submitInquiry(
 
   const inquiryType = pick(clean(formData.get("inquiry_type")), INQUIRY_TYPES) ?? "consultation";
 
+  // Asset context — present when the lead came from a specific catalogue item
+  // (the "Enquire about this piece" CTA passes these as hidden fields). We do
+  // NOT write to the `asset_category` enum column (the asset's free-text
+  // category won't match that enum); instead we record which item drove the
+  // lead in `source` (slug), `subject` (title) and `metadata` (full ref).
+  const assetSlug = clean(formData.get("asset_slug"));
+  const assetTitle = clean(formData.get("asset_title"));
+  const assetCategory = clean(formData.get("asset_category"));
+  const hasAsset = Boolean(assetSlug || assetTitle);
+
   const payload = {
     // `status` is a NOT NULL column on the Payload-owned inquiries table; its
     // Payload defaultValue is app-level only, so set it explicitly for the
@@ -69,10 +79,22 @@ export async function submitInquiry(
     client_segment: pick(clean(formData.get("client_segment")), SEGMENTS),
     service_division: pick(clean(formData.get("service_division")), DIVISIONS),
     location: clean(formData.get("location")),
+    subject: assetTitle ? `Enquiry: ${assetTitle}` : null,
     message,
     asset_description: inquiryType === "asset_review" ? message : null,
     consent: formData.get("consent") === "on",
-    source: "homepage_contact",
+    // Real provenance: the asset slug when known, else the generic CTA.
+    source: assetSlug ? `asset:${assetSlug}` : "homepage_contact",
+    metadata: hasAsset
+      ? {
+          asset: {
+            slug: assetSlug,
+            title: assetTitle,
+            category: assetCategory,
+            url: assetSlug ? `/collection/${assetSlug}` : null,
+          },
+        }
+      : null,
   };
 
   try {

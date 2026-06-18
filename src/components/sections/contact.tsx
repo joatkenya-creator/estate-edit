@@ -26,10 +26,26 @@ const contactInfo = [
   { icon: MapPin, label: siteConfig.location },
 ];
 
-export function Contact() {
-  const [type, setType] = useState<"consultation" | "asset_review">("consultation");
+export type InquiryAsset = {
+  slug: string;
+  title: string;
+  category?: string;
+};
+
+export function Contact({ asset }: { asset?: InquiryAsset }) {
+  // When the lead arrives from a specific catalogue item, default to the asset
+  // review flow and pre-fill the message referencing that item.
+  const [type, setType] = useState<"consultation" | "asset_review">(
+    asset ? "asset_review" : "consultation",
+  );
   const [state, formAction, isPending] = useActionState(submitInquiry, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const assetPrefill = asset
+    ? `I'm interested in "${asset.title}"${
+        asset.category ? ` (${asset.category})` : ""
+      }. Please share more details and availability.`
+    : undefined;
 
   useEffect(() => {
     if (state.status === "success") {
@@ -101,8 +117,27 @@ export function Contact() {
             ))}
           </div>
 
+          {asset && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-navy">
+              <ShieldCheck className="size-4 shrink-0 text-gold" strokeWidth={1.8} />
+              <span>
+                Enquiring about <span className="font-medium">{asset.title}</span>
+                {asset.category ? ` · ${asset.category}` : ""}
+              </span>
+            </div>
+          )}
+
           <form ref={formRef} action={formAction} className="grid gap-5">
             <input type="hidden" name="inquiry_type" value={type} />
+            {asset && (
+              <>
+                <input type="hidden" name="asset_slug" value={asset.slug} />
+                <input type="hidden" name="asset_title" value={asset.title} />
+                {asset.category && (
+                  <input type="hidden" name="asset_category" value={asset.category} />
+                )}
+              </>
+            )}
 
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Full name" htmlFor="full_name" required>
@@ -162,6 +197,7 @@ export function Contact() {
                 id="message"
                 name="message"
                 rows={4}
+                defaultValue={assetPrefill}
                 placeholder={
                   type === "asset_review"
                     ? "Tell us about the estate, vehicles, art, or equipment for review…"
