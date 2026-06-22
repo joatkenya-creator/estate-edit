@@ -13,6 +13,16 @@
       "binding": "WORKER_SELF_REFERENCE",
       "service": "estate-edit"
     }
+  ],
+
+  // --- Custom domain -------------------------------------------------------
+  // Serves the Worker at estateedit.org (+ www), registered via Cloudflare
+  // Registrar so the zone is already active on this account. On `npm run
+  // deploy` Wrangler provisions these custom domains and their proxied DNS
+  // records automatically; Cloudflare issues the SSL cert.
+  "routes": [
+    { "pattern": "estateedit.org", "custom_domain": true },
+    { "pattern": "www.estateedit.org", "custom_domain": true }
   ]
 
   // --- Optional: persistent ISR / Next cache via R2 ------------------------

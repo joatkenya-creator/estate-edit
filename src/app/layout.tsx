@@ -19,7 +19,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://theestateedit.co.ke"),
+  metadataBase: new URL("https://estateedit.org"),
   title: {
     default: "The Estate Edit: Luxury Estate & Transition Management",
     template: "%s · The Estate Edit",
