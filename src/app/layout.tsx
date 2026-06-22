@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { JsonLd } from "@/components/seo/json-ld";
+import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({
       className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <GoogleAnalytics />
         <JsonLd data={organizationJsonLd()} />
         <SiteHeader />
         {children}
