@@ -1,29 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AssetGallery } from "@/components/collection/asset-gallery";
 import { getAssetBySlug, getCatalogueAssets } from "@/lib/queries";
 import { divisionLabel, type AssetDetail } from "@/lib/site";
-import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { assetJsonLd } from "@/lib/seo";
 
 export const revalidate = 600;
-
-const toneGradient: Record<AssetDetail["tone"], string> = {
-  navy: "linear-gradient(145deg,#001628 0%,#002349 55%,#0c3563 100%)",
-  charcoal: "linear-gradient(145deg,#141414 0%,#1f1f1f 55%,#3a3a3a 100%)",
-  crimson: "linear-gradient(145deg,#3d0c0f 0%,#7c181d 55%,#b3242b 100%)",
-  gold: "linear-gradient(145deg,#5c4019 0%,#9c7536 55%,#b68a4e 100%)",
-};
-
-const statusStyles: Record<AssetDetail["status"], string> = {
-  available: "bg-white/90 text-navy",
-  reserved: "bg-gold text-navy",
-  sold: "bg-crimson text-white",
-};
 
 /** Pre-render every catalogue item; unknown slugs render on demand. */
 export async function generateStaticParams() {
@@ -109,49 +95,12 @@ export default async function AssetPage({
       <section className="mx-auto max-w-7xl px-5 py-14 sm:px-8 sm:py-20">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Image gallery */}
-          <div>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
-              <div className="absolute inset-0" style={{ background: toneGradient[asset.tone] }} />
-              {gallery[0] ? (
-                <Image
-                  src={gallery[0].url}
-                  alt={gallery[0].alt}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
-              ) : (
-                <span className="absolute inset-0 flex items-center justify-center font-display text-8xl text-white/10">
-                  EE
-                </span>
-              )}
-              <span
-                className={cn(
-                  "absolute right-4 top-4 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-widest",
-                  statusStyles[asset.status],
-                )}
-              >
-                {asset.status}
-              </span>
-            </div>
-
-            {gallery.length > 1 && (
-              <div className="mt-4 grid grid-cols-4 gap-3">
-                {gallery.slice(1, 5).map((img) => (
-                  <div key={img.url} className="relative aspect-square overflow-hidden rounded-lg">
-                    <Image
-                      src={img.url}
-                      alt={img.alt}
-                      fill
-                      sizes="120px"
-                      className="object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <AssetGallery
+            images={gallery}
+            tone={asset.tone}
+            status={asset.status}
+            title={asset.title}
+          />
 
           {/* Details */}
           <div className="flex flex-col">

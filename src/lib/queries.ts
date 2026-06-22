@@ -95,12 +95,25 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
 const tones: FeaturedAsset["tone"][] = ["navy", "charcoal", "crimson", "gold"];
 
+/**
+ * Display label for an asset's category. When the category is "other" and the
+ * editor typed a custom value (category_other), that custom value is shown
+ * instead of the generic "Other".
+ */
+function categoryDisplay(
+  category: string | null | undefined,
+  categoryOther: string | null | undefined,
+): string {
+  if (category === "other" && categoryOther?.trim()) return categoryOther.trim();
+  return category ? assetCategoryLabel[category] ?? category : "Other";
+}
+
 export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
-      .select("slug, title, category, division, status, primary_image_url, metadata, sort_order")
+      .select("slug, title, category, category_other, division, status, primary_image_url, metadata, sort_order")
       .eq("_status", "published")
       .order("sort_order");
 
@@ -119,7 +132,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
       return {
         slug: a.slug ?? "",
         title: a.title ?? "",
-        category: a.category ? assetCategoryLabel[a.category] ?? a.category : "Other",
+        category: categoryDisplay(a.category, a.category_other),
         categoryKey: a.category ?? "other",
         division: a.division ?? "estate_sales",
         meta: meta.meta ?? "",
@@ -155,7 +168,7 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
     const { data, error } = await supabase
       .from("assets")
       .select(
-        "id, slug, title, description, division, category, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata",
+        "id, slug, title, description, division, category, category_other, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata",
       )
       .eq("slug", slug)
       .eq("_status", "published")
@@ -180,7 +193,7 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
     return {
       slug: data.slug ?? "",
       title: data.title ?? "",
-      category: data.category ? assetCategoryLabel[data.category] ?? data.category : "Other",
+      category: categoryDisplay(data.category, data.category_other),
       categoryKey: data.category ?? "other",
       division: data.division ?? "estate_sales",
       status,
@@ -210,7 +223,7 @@ export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
-      .select("slug, title, category, status, primary_image_url, metadata, sort_order")
+      .select("slug, title, category, category_other, status, primary_image_url, metadata, sort_order")
       .eq("_status", "published")
       .eq("is_featured", true)
       .order("sort_order");
@@ -224,7 +237,7 @@ export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
       return {
         slug: a.slug ?? "",
         title: a.title ?? "",
-        category: a.category ? assetCategoryLabel[a.category] ?? a.category : "Other",
+        category: categoryDisplay(a.category, a.category_other),
         meta: meta.meta ?? "",
         status,
         tone: meta.tone ?? tones[i % tones.length],

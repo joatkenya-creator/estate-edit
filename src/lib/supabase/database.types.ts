@@ -530,6 +530,7 @@ export type Database = {
           _status: Database["public"]["Enums"]["enum_assets_status"] | null
           brand: string | null
           category: Database["public"]["Enums"]["enum_assets_category"] | null
+          category_other: string | null
           condition: Database["public"]["Enums"]["enum_assets_condition"] | null
           created_at: string
           currency: string | null
