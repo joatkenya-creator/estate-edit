@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { getAssetBySlug, getCatalogueAssets } from "@/lib/queries";
 import { divisionLabel, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { JsonLd } from "@/components/seo/json-ld";
+import { assetJsonLd } from "@/lib/seo";
 
 export const revalidate = 600;
 
@@ -37,11 +39,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const asset = await getAssetBySlug(slug);
   if (!asset) return { title: "Asset not found" };
+  const ogImage = asset.images[0]?.url ?? asset.imageUrl;
   return {
     title: asset.title,
     description:
       asset.description ??
       `${asset.category} available through The Estate Edit in Nairobi. Enquire in confidence.`,
+    alternates: { canonical: `/collection/${slug}` },
+    ...(ogImage ? { openGraph: { images: [{ url: ogImage }] } } : {}),
   };
 }
 
@@ -81,6 +86,7 @@ export default async function AssetPage({
 
   return (
     <main className="flex-1 bg-white">
+      <JsonLd data={assetJsonLd(asset)} />
       {/* Breadcrumb header */}
       <section className="relative isolate overflow-hidden gradient-navy">
         <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:36px_36px]" />

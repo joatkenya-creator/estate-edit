@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { Pillars } from "@/components/sections/pillars";
 import { Stats } from "@/components/sections/stats";
@@ -6,6 +7,8 @@ import { Process } from "@/components/sections/process";
 import { Clients } from "@/components/sections/clients";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 // Statically generated, regenerated every 10 minutes so content edits in
 // Supabase surface without a redeploy.

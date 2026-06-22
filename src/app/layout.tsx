@@ -3,6 +3,8 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
+import { JsonLd } from "@/components/seo/json-ld";
+import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -39,6 +41,18 @@ export const metadata: Metadata = {
       "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
     type: "website",
     locale: "en_KE",
+    url: SITE_URL,
+    siteName: "The Estate Edit",
+    images: [
+      { url: OG_IMAGE, width: 1200, height: 630, alt: "The Estate Edit" },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Estate Edit: Luxury Estate & Transition Management",
+    description:
+      "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
+    images: [OG_IMAGE],
   },
 };
 
@@ -53,6 +67,7 @@ export default function RootLayout({
       className={`${inter.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <JsonLd data={organizationJsonLd()} />
         <SiteHeader />
         {children}
         <SiteFooter />

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Contact & Consultations",
   description:
     "Book a private consultation or request an asset review with The Estate Edit, luxury estate and transition management in Nairobi.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage({
