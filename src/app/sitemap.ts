@@ -31,6 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic catalogue pages. getCatalogueAssets is resilient (falls back to
   // static content on DB error), so this never throws/breaks the build.
+  //
+  // NOTE: we deliberately omit the `images` field. Next 16's sitemap serializer
+  // does NOT XML-escape `&` inside <image:loc>, and asset photos are Unsplash/
+  // Supabase URLs full of query-string ampersands — that produced invalid XML
+  // ("EntityRef: expecting ';'") and broke the whole sitemap. Image discovery
+  // is already covered by OG tags + Product JSON-LD.
   const assets = await getCatalogueAssets();
   const assetEntries: MetadataRoute.Sitemap = assets
     .filter((a) => a.slug)
@@ -39,7 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
-      ...(a.imageUrl ? { images: [a.imageUrl] } : {}),
     }));
 
   return [...staticEntries, ...assetEntries];
