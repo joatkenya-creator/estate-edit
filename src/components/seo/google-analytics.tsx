@@ -6,7 +6,7 @@ import Script from "next/script";
  * first paint. Only injected in production so local `next dev` traffic doesn't
  * pollute the analytics property.
  */
-const GA_MEASUREMENT_ID = "G-1MHV08SHR6";
+const GA_MEASUREMENT_ID = "G-T3WMR3MTQB";
 
 export function GoogleAnalytics() {
   if (process.env.NODE_ENV !== "production") return null;
