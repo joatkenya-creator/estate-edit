@@ -20,8 +20,16 @@ const statusStyles: Record<FeaturedAsset["status"], string> = {
   sold: "bg-crimson text-white",
 };
 
-export async function FeaturedAssets() {
-  const assets = await getFeaturedAssets();
+export async function FeaturedAssets({
+  limit,
+  latest,
+}: {
+  /** Cap the number of items shown (e.g. 3 on the homepage). */
+  limit?: number;
+  /** Show the most recently added assets instead of the curated featured set. */
+  latest?: boolean;
+} = {}) {
+  const assets = await getFeaturedAssets({ limit, latest });
 
   return (
     <section id="assets" className="bg-white py-24 sm:py-32">

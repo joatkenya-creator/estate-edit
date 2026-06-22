@@ -20,7 +20,7 @@ export default function Home() {
       <Hero />
       <Pillars />
       <Stats />
-      <FeaturedAssets />
+      <FeaturedAssets latest limit={3} />
       <Process />
       <Clients />
       <Testimonials />

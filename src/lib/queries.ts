@@ -218,17 +218,34 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
   }
 }
 
-export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
+/**
+ * Assets for the "Collection" preview blocks.
+ *  - default: the curated featured set, ordered by sort_order.
+ *  - { latest: true }: the most recently added published assets (homepage shows
+ *    only the latest few), ignoring the featured flag.
+ *  - { limit }: cap the number returned.
+ */
+export async function getFeaturedAssets(
+  opts: { limit?: number; latest?: boolean } = {},
+): Promise<FeaturedAsset[]> {
   try {
     const supabase = createPublicClient();
-    const { data, error } = await supabase
+    let query = supabase
       .from("assets")
-      .select("slug, title, category, category_other, status, primary_image_url, metadata, sort_order")
-      .eq("_status", "published")
-      .eq("is_featured", true)
-      .order("sort_order");
+      .select("slug, title, category, category_other, status, primary_image_url, metadata, sort_order, created_at")
+      .eq("_status", "published");
 
-    if (error || !data?.length) return staticAssets;
+    query = opts.latest
+      ? query.order("created_at", { ascending: false })
+      : query.eq("is_featured", true).order("sort_order");
+
+    if (opts.limit) query = query.limit(opts.limit);
+
+    const { data, error } = await query;
+
+    if (error || !data?.length) {
+      return opts.limit ? staticAssets.slice(0, opts.limit) : staticAssets;
+    }
 
     return data.map((a, i) => {
       const meta = (a.metadata ?? {}) as { meta?: string; tone?: FeaturedAsset["tone"] };
@@ -245,6 +262,6 @@ export async function getFeaturedAssets(): Promise<FeaturedAsset[]> {
       };
     });
   } catch {
-    return staticAssets;
+    return opts.limit ? staticAssets.slice(0, opts.limit) : staticAssets;
   }
 }
