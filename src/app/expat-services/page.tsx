@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PlaneLanding, PlaneTakeoff, House, Car, GraduationCap, Handshake, Boxes, Compass } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { CategoryGrid } from "@/components/sections/category-grid";
+import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
@@ -57,8 +58,8 @@ export default function ExpatServicesPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Expat Services"
-        title="Relocation, simplified: in both directions"
-        subtitle="For individuals and families moving to or from Kenya, we manage the estate, the logistics, and the everyday details, so your relocation feels effortless."
+        title="Expat Relocation Services in Nairobi"
+        subtitle="For expatriates and families relocating between Kenya and abroad — including the USA — we manage the estate, the logistics, and the everyday details, so your move feels effortless."
         crumbs={[{ label: "Expat Services" }]}
       />
 
@@ -99,6 +100,8 @@ export default function ExpatServicesPage() {
         items={support}
         tone="stone"
       />
+
+      <RelatedServices current="expat-services" />
 
       <CtaBand
         title="Relocating to or from Kenya?"

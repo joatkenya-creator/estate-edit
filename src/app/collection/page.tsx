@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site/page-hero";
 import { CollectionGrid } from "@/components/sections/collection-grid";
+import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getCatalogueAssets } from "@/lib/queries";
 
@@ -25,6 +26,7 @@ export default async function CollectionPage() {
         crumbs={[{ label: "Collection" }]}
       />
       <CollectionGrid items={assets} />
+      <RelatedServices current="collection" />
       <CtaBand
         title="Seeking something in particular?"
         subtitle="Tell us what you're looking for and we'll match it from current and upcoming estates."

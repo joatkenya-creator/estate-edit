@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { CategoryGrid } from "@/components/sections/category-grid";
+import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
@@ -48,8 +49,8 @@ export default function CommercialLiquidationPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Commercial Liquidation"
-        title="Business asset sales & liquidation"
-        subtitle="Value-maximising, discreet disposal of commercial assets for closures, relocations, downsizing, and bankruptcy, across construction, hospitality, education, and beyond."
+        title="Commercial Liquidation & Business Asset Sales in Nairobi"
+        subtitle="Value-maximising, discreet liquidation of commercial assets in Nairobi for closures, relocations, downsizing, and bankruptcy — across construction, hospitality, education, and beyond."
         crumbs={[{ label: "Commercial Liquidation" }]}
       />
 
@@ -87,6 +88,8 @@ export default function CommercialLiquidationPage() {
           </div>
         </div>
       </section>
+
+      <RelatedServices current="commercial-liquidation" />
 
       <CtaBand
         title="Closing, relocating, or downsizing?"

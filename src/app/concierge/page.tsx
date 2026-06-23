@@ -3,6 +3,7 @@ import { Boxes, Sparkles, House, Handshake, ClipboardList, Package } from "lucid
 import { PageHero } from "@/components/site/page-hero";
 import { CategoryGrid } from "@/components/sections/category-grid";
 import { Process } from "@/components/sections/process";
+import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata: Metadata = {
@@ -52,8 +53,8 @@ export default function ConciergePage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Concierge Transition Services"
-        title="White-glove support for major life changes"
-        subtitle="When life shifts (a downsize, a relocation, settling an estate), a single accountable team handles every detail, so the transition feels effortless and dignified."
+        title="Downsizing & Relocation Concierge in Nairobi"
+        subtitle="When life shifts — a downsize, a relocation, or settling an estate in Nairobi — a single accountable team handles every detail, so the transition feels effortless and dignified."
         crumbs={[{ label: "Concierge" }]}
       />
 
@@ -65,6 +66,8 @@ export default function ConciergePage() {
       />
 
       <Process />
+
+      <RelatedServices current="concierge" />
 
       <CtaBand
         title="Facing a major transition?"

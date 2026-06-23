@@ -4,6 +4,7 @@ import { PageHero } from "@/components/site/page-hero";
 import { CategoryGrid } from "@/components/sections/category-grid";
 import { Process } from "@/components/sections/process";
 import { FeaturedAssets } from "@/components/sections/featured-assets";
+import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata: Metadata = {
@@ -53,8 +54,8 @@ export default function EstateSalesPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Estate Sales"
-        title="Full-service estate management & sales"
-        subtitle="From inventory and valuation to editorial marketing and curated estate events, we manage the entire sale, maximising value while you focus on what matters."
+        title="Luxury Estate Sales & Liquidation in Nairobi"
+        subtitle="We manage the entire luxury estate sale in Nairobi — from inventory and valuation to editorial marketing and curated estate events — maximising value while you focus on what matters."
         crumbs={[{ label: "Estate Sales" }]}
       />
 
@@ -67,6 +68,7 @@ export default function EstateSalesPage() {
 
       <Process />
       <FeaturedAssets />
+      <RelatedServices current="estate-sales" />
       <CtaBand />
     </main>
   );
