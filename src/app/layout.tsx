@@ -55,6 +55,12 @@ export const metadata: Metadata = {
       "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
     images: [OG_IMAGE],
   },
+  // Search engine ownership verification (renders <meta name=...> in <head>).
+  verification: {
+    other: {
+      "msvalidate.01": "22FD0F6E044C99B01F2A9FD628E4DF8C", // Bing Webmaster Tools
+    },
+  },
 };
 
 export default function RootLayout({
