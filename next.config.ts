@@ -27,20 +27,28 @@ const nextConfig: NextConfig = {
   // OpenNext/Cloudflare does not support — redirects() run at the routing layer
   // and work on Cloudflare.
   async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "www.estateedit.org" }],
-        destination: "https://estateedit.org/:path*",
-        permanent: true,
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "estate-edit.joatkenya120.workers.dev" }],
-        destination: "https://estateedit.org/:path*",
-        permanent: true,
-      },
+    // One root rule + one `:path+` (one-or-more) rule per non-canonical host.
+    // NOTE: a single `/:path*` rule does NOT substitute correctly for the empty
+    // root path — it emits a literal "/:path*" Location that 404s. Splitting the
+    // root out and using `:path+` for the rest avoids that.
+    const nonCanonicalHosts = [
+      "www.estateedit.org",
+      "estate-edit.joatkenya120.workers.dev",
     ];
+    return nonCanonicalHosts.flatMap((host) => [
+      {
+        source: "/",
+        has: [{ type: "host" as const, value: host }],
+        destination: "https://estateedit.org/",
+        permanent: true,
+      },
+      {
+        source: "/:path+",
+        has: [{ type: "host" as const, value: host }],
+        destination: "https://estateedit.org/:path+",
+        permanent: true,
+      },
+    ]);
   },
 };
 
