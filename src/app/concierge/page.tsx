@@ -6,9 +6,10 @@ import { Process } from "@/components/sections/process";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata: Metadata = {
-  title: "Concierge Transition Services",
+  title: "Downsizing & Relocation Concierge in Nairobi",
   description:
-    "White-glove concierge transition support in Nairobi: downsizing, relocation, estate cleanouts, property preparation, donation coordination, and vendor management, handled end to end.",
+    "White-glove downsizing, relocation, and estate cleanout services in Nairobi, Kenya: property preparation, donation coordination, vendor management, and storage — handled end to end.",
+  alternates: { canonical: "/concierge" },
 };
 
 export const revalidate = 600;

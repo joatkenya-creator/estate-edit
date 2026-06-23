@@ -7,9 +7,10 @@ import { FeaturedAssets } from "@/components/sections/featured-assets";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata: Metadata = {
-  title: "Estate Sales",
+  title: "Luxury Estate Sales in Nairobi, Kenya",
   description:
-    "Full-service luxury estate sales in Nairobi: household sales, inherited estates, collectibles, vehicles, artwork, and jewellery, with editorial photography and private buyer outreach.",
+    "Full-service luxury estate sales and estate liquidation in Nairobi, Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery — with editorial photography and private buyer outreach.",
+  alternates: { canonical: "/estate-sales" },
 };
 
 export const revalidate = 600;

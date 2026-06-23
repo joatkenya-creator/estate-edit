@@ -17,9 +17,10 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Commercial Liquidation",
+  title: "Commercial Liquidation in Nairobi, Kenya",
   description:
-    "Discreet commercial liquidation in Nairobi: asset inventory, equipment and fleet liquidation, online auctions, and warehouse clearance for closures, relocations, and downsizing.",
+    "Discreet commercial and business asset liquidation in Nairobi, Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
+  alternates: { canonical: "/commercial-liquidation" },
 };
 
 export const revalidate = 600;

@@ -7,9 +7,10 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "About Us",
+  title: "About | Veteran-Owned Nairobi Estate Firm",
   description:
-    "The Estate Edit is a veteran-owned luxury estate and transition management firm in Nairobi, combining valuation, marketing, sale, and logistics under one premium brand.",
+    "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Nairobi, Kenya — combining valuation, marketing, sale, and logistics under one premium brand.",
+  alternates: { canonical: "/about" },
 };
 
 export const revalidate = 600;

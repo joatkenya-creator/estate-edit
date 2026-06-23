@@ -5,9 +5,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { getCatalogueAssets } from "@/lib/queries";
 
 export const metadata: Metadata = {
-  title: "The Collection",
+  title: "Luxury Assets for Sale in Nairobi",
   description:
-    "Browse the current collection of luxury estate and commercial assets: furniture, vehicles, fine art, jewellery, and equipment available across Nairobi.",
+    "Browse luxury estate and commercial assets for sale in Nairobi, Kenya: furniture, vehicles, fine art, jewellery, and equipment from active estates and liquidations. Enquire in confidence.",
   alternates: { canonical: "/collection" },
 };
 

@@ -6,9 +6,10 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Expat Services",
+  title: "Expat Relocation Services in Nairobi, Kenya",
   description:
-    "Relocation support for expatriates moving to or from Kenya: furnished housing, sourcing, school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
+    "Relocation support for expatriates moving between Kenya and abroad, including the USA: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
+  alternates: { canonical: "/expat-services" },
 };
 
 const directions = [

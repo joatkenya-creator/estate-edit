@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/seo/google-analytics";
+import { Clarity } from "@/components/seo/clarity";
 import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -24,22 +25,27 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   metadataBase: new URL("https://estateedit.org"),
   title: {
-    default: "The Estate Edit: Luxury Estate & Transition Management",
+    default: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
     template: "%s · The Estate Edit",
   },
   description:
-    "Nairobi's premier estate transition firm. White-glove luxury estate sales, commercial liquidation, and expat relocation services across East Africa.",
+    "White-glove luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes, vehicles, fine art, and business assets.",
   keywords: [
-    "luxury estate sales Nairobi",
-    "estate liquidation Kenya",
-    "commercial liquidation",
+    "estate sales Nairobi",
+    "luxury estate sales Kenya",
+    "estate liquidation Nairobi",
+    "commercial liquidation Kenya",
+    "business asset liquidation Nairobi",
     "expat relocation Nairobi",
+    "downsizing services Nairobi",
+    "fleet liquidation Kenya",
     "asset valuation Kenya",
+    "estate sale company Nairobi",
   ],
   openGraph: {
-    title: "The Estate Edit: Luxury Estate & Transition Management",
+    title: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
     description:
-      "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
+      "Luxury estates, commercial liquidations, and seamless transitions in Nairobi, Kenya. White-glove valuation, marketing, and sale of high-value assets.",
     type: "website",
     locale: "en_KE",
     url: SITE_URL,
@@ -50,9 +56,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Estate Edit: Luxury Estate & Transition Management",
+    title: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
     description:
-      "Luxury Estates. Commercial Liquidations. Seamless Transitions. White-glove estate management across East Africa.",
+      "Luxury estates, commercial liquidations, and seamless transitions in Nairobi, Kenya. White-glove valuation, marketing, and sale of high-value assets.",
     images: [OG_IMAGE],
   },
   // Search engine ownership verification (renders <meta name=...> in <head>).
@@ -75,6 +81,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <GoogleAnalytics />
+        <Clarity />
         <JsonLd data={organizationJsonLd()} />
         <SiteHeader />
         {children}
