@@ -21,8 +21,8 @@ export default async function CollectionPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="The Collection"
-        title="A curated catalogue of exceptional assets"
-        subtitle="From active estates and commercial liquidations across Nairobi. Filter by division and category, then enquire in confidence."
+        title="Luxury Assets for Sale in Nairobi"
+        subtitle="A curated catalogue from active estates and commercial liquidations across Nairobi — furniture, vehicles, fine art, jewellery, and equipment. Filter by division and category, then enquire in confidence."
         crumbs={[{ label: "Collection" }]}
       />
       <CollectionGrid items={assets} />

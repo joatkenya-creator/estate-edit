@@ -83,9 +83,9 @@ export function Hero() {
           transition={{ duration: 0.9, ease, delay: 0.2 }}
           className="mt-8 max-w-xl text-base leading-relaxed text-white/80 text-pretty sm:text-lg"
         >
-          A white-glove advisory firm trusted by affluent families, expatriates, and
-          businesses across East Africa, combining valuation, marketing, sale, and
-          logistics under one premium brand.
+          A white-glove luxury estate sales and transition firm in Nairobi, Kenya,
+          trusted by affluent families, expatriates, and businesses across East Africa —
+          combining valuation, marketing, sale, and logistics under one premium brand.
         </motion.p>
 
         <motion.div
