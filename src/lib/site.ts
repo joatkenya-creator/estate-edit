@@ -157,6 +157,82 @@ export type AssetDetail = CatalogueItem & {
   images: AssetImage[];
 };
 
+// ----- Commerce (Phase 2: self-checkout) -----
+
+/** Format an amount like "KES 45,000". */
+export function formatMoney(amount: number, currency = "KES"): string {
+  return `${currency} ${Math.round(amount).toLocaleString("en-US")}`;
+}
+
+/** A line in the shopping cart (persisted client-side). */
+export type CartItem = {
+  slug: string;
+  title: string;
+  price: number;
+  currency: string;
+  quantity: number;
+  imageUrl?: string;
+};
+
+/** Delivery settings read from the CMS `delivery` global (with fallbacks). */
+export type DeliverySettings = {
+  enabled: boolean;
+  message: string;
+  details: string;
+  flatFee: number;
+  freeAbove: number | null;
+  countyRates: Record<string, number>;
+};
+
+export const defaultDeliverySettings: DeliverySettings = {
+  enabled: true,
+  message: "We deliver countrywide",
+  details: "",
+  flatFee: 0,
+  freeAbove: null,
+  countyRates: {},
+};
+
+/**
+ * An asset is buyable (Buy now) only when it has a real price and isn't sold.
+ * Price-on-request / luxury pieces fall through to Enquire-only.
+ */
+export function isPurchasable(a: {
+  price?: number | null;
+  priceOnRequest?: boolean;
+  status?: string;
+}): boolean {
+  return (
+    !a.priceOnRequest &&
+    typeof a.price === "number" &&
+    a.price > 0 &&
+    a.status !== "sold"
+  );
+}
+
+/** Delivery fee for a destination county + order subtotal. */
+export function computeDeliveryFee(
+  settings: DeliverySettings,
+  county: string | null | undefined,
+  subtotal: number,
+): number {
+  if (!settings.enabled) return 0;
+  if (settings.freeAbove != null && subtotal >= settings.freeAbove) return 0;
+  if (county && settings.countyRates[county] != null) return settings.countyRates[county];
+  return settings.flatFee || 0;
+}
+
+/** Kenya's 47 counties — the delivery destination dropdown at checkout. */
+export const kenyaCounties: string[] = [
+  "Baringo", "Bomet", "Bungoma", "Busia", "Elgeyo-Marakwet", "Embu", "Garissa",
+  "Homa Bay", "Isiolo", "Kajiado", "Kakamega", "Kericho", "Kiambu", "Kilifi",
+  "Kirinyaga", "Kisii", "Kisumu", "Kitui", "Kwale", "Laikipia", "Lamu",
+  "Machakos", "Makueni", "Mandera", "Marsabit", "Meru", "Migori", "Mombasa",
+  "Murang'a", "Nairobi", "Nakuru", "Nandi", "Narok", "Nyamira", "Nyandarua",
+  "Nyeri", "Samburu", "Siaya", "Taita-Taveta", "Tana River", "Tharaka-Nithi",
+  "Trans Nzoia", "Turkana", "Uasin Gishu", "Vihiga", "Wajir", "West Pokot",
+];
+
 export const divisionLabel: Record<string, string> = {
   estate_sales: "Estate Sales",
   commercial_liquidation: "Commercial Liquidation",

@@ -1,0 +1,67 @@
+import { createPublicClient } from "@/lib/supabase/public";
+import type { Json } from "@/lib/supabase/database.types";
+import type { CartItem } from "@/lib/site";
+
+/**
+ * Client-safe order placement. The shopper's browser inserts the order with the
+ * anon key (RLS allows INSERT-only on `orders`). There is no online payment —
+ * the order lands as `pending` and is paid after delivery, then reconciled in
+ * the CMS payments ledger. Because anon cannot read orders back, the
+ * confirmation screen is rendered from the data we submit here (esp. the
+ * order number we generate client-side).
+ */
+
+export type PlaceOrderInput = {
+  fullName: string;
+  phone: string;
+  email?: string;
+  county: string;
+  town?: string;
+  address: string;
+  deliveryNotes?: string;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  currency: string;
+  source?: string;
+};
+
+export type PlacedOrder = { orderNumber: string };
+
+/** EE-XXXXXX — mirrors the CMS hook's format so both creation paths match. */
+export function createOrderNumber(): string {
+  const t = Date.now().toString(36).toUpperCase().slice(-5);
+  const r = Math.floor(Math.random() * 1296)
+    .toString(36)
+    .toUpperCase()
+    .padStart(2, "0");
+  return `EE-${t}${r}`;
+}
+
+export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
+  const supabase = createPublicClient();
+  const orderNumber = createOrderNumber();
+
+  const { error } = await supabase.from("orders").insert({
+    order_number: orderNumber,
+    status: "pending",
+    full_name: input.fullName.trim(),
+    phone: input.phone.trim(),
+    email: input.email?.trim() || null,
+    county: input.county || null,
+    town: input.town?.trim() || null,
+    address: input.address?.trim() || null,
+    delivery_notes: input.deliveryNotes?.trim() || null,
+    items: input.items as unknown as Json,
+    subtotal: input.subtotal,
+    delivery_fee: input.deliveryFee,
+    total: input.total,
+    currency: input.currency,
+    payment_status: "unpaid",
+    source: input.source || "checkout",
+  });
+
+  if (error) throw new Error(error.message);
+  return { orderNumber };
+}

@@ -14,6 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
+      delivery: {
+        Row: {
+          county_rates: Json | null
+          created_at: string | null
+          details: string | null
+          enabled: boolean | null
+          flat_fee: number | null
+          free_above: number | null
+          id: string
+          message: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          county_rates?: Json | null
+          created_at?: string | null
+          details?: string | null
+          enabled?: boolean | null
+          flat_fee?: number | null
+          free_above?: number | null
+          id?: string
+          message?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          county_rates?: Json | null
+          created_at?: string | null
+          details?: string | null
+          enabled?: boolean | null
+          flat_fee?: number | null
+          free_above?: number | null
+          id?: string
+          message?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          address: string | null
+          amount_paid: number | null
+          county: string | null
+          created_at: string
+          currency: string | null
+          delivery_fee: number | null
+          delivery_notes: string | null
+          email: string | null
+          full_name: string
+          id: string
+          items: Json | null
+          metadata: Json | null
+          order_number: string | null
+          paid_at: string | null
+          payment_status: string | null
+          phone: string
+          source: string | null
+          status: string
+          subtotal: number | null
+          total: number | null
+          town: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          amount_paid?: number | null
+          county?: string | null
+          created_at?: string
+          currency?: string | null
+          delivery_fee?: number | null
+          delivery_notes?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          items?: Json | null
+          metadata?: Json | null
+          order_number?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          phone: string
+          source?: string | null
+          status?: string
+          subtotal?: number | null
+          total?: number | null
+          town?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          amount_paid?: number | null
+          county?: string | null
+          created_at?: string
+          currency?: string | null
+          delivery_fee?: number | null
+          delivery_notes?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          items?: Json | null
+          metadata?: Json | null
+          order_number?: string | null
+          paid_at?: string | null
+          payment_status?: string | null
+          phone?: string
+          source?: string | null
+          status?: string
+          subtotal?: number | null
+          total?: number | null
+          town?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       _assets_v: {
         Row: {
           created_at: string

@@ -15,6 +15,7 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { navLinks, siteConfig } from "@/lib/site";
+import { CartButton } from "@/components/cart/cart-button";
 
 function Wordmark({ inverted }: { inverted: boolean }) {
   return (
@@ -98,6 +99,8 @@ export function SiteHeader() {
           >
             <Link href="/contact">Book a Consultation</Link>
           </Button>
+
+          <CartButton inverted={inverted} />
 
           {/* Mobile menu */}
           <Sheet>

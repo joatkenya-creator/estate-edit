@@ -71,7 +71,18 @@ export function assetJsonLd(asset: AssetDetail) {
       url,
       availability: AVAILABILITY[asset.status],
       ...(hasPrice
-        ? { price: asset.price, priceCurrency: asset.currency }
+        ? {
+            price: asset.price,
+            priceCurrency: asset.currency,
+            // Signals "delivery available" countrywide for purchasable items.
+            shippingDetails: {
+              "@type": "OfferShippingDetails",
+              shippingDestination: {
+                "@type": "DefinedRegion",
+                addressCountry: "KE",
+              },
+            },
+          }
         : {}),
       seller: { "@id": `${SITE_URL}/#organization` },
     },

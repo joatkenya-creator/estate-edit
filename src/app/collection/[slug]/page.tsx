@@ -4,8 +4,11 @@ import Link from "next/link";
 import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AssetGallery } from "@/components/collection/asset-gallery";
-import { getAssetBySlug, getCatalogueAssets } from "@/lib/queries";
-import { divisionLabel, type AssetDetail } from "@/lib/site";
+import { AssetPurchase } from "@/components/collection/asset-purchase";
+import { DeliveryBadge } from "@/components/commerce/delivery-badge";
+import { getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
+import { divisionLabel, isPurchasable, type AssetDetail } from "@/lib/site";
+import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { assetJsonLd } from "@/lib/seo";
 
@@ -70,6 +73,9 @@ export default async function AssetPage({
         ? [{ url: asset.imageUrl, alt: asset.title }]
         : [];
 
+  const buyable = isPurchasable(asset);
+  const delivery = buyable ? await getDeliverySettings() : null;
+
   return (
     <main className="flex-1 bg-white">
       <JsonLd data={assetJsonLd(asset)} />
@@ -116,6 +122,12 @@ export default async function AssetPage({
 
             <p className="mt-6 font-display text-2xl text-navy">{formatPrice(asset)}</p>
 
+            {buyable && (
+              <div className="mt-3">
+                <DeliveryBadge message={delivery?.message} />
+              </div>
+            )}
+
             {asset.description && (
               <p className="mt-6 leading-relaxed text-charcoal/80 text-pretty">
                 {asset.description}
@@ -147,11 +159,33 @@ export default async function AssetPage({
               </div>
             )}
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+            {/* Buy now / Add to cart for transactional (priced) items. */}
+            {buyable && (
+              <div className="mt-10">
+                <AssetPurchase
+                  item={{
+                    slug: asset.slug,
+                    title: asset.title,
+                    price: asset.price as number,
+                    currency: asset.currency,
+                    imageUrl: gallery[0]?.url ?? asset.imageUrl,
+                  }}
+                />
+              </div>
+            )}
+
+            <div className={cn("flex flex-col gap-4 sm:flex-row", buyable ? "mt-4" : "mt-10")}>
+              {/* Enquire is the primary CTA for luxury pieces, secondary when buyable. */}
               <Button
                 asChild
                 size="lg"
-                className="group h-12 bg-navy px-8 text-white hover:bg-navy-soft"
+                variant={buyable ? "outline" : "default"}
+                className={cn(
+                  "group h-12 px-8",
+                  buyable
+                    ? "border-navy/20 text-navy hover:bg-navy hover:text-white"
+                    : "bg-navy text-white hover:bg-navy-soft",
+                )}
               >
                 <Link
                   href={{
@@ -163,7 +197,7 @@ export default async function AssetPage({
                     },
                   }}
                 >
-                  Enquire about this piece
+                  {buyable ? "Ask about this item" : "Enquire about this piece"}
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>

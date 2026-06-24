@@ -6,6 +6,7 @@ import {
   testimonials as staticTestimonials,
   featuredAssets as staticAssets,
   assetCategoryLabel,
+  defaultDeliverySettings,
   type Service,
   type Metric,
   type Testimonial,
@@ -13,6 +14,7 @@ import {
   type CatalogueItem,
   type AssetDetail,
   type AssetImage,
+  type DeliverySettings,
 } from "@/lib/site";
 
 /**
@@ -225,6 +227,33 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
  *    only the latest few), ignoring the featured flag.
  *  - { limit }: cap the number returned.
  */
+/**
+ * Delivery settings from the CMS `delivery` global (single row). Falls back to
+ * sensible defaults if the row hasn't been created/saved in admin yet.
+ */
+export async function getDeliverySettings(): Promise<DeliverySettings> {
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("delivery")
+      .select("enabled, message, details, flat_fee, free_above, county_rates")
+      .maybeSingle();
+
+    if (error || !data) return defaultDeliverySettings;
+
+    return {
+      enabled: data.enabled ?? true,
+      message: data.message?.trim() || defaultDeliverySettings.message,
+      details: data.details ?? "",
+      flatFee: Number(data.flat_fee) || 0,
+      freeAbove: data.free_above != null ? Number(data.free_above) : null,
+      countyRates: (data.county_rates as Record<string, number> | null) ?? {},
+    };
+  } catch {
+    return defaultDeliverySettings;
+  }
+}
+
 export async function getFeaturedAssets(
   opts: { limit?: number; latest?: boolean } = {},
 ): Promise<FeaturedAsset[]> {
