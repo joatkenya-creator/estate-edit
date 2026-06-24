@@ -196,13 +196,28 @@ export type DeliverySettings = {
   fragileSurcharge: number;
 };
 
+/** County base fees (KSh) — anchored at the Nairobi 800 floor, scaled by
+ * distance from the Fargo/G4S domestic rate shape. Mirrors the CMS default. */
+export const defaultCountyRates: Record<string, number> = {
+  Nairobi: 800, Kiambu: 950, Kajiado: 950, Machakos: 1050, Makueni: 1150,
+  "Murang'a": 950, Kirinyaga: 1050, Nyandarua: 1050, Nyeri: 1100, Laikipia: 1300,
+  Embu: 1100, "Tharaka-Nithi": 1200, Meru: 1150, Kitui: 1200, Nakuru: 950,
+  Narok: 1050, Bomet: 1250, Kericho: 1200, Nandi: 1400, "Uasin Gishu": 1150,
+  "Elgeyo-Marakwet": 1300, Baringo: 1300, "Trans Nzoia": 1400, "West Pokot": 1600,
+  Samburu: 1800, Turkana: 2500, Kakamega: 1200, Vihiga: 1250, Bungoma: 1450,
+  Busia: 1450, Siaya: 1350, Kisumu: 1250, "Homa Bay": 1400, Migori: 1500,
+  Kisii: 1250, Nyamira: 1300, Mombasa: 1500, Kwale: 1650, Kilifi: 1600,
+  "Tana River": 1900, Lamu: 2000, "Taita-Taveta": 1500, Garissa: 2000,
+  Wajir: 2500, Mandera: 2800, Marsabit: 2300, Isiolo: 1500,
+};
+
 export const defaultDeliverySettings: DeliverySettings = {
   enabled: true,
   message: "We deliver countrywide",
   details: "",
   flatFee: 800,
   freeAbove: null,
-  countyRates: { Nairobi: 800 },
+  countyRates: defaultCountyRates,
   tierSurcharges: { standard: 0, medium: 400, large: 800, bulky: 1500 },
   fragileSurcharge: 500,
 };
