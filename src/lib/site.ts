@@ -155,6 +155,8 @@ export type AssetDetail = CatalogueItem & {
   priceOnRequest: boolean;
   tags: string[];
   images: AssetImage[];
+  deliveryTier?: string;
+  fragile?: boolean;
 };
 
 // ----- Commerce (Phase 2: self-checkout) -----
@@ -172,6 +174,10 @@ export type CartItem = {
   currency: string;
   quantity: number;
   imageUrl?: string;
+  /** Size/weight band — drives the handling surcharge. */
+  deliveryTier?: string;
+  /** Fragile items add the fragile surcharge. */
+  fragile?: boolean;
 };
 
 /** Delivery settings read from the CMS `delivery` global (with fallbacks). */
@@ -179,18 +185,26 @@ export type DeliverySettings = {
   enabled: boolean;
   message: string;
   details: string;
+  /** County/distance base fee when no per-county rate is set. */
   flatFee: number;
   freeAbove: number | null;
+  /** Per-county base (distance), e.g. { Nairobi: 800 }. */
   countyRates: Record<string, number>;
+  /** Handling add-on per size tier, e.g. { standard: 0, bulky: 1500 }. */
+  tierSurcharges: Record<string, number>;
+  /** Extra added for a fragile item. */
+  fragileSurcharge: number;
 };
 
 export const defaultDeliverySettings: DeliverySettings = {
   enabled: true,
   message: "We deliver countrywide",
   details: "",
-  flatFee: 0,
+  flatFee: 800,
   freeAbove: null,
-  countyRates: {},
+  countyRates: { Nairobi: 800 },
+  tierSurcharges: { standard: 0, medium: 400, large: 800, bulky: 1500 },
+  fragileSurcharge: 500,
 };
 
 /**
@@ -210,16 +224,36 @@ export function isPurchasable(a: {
   );
 }
 
-/** Delivery fee for a destination county + order subtotal. */
+/** Per-item handling add-on = its size-tier surcharge + (fragile ? fragile surcharge). */
+export function itemHandling(settings: DeliverySettings, item: CartItem): number {
+  const tier = item.deliveryTier ?? "standard";
+  const tierFee = settings.tierSurcharges[tier] ?? 0;
+  const fragileFee = item.fragile ? settings.fragileSurcharge : 0;
+  return tierFee + fragileFee;
+}
+
+/**
+ * Delivery fee = county base (distance) + the single largest item's handling
+ * add-on (size/weight + fragile). Free when disabled or subtotal ≥ freeAbove.
+ */
 export function computeDeliveryFee(
   settings: DeliverySettings,
   county: string | null | undefined,
-  subtotal: number,
+  items: CartItem[],
 ): number {
   if (!settings.enabled) return 0;
+
+  const subtotal = items.reduce((s, it) => s + it.price * it.quantity, 0);
   if (settings.freeAbove != null && subtotal >= settings.freeAbove) return 0;
-  if (county && settings.countyRates[county] != null) return settings.countyRates[county];
-  return settings.flatFee || 0;
+
+  const base =
+    (county && settings.countyRates[county] != null
+      ? settings.countyRates[county]
+      : settings.flatFee) || 0;
+
+  const handling = items.reduce((max, it) => Math.max(max, itemHandling(settings, it)), 0);
+
+  return base + handling;
 }
 
 /** Kenya's 47 counties — the delivery destination dropdown at checkout. */

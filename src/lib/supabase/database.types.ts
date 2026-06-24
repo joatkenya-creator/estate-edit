@@ -21,9 +21,11 @@ export type Database = {
           details: string | null
           enabled: boolean | null
           flat_fee: number | null
+          fragile_surcharge: number | null
           free_above: number | null
           id: string
           message: string | null
+          tier_surcharges: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -645,10 +647,12 @@ export type Database = {
           condition: Database["public"]["Enums"]["enum_assets_condition"] | null
           created_at: string
           currency: string | null
+          delivery_tier: string | null
           description: string | null
           dimensions: string | null
           division: Database["public"]["Enums"]["enum_assets_division"] | null
           era: string | null
+          fragile: boolean | null
           gallery: Json | null
           id: string
           is_featured: boolean | null

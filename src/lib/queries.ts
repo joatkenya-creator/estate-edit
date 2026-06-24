@@ -170,7 +170,7 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
     const { data, error } = await supabase
       .from("assets")
       .select(
-        "id, slug, title, description, division, category, category_other, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata",
+        "id, slug, title, description, division, category, category_other, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata, delivery_tier, fragile",
       )
       .eq("slug", slug)
       .eq("_status", "published")
@@ -214,6 +214,8 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
       priceOnRequest: data.price_on_request ?? false,
       tags: (data.tags as string[] | null) ?? [],
       images,
+      deliveryTier: data.delivery_tier ?? undefined,
+      fragile: data.fragile ?? false,
     };
   } catch {
     return fallback();
@@ -236,7 +238,9 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("delivery")
-      .select("enabled, message, details, flat_fee, free_above, county_rates")
+      .select(
+        "enabled, message, details, flat_fee, free_above, county_rates, tier_surcharges, fragile_surcharge",
+      )
       .maybeSingle();
 
     if (error || !data) return defaultDeliverySettings;
@@ -245,9 +249,18 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
       enabled: data.enabled ?? true,
       message: data.message?.trim() || defaultDeliverySettings.message,
       details: data.details ?? "",
-      flatFee: Number(data.flat_fee) || 0,
+      flatFee: data.flat_fee != null ? Number(data.flat_fee) : defaultDeliverySettings.flatFee,
       freeAbove: data.free_above != null ? Number(data.free_above) : null,
-      countyRates: (data.county_rates as Record<string, number> | null) ?? {},
+      countyRates:
+        (data.county_rates as Record<string, number> | null) ??
+        defaultDeliverySettings.countyRates,
+      tierSurcharges:
+        (data.tier_surcharges as Record<string, number> | null) ??
+        defaultDeliverySettings.tierSurcharges,
+      fragileSurcharge:
+        data.fragile_surcharge != null
+          ? Number(data.fragile_surcharge)
+          : defaultDeliverySettings.fragileSurcharge,
     };
   } catch {
     return defaultDeliverySettings;

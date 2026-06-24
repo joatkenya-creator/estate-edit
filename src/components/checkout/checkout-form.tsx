@@ -37,8 +37,8 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
 
   const currency = items[0]?.currency ?? "KES";
   const deliveryFee = useMemo(
-    () => computeDeliveryFee(settings, county, subtotal),
-    [settings, county, subtotal],
+    () => computeDeliveryFee(settings, county, items),
+    [settings, county, items],
   );
   const freeDelivery = settings.enabled && deliveryFee === 0;
   const total = subtotal + deliveryFee;

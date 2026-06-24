@@ -169,6 +169,8 @@ export default async function AssetPage({
                     price: asset.price as number,
                     currency: asset.currency,
                     imageUrl: gallery[0]?.url ?? asset.imageUrl,
+                    deliveryTier: asset.deliveryTier,
+                    fragile: asset.fragile,
                   }}
                 />
               </div>
