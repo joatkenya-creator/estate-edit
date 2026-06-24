@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -17,22 +18,34 @@ import { navLinks, siteConfig } from "@/lib/site";
 
 function Wordmark({ inverted }: { inverted: boolean }) {
   return (
-    <Link href="/" className="group flex flex-col leading-none">
-      <span
-        className={cn(
-          "font-display text-xl tracking-[0.02em] transition-colors sm:text-2xl",
-          inverted ? "text-white" : "text-navy",
-        )}
-      >
-        The Estate Edit
-      </span>
-      <span
-        className={cn(
-          "mt-1 text-[0.6rem] uppercase tracking-[0.34em] transition-colors",
-          inverted ? "text-gold-soft" : "text-gold",
-        )}
-      >
-        Nairobi · East Africa
+    <Link href="/" className="group flex items-center gap-3">
+      {/* Gold monogram — keeps its colour on any background */}
+      <Image
+        src="/logo-mark.svg"
+        alt=""
+        width={46}
+        height={40}
+        priority
+        unoptimized
+        className="h-9 w-auto sm:h-10"
+      />
+      <span className="flex flex-col leading-none">
+        <span
+          className={cn(
+            "font-display text-xl tracking-[0.02em] transition-colors sm:text-2xl",
+            inverted ? "text-white" : "text-navy",
+          )}
+        >
+          The Estate Edit
+        </span>
+        <span
+          className={cn(
+            "mt-1 text-[0.6rem] uppercase tracking-[0.34em] transition-colors",
+            inverted ? "text-gold-soft" : "text-gold",
+          )}
+        >
+          Nairobi · East Africa
+        </span>
       </span>
     </Link>
   );
