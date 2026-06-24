@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Camera, Globe } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 
@@ -41,9 +42,22 @@ export function SiteFooter() {
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <div className="font-display text-2xl">The Estate Edit</div>
-            <p className="mt-1 text-[0.65rem] uppercase tracking-[0.32em] text-gold-soft">
-              Nairobi · East Africa
+            {/* Full logo lockup, rendered for the dark footer: gold monogram +
+                white wordmark + the brand tagline. */}
+            <Image
+              src="/logo-mark.svg"
+              alt="The Estate Edit"
+              width={72}
+              height={62}
+              unoptimized
+              className="h-14 w-auto"
+            />
+            <div className="mt-4 font-display text-2xl uppercase tracking-[0.16em] text-white">
+              The Estate Edit
+            </div>
+            <div className="mt-3 h-px w-60 max-w-full bg-white/20" />
+            <p className="mt-3 text-[0.58rem] uppercase tracking-[0.24em] text-gold-soft">
+              Estate Transition · Asset Liquidation · Property Management
             </p>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/65">
               {siteConfig.description}
