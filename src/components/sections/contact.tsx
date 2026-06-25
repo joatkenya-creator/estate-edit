@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PhoneField } from "@/components/forms/phone-field";
 import {
   Select,
   SelectContent,
@@ -161,7 +162,7 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
 
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="Phone" htmlFor="phone">
-                <Input id="phone" name="phone" placeholder="+254 …" />
+                <PhoneField id="phone" name="phone" />
               </Field>
               <Field label="Location" htmlFor="location">
                 <Input id="location" name="location" placeholder="Karen, Runda, Westlands…" />

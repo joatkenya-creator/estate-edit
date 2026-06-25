@@ -181,3 +181,27 @@
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+
+/* International phone field (react-phone-number-input). The number box reuses
+   the shadcn Input via inputComponent; here we lay out the flag + country
+   select and let the number input fill the remaining space. */
+.ee-phone .PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ee-phone .PhoneInputCountry {
+  gap: 0.35rem;
+  padding-left: 0.15rem;
+}
+.ee-phone .PhoneInputCountryIcon {
+  width: 1.3rem;
+  height: auto;
+  box-shadow: none;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.ee-phone .PhoneInputInput {
+  flex: 1 1 auto;
+  min-width: 0;
+}
