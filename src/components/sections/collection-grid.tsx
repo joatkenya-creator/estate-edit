@@ -9,6 +9,7 @@ import {
   divisionLabel,
   type CatalogueItem,
 } from "@/lib/site";
+import { CardAddToCart } from "@/components/collection/card-add-to-cart";
 
 const toneGradient: Record<CatalogueItem["tone"], string> = {
   navy: "linear-gradient(145deg,#001628 0%,#002349 55%,#0c3563 100%)",
@@ -117,6 +118,7 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
                 className="group block"
               >
                 <div className="relative aspect-[4/5] overflow-hidden rounded-xl">
+                  <CardAddToCart item={asset} />
                   <div className="absolute inset-0 scale-100 transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110">
                     <div className="absolute inset-0" style={{ background: toneGradient[asset.tone] }} />
                     {asset.imageUrl && (

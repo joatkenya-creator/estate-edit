@@ -63,5 +63,32 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
   });
 
   if (error) throw new Error(error.message);
+
+  // Fire-and-forget staff alert. `keepalive` lets it complete through the
+  // redirect to the confirmation page; any failure must not block the order.
+  try {
+    void fetch("/api/notify-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        orderNumber,
+        fullName: input.fullName,
+        phone: input.phone,
+        email: input.email,
+        county: input.county,
+        town: input.town,
+        address: input.address,
+        items: input.items,
+        subtotal: input.subtotal,
+        deliveryFee: input.deliveryFee,
+        total: input.total,
+        currency: input.currency,
+      }),
+    }).catch(() => {});
+  } catch {
+    /* notification is best-effort */
+  }
+
   return { orderNumber };
 }

@@ -115,7 +115,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
-      .select("slug, title, category, category_other, division, status, primary_image_url, metadata, sort_order")
+      .select("slug, title, category, category_other, division, status, price, currency, price_on_request, delivery_tier, fragile, primary_image_url, metadata, sort_order")
       .eq("_status", "published")
       .order("sort_order");
 
@@ -141,6 +141,11 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
         status,
         tone: meta.tone ?? tones[i % tones.length],
         imageUrl: a.primary_image_url ?? undefined,
+        price: a.price ?? undefined,
+        currency: a.currency ?? "KES",
+        priceOnRequest: a.price_on_request ?? false,
+        deliveryTier: a.delivery_tier ?? undefined,
+        fragile: a.fragile ?? false,
       };
     });
   } catch {

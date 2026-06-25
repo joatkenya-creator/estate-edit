@@ -18,6 +18,14 @@
     }
   ],
 
+  // --- Order notifications via Cloudflare Email Routing -------------------
+  // Lets the Worker send the new-order alert to a VERIFIED destination address.
+  // Before this works: enable Email Routing on estateedit.org and verify this
+  // address as a destination (Cloudflare emails it a confirmation link).
+  "send_email": [
+    { "name": "ORDER_EMAIL", "destination_address": "joatkenya120@gmail.com" }
+  ],
+
   // --- Custom domain -------------------------------------------------------
   // Serves the Worker at estateedit.org (+ www), registered via Cloudflare
   // Registrar so the zone is already active on this account. On `npm run
