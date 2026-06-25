@@ -141,7 +141,12 @@ export function SiteHeader() {
                     <Link href="/contact">Book a Consultation</Link>
                   </Button>
                 </SheetClose>
-                <p className="text-center text-xs text-white/60">{siteConfig.phone}</p>
+                <a
+                  href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+                  className="text-center text-xs text-white/60 transition-colors hover:text-gold"
+                >
+                  {siteConfig.phone}
+                </a>
               </div>
             </SheetContent>
           </Sheet>

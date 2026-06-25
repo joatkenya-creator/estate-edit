@@ -21,9 +21,13 @@ import { clientSegments, serviceOptions, siteConfig } from "@/lib/site";
 const initialState: InquiryState = { status: "idle", message: "" };
 
 const contactInfo = [
-  { icon: Phone, label: siteConfig.phone },
-  { icon: Mail, label: siteConfig.email },
-  { icon: MapPin, label: siteConfig.location },
+  { icon: Phone, label: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/\s+/g, "")}` },
+  { icon: Mail, label: siteConfig.email, href: `mailto:${siteConfig.email}` },
+  {
+    icon: MapPin,
+    label: siteConfig.location,
+    href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.location)}`,
+  },
 ];
 
 export type InquiryAsset = {
@@ -72,13 +76,20 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
           </p>
 
           <div className="mt-10 space-y-4">
-            {contactInfo.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-3 text-charcoal">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-stone text-navy">
+            {contactInfo.map(({ icon: Icon, label, href }) => (
+              <a
+                key={label}
+                href={href}
+                {...(href.startsWith("http")
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="group flex items-center gap-3 text-charcoal transition-colors hover:text-navy"
+              >
+                <span className="flex size-10 items-center justify-center rounded-lg bg-stone text-navy transition-colors group-hover:bg-navy group-hover:text-white">
                   <Icon className="size-4.5" strokeWidth={1.6} />
                 </span>
                 <span className="text-sm">{label}</span>
-              </div>
+              </a>
             ))}
           </div>
 

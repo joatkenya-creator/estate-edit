@@ -91,7 +91,14 @@ export default function PrivacyPage() {
           <a href={`mailto:${siteConfig.email}`} className="text-navy underline underline-offset-4 hover:text-crimson">
             {siteConfig.email}
           </a>{" "}
-          or {siteConfig.phone}.
+          or{" "}
+          <a
+            href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+            className="text-navy underline underline-offset-4 hover:text-crimson"
+          >
+            {siteConfig.phone}
+          </a>
+          .
         </p>
       </LegalSection>
     </LegalShell>

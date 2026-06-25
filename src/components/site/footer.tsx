@@ -30,7 +30,7 @@ const columns = [
     links: [
       { label: "About Us", href: "/about" },
       { label: "Our Process", href: "/#process" },
-      { label: "The Collection", href: "/collection" },
+      { label: "Delivery & Returns", href: "/delivery" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -112,9 +112,19 @@ export function SiteFooter() {
             </Link>
           </nav>
           <p className="flex items-center gap-2">
-            <span>{siteConfig.phone}</span>
+            <a
+              href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+              className="transition-colors hover:text-white"
+            >
+              {siteConfig.phone}
+            </a>
             <span className="text-white/25">·</span>
-            <span>{siteConfig.email}</span>
+            <a
+              href={`mailto:${siteConfig.email}`}
+              className="transition-colors hover:text-white"
+            >
+              {siteConfig.email}
+            </a>
           </p>
         </div>
       </div>
