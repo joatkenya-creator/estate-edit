@@ -12,7 +12,7 @@ export const siteConfig = {
   description:
     "A luxury estate advisory and transition management firm trusted by affluent families, expatriates, and businesses across East Africa.",
   location: "Nairobi, Kenya",
-  email: "joatkenya120@gmail.com",
+  email: "info@estateedit.org",
   phone: "+254 142 378 150",
   social: {
     instagram: "https://www.instagram.com/joat.kenya?igsh=MXZraTR5enF4OTVpaQ==",
@@ -137,6 +137,12 @@ export type FeaturedAsset = {
 export type CatalogueItem = FeaturedAsset & {
   categoryKey: string;
   division: string;
+  // Commerce fields (so cards can offer Add to cart for buyable items).
+  price?: number;
+  currency?: string;
+  priceOnRequest?: boolean;
+  deliveryTier?: string;
+  fragile?: boolean;
 };
 
 export type AssetImage = { url: string; alt: string };
