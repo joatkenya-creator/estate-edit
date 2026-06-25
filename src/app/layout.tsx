@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { CartProvider } from "@/components/cart/cart-context";
 import { CartDrawer } from "@/components/cart/cart-drawer";
+import { CurrencyProvider } from "@/components/currency/currency-context";
 import { JsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { Clarity } from "@/components/seo/clarity";
@@ -85,12 +86,14 @@ export default function RootLayout({
         <GoogleAnalytics />
         <Clarity />
         <JsonLd data={organizationJsonLd()} />
-        <CartProvider>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-          <CartDrawer />
-        </CartProvider>
+        <CurrencyProvider>
+          <CartProvider>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+            <CartDrawer />
+          </CartProvider>
+        </CurrencyProvider>
         <Toaster position="top-center" richColors />
       </body>
     </html>

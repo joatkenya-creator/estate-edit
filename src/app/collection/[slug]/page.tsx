@@ -10,6 +10,7 @@ import { getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/q
 import { divisionLabel, isPurchasable, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
+import { Price, CurrencyNote } from "@/components/currency/price";
 import { assetJsonLd } from "@/lib/seo";
 
 export const revalidate = 600;
@@ -39,10 +40,6 @@ export async function generateMetadata({
   };
 }
 
-function formatPrice(asset: AssetDetail) {
-  if (asset.priceOnRequest || asset.price == null) return "Price on request";
-  return `${asset.currency} ${asset.price.toLocaleString("en-US")}`;
-}
 
 export default async function AssetPage({
   params,
@@ -120,7 +117,14 @@ export default async function AssetPage({
               <p className="mt-3 text-sm text-muted-foreground">{asset.meta}</p>
             )}
 
-            <p className="mt-6 font-display text-2xl text-navy">{formatPrice(asset)}</p>
+            {asset.priceOnRequest || asset.price == null ? (
+              <p className="mt-6 font-display text-2xl text-navy">Price on request</p>
+            ) : (
+              <div className="mt-6">
+                <Price kes={asset.price} className="font-display text-2xl text-navy" />
+                <CurrencyNote className="mt-1 text-xs text-muted-foreground" />
+              </div>
+            )}
 
             {buyable && (
               <div className="mt-3">
