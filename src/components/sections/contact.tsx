@@ -161,11 +161,11 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Phone" htmlFor="phone">
-                <PhoneField id="phone" name="phone" />
+              <Field label="Phone" htmlFor="phone" required>
+                <PhoneField id="phone" name="phone" required />
               </Field>
               <Field label="Location" htmlFor="location">
-                <Input id="location" name="location" placeholder="Karen, Runda, Westlands…" />
+                <Input id="location" name="location" />
               </Field>
             </div>
 

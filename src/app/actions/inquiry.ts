@@ -45,10 +45,14 @@ export async function submitInquiry(
 ): Promise<InquiryState> {
   const fullName = clean(formData.get("full_name"));
   const email = clean(formData.get("email"));
+  const phone = clean(formData.get("phone"));
   const message = clean(formData.get("message"));
 
-  if (!fullName || !email || !message) {
-    return { status: "error", message: "Please complete name, email, and a short message." };
+  if (!fullName || !email || !phone || !message) {
+    return {
+      status: "error",
+      message: "Please complete name, email, phone, and a short message.",
+    };
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
@@ -74,7 +78,7 @@ export async function submitInquiry(
     inquiry_type: inquiryType,
     full_name: fullName,
     email,
-    phone: clean(formData.get("phone")),
+    phone,
     company: clean(formData.get("company")),
     client_segment: pick(clean(formData.get("client_segment")), SEGMENTS),
     service_division: pick(clean(formData.get("service_division")), DIVISIONS),
