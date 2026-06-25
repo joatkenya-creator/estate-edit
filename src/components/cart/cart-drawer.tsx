@@ -27,7 +27,7 @@ export function CartDrawer() {
           <SheetTitle className="font-display text-xl text-navy">
             Your cart {count > 0 && <span className="text-muted-foreground">({count})</span>}
           </SheetTitle>
-          <SheetDescription>Pay after delivery — we deliver countrywide.</SheetDescription>
+          <SheetDescription>Pay after delivery. We deliver countrywide.</SheetDescription>
         </SheetHeader>
 
         {items.length === 0 ? (

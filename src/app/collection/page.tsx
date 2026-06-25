@@ -22,7 +22,7 @@ export default async function CollectionPage() {
       <PageHero
         eyebrow="The Collection"
         title="Luxury Assets for Sale in Nairobi"
-        subtitle="A curated catalogue from active estates and commercial liquidations across Nairobi — furniture, vehicles, fine art, jewellery, and equipment. Filter by division and category, then enquire in confidence."
+        subtitle="A curated catalogue from active estates and commercial liquidations across Nairobi: furniture, vehicles, fine art, jewellery, and equipment. Filter by division and category, then enquire in confidence."
         crumbs={[{ label: "Collection" }]}
       />
       <CollectionGrid items={assets} />

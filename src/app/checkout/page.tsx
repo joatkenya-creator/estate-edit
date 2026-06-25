@@ -6,7 +6,7 @@ export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Checkout",
-  description: "Complete your order — pay on delivery, countrywide.",
+  description: "Complete your order: pay on delivery, countrywide.",
   robots: { index: false }, // a transactional page, keep out of search
 };
 

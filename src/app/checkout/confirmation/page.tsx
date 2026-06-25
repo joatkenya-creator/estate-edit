@@ -22,7 +22,7 @@ export default async function ConfirmationPage({
       <section className="mx-auto max-w-2xl px-5 py-24 text-center sm:px-8 sm:py-32">
         <CheckCircle2 className="mx-auto size-14 text-gold" strokeWidth={1.5} />
         <h1 className="mt-6 font-display text-3xl font-light text-navy sm:text-4xl">
-          Thank you — your order is in
+          Thank you, your order is in
         </h1>
 
         {order && (
@@ -54,7 +54,7 @@ export default async function ConfirmationPage({
               <Truck className="mt-0.5 size-5 shrink-0 text-navy" strokeWidth={1.6} />
               <span>
                 <span className="font-medium text-navy">Pay after delivery.</span> No payment is
-                needed now — settle by cash or M-Pesa once your items arrive. We deliver countrywide.
+                needed now. Settle by cash or M-Pesa once your items arrive. We deliver countrywide.
               </span>
             </p>
           </div>

@@ -10,7 +10,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 export const metadata: Metadata = {
   title: "Luxury Estate Sales in Nairobi, Kenya",
   description:
-    "Full-service luxury estate sales and estate liquidation in Nairobi, Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery — with editorial photography and private buyer outreach.",
+    "Full-service luxury estate sales and estate liquidation in Nairobi, Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach.",
   alternates: { canonical: "/estate-sales" },
 };
 
@@ -55,7 +55,7 @@ export default function EstateSalesPage() {
       <PageHero
         eyebrow="Estate Sales"
         title="Luxury Estate Sales & Liquidation in Nairobi"
-        subtitle="We manage the entire luxury estate sale in Nairobi — from inventory and valuation to editorial marketing and curated estate events — maximising value while you focus on what matters."
+        subtitle="We manage the entire luxury estate sale in Nairobi, from inventory and valuation to editorial marketing and curated estate events, maximising value while you focus on what matters."
         crumbs={[{ label: "Estate Sales" }]}
       />
 

@@ -50,7 +50,7 @@ export default function CommercialLiquidationPage() {
       <PageHero
         eyebrow="Commercial Liquidation"
         title="Commercial Liquidation & Business Asset Sales in Nairobi"
-        subtitle="Value-maximising, discreet liquidation of commercial assets in Nairobi for closures, relocations, downsizing, and bankruptcy — across construction, hospitality, education, and beyond."
+        subtitle="Value-maximising, discreet liquidation of commercial assets in Nairobi for closures, relocations, downsizing, and bankruptcy, across construction, hospitality, education, and beyond."
         crumbs={[{ label: "Commercial Liquidation" }]}
       />
 

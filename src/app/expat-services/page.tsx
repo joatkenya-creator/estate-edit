@@ -59,7 +59,7 @@ export default function ExpatServicesPage() {
       <PageHero
         eyebrow="Expat Services"
         title="Expat Relocation Services in Nairobi"
-        subtitle="For expatriates and families relocating between Kenya and abroad — including the USA — we manage the estate, the logistics, and the everyday details, so your move feels effortless."
+        subtitle="For expatriates and families relocating between Kenya and abroad (including the USA), we manage the estate, the logistics, and the everyday details, so your move feels effortless."
         crumbs={[{ label: "Expat Services" }]}
       />
 

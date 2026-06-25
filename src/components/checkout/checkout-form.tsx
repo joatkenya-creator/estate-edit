@@ -210,7 +210,7 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
             )}
           </Button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            No payment now — pay on delivery. We&apos;ll call to confirm.
+            No payment now, pay on delivery. We&apos;ll call to confirm.
           </p>
         </div>
       </div>
