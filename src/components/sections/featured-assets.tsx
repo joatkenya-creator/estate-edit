@@ -42,7 +42,7 @@ export async function FeaturedAssets({
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            A curated selection from active estates and commercial liquidations across Nairobi&apos;s
+            A curated selection from active estates and commercial liquidations across Kenya&apos;s
             most distinguished addresses.
           </p>
         </Reveal>

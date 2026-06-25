@@ -18,9 +18,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Commercial Liquidation in Nairobi, Kenya",
+  title: "Commercial Liquidation in Kenya",
   description:
-    "Discreet commercial and business asset liquidation in Nairobi, Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
+    "Discreet commercial and business asset liquidation in Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
   alternates: { canonical: "/commercial-liquidation" },
 };
 
@@ -49,8 +49,8 @@ export default function CommercialLiquidationPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Commercial Liquidation"
-        title="Commercial Liquidation & Business Asset Sales in Nairobi"
-        subtitle="Value-maximising, discreet liquidation of commercial assets in Nairobi for closures, relocations, downsizing, and bankruptcy, across construction, hospitality, education, and beyond."
+        title="Commercial Liquidation & Business Asset Sales"
+        subtitle="Value-maximising, discreet liquidation of commercial assets for closures, relocations, downsizing, and bankruptcy, across construction, hospitality, education, and beyond."
         crumbs={[{ label: "Commercial Liquidation" }]}
       />
 

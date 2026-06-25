@@ -5,7 +5,7 @@ import { Contact } from "@/components/sections/contact";
 export const metadata: Metadata = {
   title: "Contact & Consultations",
   description:
-    "Book a private consultation or request an asset review with The Estate Edit, luxury estate and transition management in Nairobi.",
+    "Book a private consultation or request an asset review with The Estate Edit, luxury estate and transition management in Kenya.",
   alternates: { canonical: "/contact" },
 };
 

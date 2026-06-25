@@ -7,7 +7,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "Expat Relocation Services in Nairobi, Kenya",
+  title: "Expat Relocation Services in Kenya",
   description:
     "Relocation support for expatriates moving between Kenya and abroad, including the USA: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
   alternates: { canonical: "/expat-services" },
@@ -18,7 +18,7 @@ const directions = [
     icon: PlaneLanding,
     label: "Moving to Kenya",
     title: "Arrival Services",
-    blurb: "Land softly. We prepare your home and life in Nairobi before you arrive.",
+    blurb: "Land softly. We prepare your home and life in Kenya before you arrive.",
     points: [
       "Furnished housing assistance",
       "Furniture sourcing",
@@ -45,7 +45,7 @@ const directions = [
 ];
 
 const support = [
-  { icon: House, title: "Furnished Housing", description: "Move-in-ready homes in Nairobi's premier neighbourhoods." },
+  { icon: House, title: "Furnished Housing", description: "Move-in-ready homes in Kenya's premier neighbourhoods." },
   { icon: Car, title: "Vehicle Sourcing & Sales", description: "Acquire on arrival or sell on departure, fully managed." },
   { icon: GraduationCap, title: "School Guidance", description: "Recommendations across leading international schools." },
   { icon: Handshake, title: "Vendor Referrals", description: "A vetted network of trusted local service providers." },
@@ -58,7 +58,7 @@ export default function ExpatServicesPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Expat Services"
-        title="Expat Relocation Services in Nairobi"
+        title="Expat Relocation Services"
         subtitle="For expatriates and families relocating between Kenya and abroad (including the USA), we manage the estate, the logistics, and the everyday details, so your move feels effortless."
         crumbs={[{ label: "Expat Services" }]}
       />

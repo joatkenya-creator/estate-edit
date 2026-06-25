@@ -34,7 +34,7 @@ export async function generateMetadata({
     title: asset.title,
     description:
       asset.description ??
-      `${asset.category} available through The Estate Edit in Nairobi. Enquire in confidence.`,
+      `${asset.category} available through The Estate Edit. Enquire in confidence.`,
     alternates: { canonical: `/collection/${slug}` },
     ...(ogImage ? { openGraph: { images: [{ url: ogImage }] } } : {}),
   };

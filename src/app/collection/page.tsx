@@ -6,9 +6,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { getCatalogueAssets } from "@/lib/queries";
 
 export const metadata: Metadata = {
-  title: "Luxury Assets for Sale in Nairobi",
+  title: "Luxury Assets for Sale in Kenya & Worldwide",
   description:
-    "Browse luxury estate and commercial assets for sale in Nairobi, Kenya: furniture, vehicles, fine art, jewellery, and equipment from active estates and liquidations. Enquire in confidence.",
+    "Browse luxury estate and commercial assets for sale across Kenya and to international buyers: furniture, vehicles, fine art, jewellery, and equipment from active estates and liquidations. Countrywide delivery. Enquire in confidence.",
   alternates: { canonical: "/collection" },
 };
 
@@ -21,8 +21,8 @@ export default async function CollectionPage() {
     <main className="flex-1">
       <PageHero
         eyebrow="The Collection"
-        title="Luxury Assets for Sale in Nairobi"
-        subtitle="A curated catalogue from active estates and commercial liquidations across Nairobi: furniture, vehicles, fine art, jewellery, and equipment. Filter by division and category, then enquire in confidence."
+        title="Luxury Assets for Sale in Kenya & Worldwide"
+        subtitle="A curated catalogue from active estates and commercial liquidations across Kenya: furniture, vehicles, fine art, jewellery, and equipment. Open to buyers countrywide and internationally. Filter by division and category, then enquire in confidence."
         crumbs={[{ label: "Collection" }]}
       />
       <CollectionGrid items={assets} />

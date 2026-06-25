@@ -45,7 +45,7 @@ function Wordmark({ inverted }: { inverted: boolean }) {
             inverted ? "text-gold-soft" : "text-gold",
           )}
         >
-          Nairobi · East Africa
+          Kenya · East Africa
         </span>
       </span>
     </Link>

@@ -7,9 +7,9 @@ import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 
 export const metadata: Metadata = {
-  title: "Downsizing & Relocation Concierge in Nairobi",
+  title: "Downsizing & Relocation Concierge",
   description:
-    "White-glove downsizing, relocation, and estate cleanout services in Nairobi, Kenya: property preparation, donation coordination, vendor management, and storage, handled end to end.",
+    "White-glove downsizing, relocation, and estate cleanout services in Kenya: property preparation, donation coordination, vendor management, and storage, handled end to end.",
   alternates: { canonical: "/concierge" },
 };
 
@@ -53,8 +53,8 @@ export default function ConciergePage() {
     <main className="flex-1">
       <PageHero
         eyebrow="Concierge Transition Services"
-        title="Downsizing & Relocation Concierge in Nairobi"
-        subtitle="When life shifts (a downsize, a relocation, or settling an estate in Nairobi), a single accountable team handles every detail, so the transition feels effortless and dignified."
+        title="Downsizing & Relocation Concierge"
+        subtitle="When life shifts (a downsize, a relocation, or settling an estate), a single accountable team handles every detail, so the transition feels effortless and dignified."
         crumbs={[{ label: "Concierge" }]}
       />
 

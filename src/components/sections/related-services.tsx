@@ -13,14 +13,14 @@ type ServiceKey =
   | "collection";
 
 const LINKS: Record<ServiceKey, { href: string; anchor: string }> = {
-  "estate-sales": { href: "/estate-sales", anchor: "luxury estate sales in Nairobi" },
+  "estate-sales": { href: "/estate-sales", anchor: "luxury estate sales" },
   "commercial-liquidation": {
     href: "/commercial-liquidation",
-    anchor: "commercial liquidation in Nairobi",
+    anchor: "commercial liquidation",
   },
   concierge: { href: "/concierge", anchor: "downsizing and relocation concierge services" },
   "expat-services": { href: "/expat-services", anchor: "expat relocation services" },
-  collection: { href: "/collection", anchor: "luxury assets for sale in Nairobi" },
+  collection: { href: "/collection", anchor: "luxury assets for sale" },
 };
 
 const ORDER: ServiceKey[] = [

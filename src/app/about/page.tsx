@@ -7,9 +7,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 
 export const metadata: Metadata = {
-  title: "About | Veteran-Owned Nairobi Estate Firm",
+  title: "About | Veteran-Owned Estate Sales Firm",
   description:
-    "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Nairobi, Kenya, combining valuation, marketing, sale, and logistics under one premium brand.",
+    "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Kenya, combining valuation, marketing, sale, and logistics under one premium brand.",
   alternates: { canonical: "/about" },
 };
 
@@ -44,7 +44,7 @@ const values = [
   {
     icon: Handshake,
     title: "Trusted Network",
-    description: "Vetted logistics, storage, and vendor partners across Nairobi and East Africa.",
+    description: "Vetted logistics, storage, and vendor partners across Kenya and East Africa.",
   },
 ];
 
@@ -54,7 +54,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About The Estate Edit"
         title="A luxury estate & transition management firm"
-        subtitle="Headquartered in Nairobi, we help individuals, families, businesses, and expatriates navigate major life transitions, simplifying the complex while maximising value."
+        subtitle="We help individuals, families, businesses, and expatriates navigate major life transitions, simplifying the complex while maximising value."
         crumbs={[{ label: "About" }]}
       />
 
