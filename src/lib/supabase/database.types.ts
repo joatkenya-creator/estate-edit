@@ -1517,6 +1517,226 @@ export type Database = {
           },
         ]
       }
+      // ── Marketplace tables (added by migration 20260626000001) ──────────────
+      user_profiles: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          full_name: string | null
+          phone: string | null
+          bio: string | null
+          avatar_url: string | null
+          location: string | null
+          free_listings_used: number
+          free_listings_sold: number
+          is_verified: boolean
+          is_active: boolean
+          metadata: Json
+        }
+        Insert: {
+          id: string
+          created_at?: string
+          updated_at?: string
+          full_name?: string | null
+          phone?: string | null
+          bio?: string | null
+          avatar_url?: string | null
+          location?: string | null
+          free_listings_used?: number
+          free_listings_sold?: number
+          is_verified?: boolean
+          is_active?: boolean
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          full_name?: string | null
+          phone?: string | null
+          bio?: string | null
+          avatar_url?: string | null
+          location?: string | null
+          free_listings_used?: number
+          free_listings_sold?: number
+          is_verified?: boolean
+          is_active?: boolean
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      user_listings: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          user_id: string
+          slug: string
+          title: string
+          description: string | null
+          category: Database["public"]["Enums"]["asset_category"]
+          condition: Database["public"]["Enums"]["asset_condition"] | null
+          price: number
+          currency: string
+          location: string | null
+          primary_image_url: string | null
+          tags: string[]
+          status: "draft" | "pending_review" | "active" | "sold" | "withdrawn" | "rejected"
+          is_free_listing: boolean
+          listing_fee_paid: boolean
+          listing_fee_amount: number
+          sold_price: number | null
+          sold_at: string | null
+          commission_rate: number
+          commission_amount: number | null
+          commission_collected: boolean
+          views: number
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          user_id: string
+          slug: string
+          title: string
+          description?: string | null
+          category?: Database["public"]["Enums"]["asset_category"]
+          condition?: Database["public"]["Enums"]["asset_condition"] | null
+          price: number
+          currency?: string
+          location?: string | null
+          primary_image_url?: string | null
+          tags?: string[]
+          status?: "draft" | "pending_review" | "active" | "sold" | "withdrawn" | "rejected"
+          is_free_listing?: boolean
+          listing_fee_paid?: boolean
+          listing_fee_amount?: number
+          sold_price?: number | null
+          sold_at?: string | null
+          commission_rate?: number
+          commission_amount?: number | null
+          commission_collected?: boolean
+          views?: number
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          slug?: string
+          title?: string
+          description?: string | null
+          category?: Database["public"]["Enums"]["asset_category"]
+          condition?: Database["public"]["Enums"]["asset_condition"] | null
+          price?: number
+          currency?: string
+          location?: string | null
+          primary_image_url?: string | null
+          tags?: string[]
+          status?: "draft" | "pending_review" | "active" | "sold" | "withdrawn" | "rejected"
+          is_free_listing?: boolean
+          listing_fee_paid?: boolean
+          listing_fee_amount?: number
+          sold_price?: number | null
+          sold_at?: string | null
+          commission_rate?: number
+          commission_amount?: number | null
+          commission_collected?: boolean
+          views?: number
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      user_listing_images: {
+        Row: {
+          id: string
+          created_at: string
+          listing_id: string
+          url: string
+          alt: string | null
+          sort_order: number
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          listing_id: string
+          url: string
+          alt?: string | null
+          sort_order?: number
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          listing_id?: string
+          url?: string
+          alt?: string | null
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      listing_payments: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          listing_id: string
+          user_id: string
+          transaction_type: "listing_fee" | "commission"
+          amount: number
+          currency: string
+          status: "pending" | "completed" | "failed"
+          mpesa_phone: string | null
+          mpesa_checkout_request_id: string | null
+          mpesa_merchant_request_id: string | null
+          mpesa_transaction_id: string | null
+          mpesa_result_code: number | null
+          mpesa_result_desc: string | null
+          paid_at: string | null
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          listing_id: string
+          user_id: string
+          transaction_type: "listing_fee" | "commission"
+          amount: number
+          currency?: string
+          status?: "pending" | "completed" | "failed"
+          mpesa_phone?: string | null
+          mpesa_checkout_request_id?: string | null
+          mpesa_merchant_request_id?: string | null
+          mpesa_transaction_id?: string | null
+          mpesa_result_code?: number | null
+          mpesa_result_desc?: string | null
+          paid_at?: string | null
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          listing_id?: string
+          user_id?: string
+          transaction_type?: "listing_fee" | "commission"
+          amount?: number
+          currency?: string
+          status?: "pending" | "completed" | "failed"
+          mpesa_phone?: string | null
+          mpesa_checkout_request_id?: string | null
+          mpesa_merchant_request_id?: string | null
+          mpesa_transaction_id?: string | null
+          mpesa_result_code?: number | null
+          mpesa_result_desc?: string | null
+          paid_at?: string | null
+          metadata?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

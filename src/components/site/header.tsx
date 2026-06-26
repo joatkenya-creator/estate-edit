@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu } from "lucide-react";
+import { Menu, User, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +14,22 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { navLinks, siteConfig } from "@/lib/site";
 import { CartButton } from "@/components/cart/cart-button";
+import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/app/actions/auth";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 function Wordmark({ inverted }: { inverted: boolean }) {
   return (
     <Link href="/" className="group flex items-center gap-3">
-      {/* Gold monogram — keeps its colour on any background */}
       <Image
         src="/logo-mark.svg"
         alt=""
@@ -54,12 +63,22 @@ function Wordmark({ inverted }: { inverted: boolean }) {
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const inverted = !scrolled;
@@ -90,6 +109,18 @@ export function SiteHeader() {
               <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
+
+          {/* Sell link */}
+          <Link
+            href="/sell"
+            className={cn(
+              "group relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors",
+              inverted ? "text-gold-soft hover:text-gold" : "text-gold hover:text-gold-dark",
+            )}
+          >
+            <Tag className="size-3.5" />
+            Sell
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -101,6 +132,57 @@ export function SiteHeader() {
           </Button>
 
           <CartButton inverted={inverted} />
+
+          {/* Account menu (desktop) */}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label="Account menu"
+                  className={cn(
+                    "hidden size-9 items-center justify-center rounded-full border transition-colors lg:flex",
+                    inverted
+                      ? "border-white/30 text-white hover:bg-white/10"
+                      : "border-border text-navy hover:bg-stone",
+                  )}
+                >
+                  <User className="size-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem asChild>
+                  <Link href="/account">My Account</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/account/listings">My Listings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/account/orders">My Orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/sell/post">Post a Listing</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <form action={signOut}>
+                    <button type="submit" className="w-full text-left text-red-600">
+                      Sign out
+                    </button>
+                  </form>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link
+              href="/auth/login"
+              className={cn(
+                "hidden text-sm font-medium transition-colors lg:block",
+                inverted ? "text-white/80 hover:text-white" : "text-charcoal/70 hover:text-navy",
+              )}
+            >
+              Sign in
+            </Link>
+          )}
 
           {/* Mobile menu */}
           <Sheet>
@@ -134,6 +216,22 @@ export function SiteHeader() {
                     </Link>
                   </SheetClose>
                 ))}
+                <SheetClose asChild>
+                  <Link
+                    href="/sell"
+                    className="border-b border-white/10 py-4 text-lg text-gold hover:text-gold-soft flex items-center gap-2"
+                  >
+                    <Tag className="size-4" /> Sell
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    href="/marketplace"
+                    className="border-b border-white/10 py-4 text-lg text-white/85 hover:text-gold"
+                  >
+                    Marketplace
+                  </Link>
+                </SheetClose>
               </nav>
               <div className="mt-auto flex flex-col gap-3 p-6">
                 <SheetClose asChild>
@@ -141,6 +239,25 @@ export function SiteHeader() {
                     <Link href="/contact">Book a Consultation</Link>
                   </Button>
                 </SheetClose>
+                {user ? (
+                  <SheetClose asChild>
+                    <Link
+                      href="/account"
+                      className="text-center text-sm font-medium text-white/80 hover:text-gold"
+                    >
+                      My Account
+                    </Link>
+                  </SheetClose>
+                ) : (
+                  <SheetClose asChild>
+                    <Link
+                      href="/auth/login"
+                      className="text-center text-sm font-medium text-white/80 hover:text-gold"
+                    >
+                      Sign in
+                    </Link>
+                  </SheetClose>
+                )}
                 <a
                   href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
                   className="text-center text-xs text-white/60 transition-colors hover:text-gold"

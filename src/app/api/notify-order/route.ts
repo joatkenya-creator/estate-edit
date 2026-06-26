@@ -1,5 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { formatMoney, type CartItem } from "@/lib/site";
+import { notifyCustomer } from "@/lib/order-notifications";
 
 /**
  * Sends a new-order alert to staff using the Cloudflare Send Email binding
@@ -60,12 +61,31 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json({ ok: false, error: "bad payload" }, { status: 400 });
     }
 
-    const { env } = getCloudflareContext();
+    const { env, ctx } = getCloudflareContext();
+
+    // Customer confirmation — always attempted regardless of email binding state.
+    // waitUntil keeps the Worker alive until the Resend/SMS calls finish; a bare
+    // floating promise would be cancelled the moment the response returns.
+    ctx.waitUntil(
+      notifyCustomer({
+        event: "placed",
+        orderNumber: o.orderNumber,
+        fullName: o.fullName,
+        phone: o.phone,
+        email: o.email,
+        total: o.total,
+        currency: o.currency,
+        items: o.items,
+        subtotal: o.subtotal,
+        deliveryFee: o.deliveryFee,
+      }).catch(() => {}),
+    );
+
     const binding = (env as Record<string, unknown>).ORDER_EMAIL as
       | { send: (msg: unknown) => Promise<void> }
       | undefined;
 
-    // No binding (e.g. local dev) — skip silently; the order is already saved.
+    // No binding (e.g. local dev) — skip staff alert only; customer notified above.
     if (!binding) return Response.json({ ok: true, skipped: "no email binding" });
 
     // cloudflare:email is a Workers-runtime module; keep it out of the bundle.

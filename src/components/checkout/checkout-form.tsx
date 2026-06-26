@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,6 +20,7 @@ import { useCart } from "@/components/cart/cart-context";
 import { useCurrency } from "@/components/currency/currency-context";
 import { CurrencyNote } from "@/components/currency/price";
 import { placeOrder } from "@/lib/orders";
+import { quoteDelivery } from "@/app/actions/delivery-quote";
 
 const selectClass =
   "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -39,10 +40,35 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
   const [submitting, setSubmitting] = useState(false);
 
   const currency = items[0]?.currency ?? "KES";
-  const deliveryFee = useMemo(
+
+  // Immediate estimate from the cart snapshot…
+  const localFee = useMemo(
     () => computeDeliveryFee(settings, county, items),
     [settings, county, items],
   );
+
+  // …superseded by an authoritative server quote (recomputed from the current
+  // product tiers by slug), so a stale cart can't mis-price delivery.
+  const slugsKey = items.map((i) => i.slug).join(",");
+  const [quoted, setQuoted] = useState<{ county: string; fee: number } | null>(null);
+  useEffect(() => {
+    if (!county) return;
+    const slugs = slugsKey ? slugsKey.split(",") : [];
+    if (!slugs.length) return;
+    let active = true;
+    quoteDelivery(slugs, county, subtotal)
+      .then((fee) => {
+        if (active) setQuoted({ county, fee });
+      })
+      .catch(() => {
+        /* keep the local estimate on failure */
+      });
+    return () => {
+      active = false;
+    };
+  }, [county, slugsKey, subtotal]);
+
+  const deliveryFee = quoted && quoted.county === county ? quoted.fee : localFee;
   const freeDelivery = settings.enabled && deliveryFee === 0;
   const total = subtotal + deliveryFee;
 
