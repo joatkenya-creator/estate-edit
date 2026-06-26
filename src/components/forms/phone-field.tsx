@@ -17,11 +17,13 @@ export function PhoneField({
   name = "phone",
   placeholder = "712 345678",
   required = false,
+  onValueChange,
 }: {
   id?: string;
   name?: string;
   placeholder?: string;
   required?: boolean;
+  onValueChange?: (value: string) => void;
 }) {
   const [value, setValue] = useState<Value | undefined>();
   const [country, setCountry] = useState<Country>("KE");
@@ -62,7 +64,7 @@ export function PhoneField({
           international
           defaultCountry={country}
           value={value}
-          onChange={setValue}
+          onChange={(v) => { setValue(v); onValueChange?.(v ?? ""); }}
           inputComponent={Input}
           placeholder={placeholder}
           required={required}

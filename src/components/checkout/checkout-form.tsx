@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { PhoneField } from "@/components/forms/phone-field";
 import {
   computeDeliveryFee,
   kenyaCounties,
@@ -116,7 +117,7 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="phone">Phone *</Label>
-              <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 7…" required />
+              <PhoneField id="phone" name="_phone_hidden" required onValueChange={setPhone} />
             </div>
           </div>
 
