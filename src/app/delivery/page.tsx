@@ -10,30 +10,49 @@ export const revalidate = 600;
 export const metadata: Metadata = {
   title: "Delivery & Returns",
   description:
-    "How The Estate Edit delivers countrywide across Kenya: delivery fees, timelines, payment on delivery, and returns.",
+    "How The Estate Edit delivers: delivery fees, timelines, payment on delivery, and returns.",
   alternates: { canonical: "/delivery" },
 };
 
-/** Fallback copy shown when the CMS `details` field is empty. */
-const DEFAULT_DETAILS = [
+/** Fallback copy shown when the CMS delivery `details` field is empty. */
+const DETAILS_KE = [
   "We deliver purchased items to every county in Kenya. Delivery is arranged after you place an order. Our team calls or WhatsApps you to confirm the details and timing.",
   "Delivery fees are calculated at checkout based on your county (distance) and the size, weight and fragility of the item. You'll always see the exact fee before you confirm.",
   "Payment is made on delivery, by cash or M-Pesa, once your items arrive and you're satisfied. No payment is taken online.",
   "If an item arrives damaged or not as described, contact us within 48 hours of delivery and we'll arrange a replacement or resolution.",
 ];
 
-const points = [
+const DETAILS_VA = [
+  "We deliver purchased items across Virginia. Delivery is arranged after you place an order. Our team calls or texts you to confirm the details and timing.",
+  "Delivery fees are calculated at checkout based on your Virginia locality (distance) and the size, weight and fragility of the item. You'll always see the exact fee before you confirm.",
+  "Buying from outside Virginia? Place your order and we'll arrange and quote shipping to your address.",
+  "Payment is made on delivery, by cash, once your items arrive and you're satisfied. No payment is taken online.",
+  "If an item arrives damaged or not as described, contact us within 48 hours of delivery and we'll arrange a replacement or resolution.",
+];
+
+const POINTS_KE = [
   { icon: MapPin, title: "Countrywide", body: "All 47 counties, from Nairobi to the coast and upcountry." },
   { icon: Truck, title: "Fee by county & item", body: "Distance plus the item's size, weight and fragility, shown at checkout." },
   { icon: Wallet, title: "Pay on delivery", body: "Cash or M-Pesa when your items arrive. Nothing paid online." },
   { icon: ShieldCheck, title: "Handled with care", body: "Fragile and high-value pieces are packed and moved with extra care." },
 ];
 
+const POINTS_VA = [
+  { icon: MapPin, title: "Across Virginia", body: "Local delivery to Virginia metros, from Richmond to Hampton Roads and Northern Virginia." },
+  { icon: Truck, title: "Fee by locality & item", body: "Distance plus size, weight and fragility, shown at checkout. Outside Virginia is quoted after order." },
+  { icon: Wallet, title: "Pay on delivery", body: "Cash on delivery when your items arrive. Nothing paid online." },
+  { icon: ShieldCheck, title: "Handled with care", body: "Fragile and high-value pieces are packed and moved with extra care." },
+];
+
 export default async function DeliveryPage() {
   const settings = await getDeliverySettings();
+  const isVa = settings.market === "virginia";
+  const points = isVa ? POINTS_VA : POINTS_KE;
   const paragraphs = settings.details.trim()
     ? settings.details.split(/\n+/).filter(Boolean)
-    : DEFAULT_DETAILS;
+    : isVa
+      ? DETAILS_VA
+      : DETAILS_KE;
 
   return (
     <main className="flex-1 bg-white">

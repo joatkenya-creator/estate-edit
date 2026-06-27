@@ -16,6 +16,7 @@ export default async function ConfirmationPage({
 }) {
   const { order, total, currency } = await searchParams;
   const totalNum = total ? Number(total) : null;
+  const isUs = (currency || "KES") === "USD";
 
   return (
     <main className="flex-1 bg-white">
@@ -54,7 +55,10 @@ export default async function ConfirmationPage({
               <Truck className="mt-0.5 size-5 shrink-0 text-navy" strokeWidth={1.6} />
               <span>
                 <span className="font-medium text-navy">Pay after delivery.</span> No payment is
-                needed now. Settle by cash or M-Pesa once your items arrive. We deliver countrywide.
+                needed now.{" "}
+                {isUs
+                  ? "Settle by cash on delivery once your items arrive."
+                  : "Settle by cash or M-Pesa once your items arrive. We deliver countrywide."}
               </span>
             </p>
           </div>

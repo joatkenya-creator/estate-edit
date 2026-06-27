@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/components/cart/cart-context";
+import { useRegion } from "@/components/region/region-context";
 import { formatMoney } from "@/lib/site";
 
 export function CartDrawer() {
   const { items, isOpen, setOpen, count, subtotal, setQuantity, remove } = useCart();
-  const currency = items[0]?.currency ?? "KES";
+  const { region } = useRegion();
+  const currency = items[0]?.currency ?? (region === "virginia" ? "USD" : "KES");
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -26,7 +28,11 @@ export function CartDrawer() {
           <SheetTitle className="font-display text-xl text-navy">
             Your cart {count > 0 && <span className="text-muted-foreground">({count})</span>}
           </SheetTitle>
-          <SheetDescription>Pay after delivery. We deliver countrywide.</SheetDescription>
+          <SheetDescription>
+            {region === "virginia"
+              ? "Pay on delivery. Local delivery across Virginia."
+              : "Pay after delivery. We deliver countrywide."}
+          </SheetDescription>
         </SheetHeader>
 
         {items.length === 0 ? (
