@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
-import { getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
+import { getAllAssetSlugs, getAssetBySlug, getDeliverySettings } from "@/lib/queries";
 import { divisionLabel, formatMoney, isPurchasable, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -16,8 +16,8 @@ export const revalidate = 600;
 
 /** Pre-render every catalogue item; unknown slugs render on demand. */
 export async function generateStaticParams() {
-  const assets = await getCatalogueAssets();
-  return assets.map((a) => ({ slug: a.slug }));
+  const slugs = await getAllAssetSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

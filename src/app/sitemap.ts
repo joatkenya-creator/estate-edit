@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getCatalogueAssets } from "@/lib/queries";
+import { getAllAssetSlugs } from "@/lib/queries";
 import { SITE_URL } from "@/lib/seo";
 
 // Regenerate periodically so newly published assets appear without a redeploy.
@@ -37,15 +37,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Supabase URLs full of query-string ampersands — that produced invalid XML
   // ("EntityRef: expecting ';'") and broke the whole sitemap. Image discovery
   // is already covered by OG tags + Product JSON-LD.
-  const assets = await getCatalogueAssets();
-  const assetEntries: MetadataRoute.Sitemap = assets
-    .filter((a) => a.slug)
-    .map((a) => ({
-      url: `${SITE_URL}/collection/${a.slug}`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    }));
+  const slugs = await getAllAssetSlugs();
+  const assetEntries: MetadataRoute.Sitemap = slugs.map((slug) => ({
+    url: `${SITE_URL}/collection/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
 
   return [...staticEntries, ...assetEntries];
 }

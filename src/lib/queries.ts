@@ -111,6 +111,25 @@ function categoryDisplay(
   return category ? assetCategoryLabel[category] ?? category : "Other";
 }
 
+/**
+ * All published asset slugs across BOTH markets, for static pre-rendering and
+ * the sitemap. Region-agnostic (no cookies/headers) so it is safe to call at
+ * build time inside generateStaticParams / sitemap.
+ */
+export async function getAllAssetSlugs(): Promise<string[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("assets")
+      .select("slug")
+      .eq("_status", "published");
+    if (error || !data?.length) return staticAssets.map((a) => a.slug);
+    return data.map((a) => a.slug).filter((s): s is string => Boolean(s));
+  } catch {
+    return staticAssets.map((a) => a.slug);
+  }
+}
+
 export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
   const region = await getRegion();
   // Static fallback content is Kenya-only; the Virginia store shows an empty

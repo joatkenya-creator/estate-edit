@@ -22,12 +22,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navLinks, siteConfig } from "@/lib/site";
+import { regionTagline } from "@/lib/region";
+import { useRegion } from "@/components/region/region-context";
+import { RegionSwitcher } from "@/components/region/region-switcher";
 import { CartButton } from "@/components/cart/cart-button";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/app/actions/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 function Wordmark({ inverted }: { inverted: boolean }) {
+  const { region } = useRegion();
   return (
     <Link href="/" className="group flex items-center gap-3">
       <Image
@@ -54,7 +58,7 @@ function Wordmark({ inverted }: { inverted: boolean }) {
             inverted ? "text-gold-soft" : "text-gold",
           )}
         >
-          Kenya · East Africa
+          {regionTagline[region]}
         </span>
       </span>
     </Link>
@@ -124,6 +128,8 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <RegionSwitcher inverted={inverted} className="hidden sm:inline-flex" />
+
           <Button
             asChild
             className="hidden bg-navy text-white hover:bg-navy-soft sm:inline-flex"
@@ -234,6 +240,10 @@ export function SiteHeader() {
                 </SheetClose>
               </nav>
               <div className="mt-auto flex flex-col gap-3 p-6">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs uppercase tracking-[0.2em] text-white/60">Store</span>
+                  <RegionSwitcher inverted />
+                </div>
                 <SheetClose asChild>
                   <Button asChild className="bg-gold text-navy hover:bg-gold-soft">
                     <Link href="/contact">Book a Consultation</Link>
