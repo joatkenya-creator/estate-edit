@@ -5,7 +5,8 @@ import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { CartProvider } from "@/components/cart/cart-context";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-import { CurrencyProvider } from "@/components/currency/currency-context";
+import { RegionProvider } from "@/components/region/region-context";
+import { getRegion } from "@/lib/region.server";
 import { JsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { Clarity } from "@/components/seo/clarity";
@@ -72,11 +73,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const region = await getRegion();
   return (
     <html
       lang="en"
@@ -86,14 +88,14 @@ export default function RootLayout({
         <GoogleAnalytics />
         <Clarity />
         <JsonLd data={organizationJsonLd()} />
-        <CurrencyProvider>
+        <RegionProvider initialRegion={region}>
           <CartProvider>
             <SiteHeader />
             {children}
             <SiteFooter />
             <CartDrawer />
           </CartProvider>
-        </CurrencyProvider>
+        </RegionProvider>
         <Toaster position="top-center" richColors />
       </body>
     </html>

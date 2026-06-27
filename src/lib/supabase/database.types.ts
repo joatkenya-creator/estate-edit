@@ -657,6 +657,7 @@ export type Database = {
           id: string
           is_featured: boolean | null
           location: string | null
+          market: string | null
           metadata: Json | null
           price: number | null
           price_on_request: boolean | null
@@ -686,6 +687,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           location?: string | null
+          market?: string | null
           metadata?: Json | null
           price?: number | null
           price_on_request?: boolean | null
@@ -715,6 +717,7 @@ export type Database = {
           id?: string
           is_featured?: boolean | null
           location?: string | null
+          market?: string | null
           metadata?: Json | null
           price?: number | null
           price_on_request?: boolean | null

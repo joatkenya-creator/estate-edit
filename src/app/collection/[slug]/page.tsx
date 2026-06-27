@@ -7,10 +7,9 @@ import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
 import { getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
-import { divisionLabel, isPurchasable, type AssetDetail } from "@/lib/site";
+import { divisionLabel, formatMoney, isPurchasable, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Price, CurrencyNote } from "@/components/currency/price";
 import { assetJsonLd } from "@/lib/seo";
 
 export const revalidate = 600;
@@ -120,10 +119,9 @@ export default async function AssetPage({
             {asset.priceOnRequest || asset.price == null ? (
               <p className="mt-6 font-display text-2xl text-navy">Price on request</p>
             ) : (
-              <div className="mt-6">
-                <Price kes={asset.price} className="font-display text-2xl text-navy" />
-                <CurrencyNote className="mt-1 text-xs text-muted-foreground" />
-              </div>
+              <p className="mt-6 font-display text-2xl text-navy">
+                {formatMoney(asset.price, asset.currency)}
+              </p>
             )}
 
             {buyable && (

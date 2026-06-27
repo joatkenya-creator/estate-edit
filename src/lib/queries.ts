@@ -1,5 +1,6 @@
 import "server-only";
 import { createPublicClient } from "@/lib/supabase/public";
+import { getRegion } from "@/lib/region.server";
 import {
   services as staticServices,
   statMetrics as staticMetrics,
@@ -111,20 +112,28 @@ function categoryDisplay(
 }
 
 export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
+  const region = await getRegion();
+  // Static fallback content is Kenya-only; the Virginia store shows an empty
+  // catalogue rather than Kenyan placeholders when there's nothing to show.
+  const fallback = (): CatalogueItem[] =>
+    region !== "kenya"
+      ? []
+      : staticAssets.map((a, i) => ({
+          ...a,
+          categoryKey: "other",
+          division: i % 3 === 2 ? "commercial_liquidation" : "estate_sales",
+        }));
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
       .select("slug, title, category, category_other, division, status, price, currency, price_on_request, delivery_tier, fragile, primary_image_url, metadata, sort_order")
       .eq("_status", "published")
+      .eq("market", region)
       .order("sort_order");
 
     if (error || !data?.length) {
-      return staticAssets.map((a, i) => ({
-        ...a,
-        categoryKey: "other",
-        division: i % 3 === 2 ? "commercial_liquidation" : "estate_sales",
-      }));
+      return fallback();
     }
 
     return data.map((a, i) => {
@@ -149,7 +158,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
       };
     });
   } catch {
-    return staticAssets.map((a) => ({ ...a, categoryKey: "other", division: "estate_sales" }));
+    return fallback();
   }
 }
 
@@ -275,12 +284,20 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
 export async function getFeaturedAssets(
   opts: { limit?: number; latest?: boolean } = {},
 ): Promise<FeaturedAsset[]> {
+  const region = await getRegion();
+  const fallback = (): FeaturedAsset[] =>
+    region !== "kenya"
+      ? []
+      : opts.limit
+        ? staticAssets.slice(0, opts.limit)
+        : staticAssets;
   try {
     const supabase = createPublicClient();
     let query = supabase
       .from("assets")
       .select("slug, title, category, category_other, status, primary_image_url, metadata, sort_order, created_at")
-      .eq("_status", "published");
+      .eq("_status", "published")
+      .eq("market", region);
 
     query = opts.latest
       ? query.order("created_at", { ascending: false })
@@ -291,7 +308,7 @@ export async function getFeaturedAssets(
     const { data, error } = await query;
 
     if (error || !data?.length) {
-      return opts.limit ? staticAssets.slice(0, opts.limit) : staticAssets;
+      return fallback();
     }
 
     return data.map((a, i) => {
@@ -309,6 +326,6 @@ export async function getFeaturedAssets(
       };
     });
   } catch {
-    return opts.limit ? staticAssets.slice(0, opts.limit) : staticAssets;
+    return fallback();
   }
 }

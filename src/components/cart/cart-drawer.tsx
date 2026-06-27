@@ -13,12 +13,11 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/components/cart/cart-context";
-import { useCurrency } from "@/components/currency/currency-context";
-import { CurrencyNote } from "@/components/currency/price";
+import { formatMoney } from "@/lib/site";
 
 export function CartDrawer() {
   const { items, isOpen, setOpen, count, subtotal, setQuantity, remove } = useCart();
-  const { format } = useCurrency();
+  const currency = items[0]?.currency ?? "KES";
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -57,7 +56,7 @@ export function CartDrawer() {
                       {it.title}
                     </Link>
                     <p className="mt-0.5 text-sm text-charcoal/70">
-                      {format(it.price)}
+                      {formatMoney(it.price, currency)}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
                       <div className="flex items-center rounded-md border border-border">
@@ -90,7 +89,7 @@ export function CartDrawer() {
                     </div>
                   </div>
                   <p className="text-sm font-medium text-navy tabular-nums">
-                    {format(it.price * it.quantity)}
+                    {formatMoney(it.price * it.quantity, currency)}
                   </p>
                 </div>
               ))}
@@ -100,10 +99,9 @@ export function CartDrawer() {
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-display text-lg text-navy">
-                  {format(subtotal)}
+                  {formatMoney(subtotal, currency)}
                 </span>
               </div>
-              <CurrencyNote className="text-xs text-muted-foreground" />
               <p className="text-xs text-muted-foreground">
                 Delivery is calculated at checkout.
               </p>

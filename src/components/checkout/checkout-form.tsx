@@ -13,12 +13,11 @@ import { Label } from "@/components/ui/label";
 import { PhoneField } from "@/components/forms/phone-field";
 import {
   computeDeliveryFee,
+  formatMoney,
   kenyaCounties,
   type DeliverySettings,
 } from "@/lib/site";
 import { useCart } from "@/components/cart/cart-context";
-import { useCurrency } from "@/components/currency/currency-context";
-import { CurrencyNote } from "@/components/currency/price";
 import { placeOrder } from "@/lib/orders";
 import { quoteDelivery } from "@/app/actions/delivery-quote";
 
@@ -27,7 +26,6 @@ const selectClass =
 
 export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
   const { items, subtotal, ready, clear } = useCart();
-  const { format } = useCurrency();
   const router = useRouter();
 
   const [fullName, setFullName] = useState("");
@@ -198,7 +196,7 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
                 </div>
                 <p className="min-w-0 flex-1 text-sm text-charcoal">{it.title}</p>
                 <p className="text-sm font-medium text-navy tabular-nums">
-                  {format(it.price * it.quantity)}
+                  {formatMoney(it.price * it.quantity, currency)}
                 </p>
               </div>
             ))}
@@ -207,21 +205,19 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
           <dl className="mt-4 space-y-2 border-t border-border pt-4 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd className="tabular-nums text-charcoal">{format(subtotal)}</dd>
+              <dd className="tabular-nums text-charcoal">{formatMoney(subtotal, currency)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Delivery{county ? ` · ${county}` : ""}</dt>
               <dd className="tabular-nums text-charcoal">
-                {freeDelivery ? "Free" : format(deliveryFee)}
+                {freeDelivery ? "Free" : formatMoney(deliveryFee, currency)}
               </dd>
             </div>
             <div className="flex justify-between border-t border-border pt-2 text-base">
               <dt className="font-medium text-navy">Total</dt>
-              <dd className="font-display text-lg text-navy tabular-nums">{format(total)}</dd>
+              <dd className="font-display text-lg text-navy tabular-nums">{formatMoney(total, currency)}</dd>
             </div>
           </dl>
-
-          <CurrencyNote className="mt-3 text-xs text-muted-foreground" />
 
           {!county && (
             <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
