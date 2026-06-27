@@ -27,6 +27,15 @@ export type Database = {
           message: string | null
           tier_surcharges: Json | null
           updated_at: string | null
+          va_details: string | null
+          va_enabled: boolean | null
+          va_flat_fee: number | null
+          va_fragile_surcharge: number | null
+          va_free_above: number | null
+          va_locality_rates: Json | null
+          va_message: string | null
+          va_outside_quote: boolean | null
+          va_tier_surcharges: Json | null
         }
         Insert: {
           county_rates?: Json | null
@@ -80,7 +89,12 @@ export type Database = {
         Insert: {
           address?: string | null
           amount_paid?: number | null
+          country?: string | null
           county?: string | null
+          delivery_quote_pending?: boolean | null
+          market?: string | null
+          postal_code?: string | null
+          state?: string | null
           created_at?: string
           currency?: string | null
           delivery_fee?: number | null
@@ -104,7 +118,12 @@ export type Database = {
         Update: {
           address?: string | null
           amount_paid?: number | null
+          country?: string | null
           county?: string | null
+          delivery_quote_pending?: boolean | null
+          market?: string | null
+          postal_code?: string | null
+          state?: string | null
           created_at?: string
           currency?: string | null
           delivery_fee?: number | null

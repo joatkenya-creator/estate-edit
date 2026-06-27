@@ -15,10 +15,15 @@ export type PlaceOrderInput = {
   fullName: string;
   phone: string;
   email?: string;
+  market: "kenya" | "virginia";
   county: string;
   town?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
   address: string;
   deliveryNotes?: string;
+  deliveryQuotePending?: boolean;
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;
@@ -49,10 +54,15 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
     full_name: input.fullName.trim(),
     phone: input.phone.trim(),
     email: input.email?.trim() || null,
+    market: input.market,
     county: input.county || null,
     town: input.town?.trim() || null,
+    state: input.state?.trim() || null,
+    postal_code: input.postalCode?.trim() || null,
+    country: input.country || (input.market === "virginia" ? "US" : "KE"),
     address: input.address?.trim() || null,
     delivery_notes: input.deliveryNotes?.trim() || null,
+    delivery_quote_pending: input.deliveryQuotePending ?? false,
     items: input.items as unknown as Json,
     subtotal: input.subtotal,
     delivery_fee: input.deliveryFee,
@@ -76,9 +86,14 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
         fullName: input.fullName,
         phone: input.phone,
         email: input.email,
+        market: input.market,
         county: input.county,
         town: input.town,
+        state: input.state,
+        postalCode: input.postalCode,
+        country: input.country,
         address: input.address,
+        deliveryQuotePending: input.deliveryQuotePending,
         items: input.items,
         subtotal: input.subtotal,
         deliveryFee: input.deliveryFee,

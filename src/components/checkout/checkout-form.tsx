@@ -14,7 +14,7 @@ import { PhoneField } from "@/components/forms/phone-field";
 import {
   computeDeliveryFee,
   formatMoney,
-  kenyaCounties,
+  usStates,
   type DeliverySettings,
 } from "@/lib/site";
 import { useCart } from "@/components/cart/cart-context";
@@ -24,25 +24,37 @@ import { quoteDelivery } from "@/app/actions/delivery-quote";
 const selectClass =
   "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
+/** Sentinel for the Virginia "deliver somewhere outside Virginia" choice. */
+const OUTSIDE = "__outside__";
+
 export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
   const { items, subtotal, ready, clear } = useCart();
   const router = useRouter();
+
+  const isVirginia = settings.market === "virginia";
+  const areaLabel = settings.areaLabel;
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [county, setCounty] = useState("");
   const [town, setTown] = useState("");
+  const [usState, setUsState] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const currency = items[0]?.currency ?? "KES";
+  const currency = items[0]?.currency ?? settings.currency;
+
+  // Virginia: a destination outside the local delivery area defers shipping to
+  // a manual quote (no auto fee). Kenya never offers this.
+  const isOutside = settings.quoteOutsideArea && county === OUTSIDE;
 
   // Immediate estimate from the cart snapshot…
   const localFee = useMemo(
-    () => computeDeliveryFee(settings, county, items),
-    [settings, county, items],
+    () => (isOutside ? 0 : computeDeliveryFee(settings, county, items)),
+    [settings, county, items, isOutside],
   );
 
   // …superseded by an authoritative server quote (recomputed from the current
@@ -50,7 +62,7 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
   const slugsKey = items.map((i) => i.slug).join(",");
   const [quoted, setQuoted] = useState<{ county: string; fee: number } | null>(null);
   useEffect(() => {
-    if (!county) return;
+    if (!county || isOutside) return;
     const slugs = slugsKey ? slugsKey.split(",") : [];
     if (!slugs.length) return;
     let active = true;
@@ -64,10 +76,14 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
     return () => {
       active = false;
     };
-  }, [county, slugsKey, subtotal]);
+  }, [county, slugsKey, subtotal, isOutside]);
 
-  const deliveryFee = quoted && quoted.county === county ? quoted.fee : localFee;
-  const freeDelivery = settings.enabled && deliveryFee === 0;
+  const deliveryFee = isOutside
+    ? 0
+    : quoted && quoted.county === county
+      ? quoted.fee
+      : localFee;
+  const freeDelivery = settings.enabled && !isOutside && deliveryFee === 0;
   const total = subtotal + deliveryFee;
 
   if (!ready) return null;
@@ -89,8 +105,11 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!fullName.trim() || !phone.trim() || !county || !address.trim()) {
-      toast.error("Please fill in your name, phone, county and delivery address.");
+    const destinationOk = isOutside ? Boolean(usState) : Boolean(county);
+    if (!fullName.trim() || !phone.trim() || !destinationOk || !address.trim()) {
+      toast.error(
+        `Please fill in your name, phone, ${areaLabel.toLowerCase()} and delivery address.`,
+      );
       return;
     }
     setSubmitting(true);
@@ -99,10 +118,15 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
         fullName,
         phone,
         email,
-        county,
+        market: settings.market,
+        county: isOutside ? "" : county,
         town,
+        state: isVirginia ? (isOutside ? usState : "Virginia") : undefined,
+        postalCode: postalCode || undefined,
+        country: isVirginia ? "US" : "KE",
         address,
         deliveryNotes: notes,
+        deliveryQuotePending: isOutside,
         items,
         subtotal,
         deliveryFee,
@@ -130,14 +154,16 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
       <div>
         <h2 className="font-display text-2xl text-navy">Delivery details</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          We deliver countrywide. Pay after delivery (cash or M-Pesa).
+          {isVirginia
+            ? "Local delivery across Virginia. Pay on delivery (cash)."
+            : "We deliver countrywide. Pay after delivery (cash or M-Pesa)."}
         </p>
 
         <div className="mt-6 grid gap-5">
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="full_name">Full name *</Label>
-              <Input id="full_name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Mwangi" required />
+              <Input id="full_name" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder={isVirginia ? "Jane Carter" : "Jane Mwangi"} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="phone">Phone *</Label>
@@ -152,28 +178,49 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
 
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label htmlFor="county">County *</Label>
+              <Label htmlFor="county">{areaLabel} *</Label>
               <select id="county" value={county} onChange={(e) => setCounty(e.target.value)} className={selectClass} required>
-                <option value="">Select county…</option>
-                {kenyaCounties.map((c) => (
+                <option value="">Select {areaLabel.toLowerCase()}…</option>
+                {settings.areas.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
+                {settings.quoteOutsideArea && (
+                  <option value={OUTSIDE}>Outside Virginia (quote shipping)</option>
+                )}
               </select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="town">Town / area</Label>
-              <Input id="town" value={town} onChange={(e) => setTown(e.target.value)} placeholder="Westlands, Nyali…" />
+              <Label htmlFor="town">Town / city</Label>
+              <Input id="town" value={town} onChange={(e) => setTown(e.target.value)} placeholder={isVirginia ? "City / area" : "Westlands, Nyali…"} />
             </div>
           </div>
 
+          {isOutside && (
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="us_state">State *</Label>
+                <select id="us_state" value={usState} onChange={(e) => setUsState(e.target.value)} className={selectClass} required>
+                  <option value="">Select state…</option>
+                  {usStates.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="zip">ZIP code</Label>
+                <Input id="zip" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} placeholder="23220" />
+              </div>
+            </div>
+          )}
+
           <div className="grid gap-2">
             <Label htmlFor="address">Delivery address *</Label>
-            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Estate / building, street, landmark" rows={2} required />
+            <Textarea id="address" value={address} onChange={(e) => setAddress(e.target.value)} placeholder={isVirginia ? "Street address, unit, landmark" : "Estate / building, street, landmark"} rows={2} required />
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="notes">Delivery notes (optional)</Label>
-            <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Preferred time, gate access, etc." rows={2} />
+            <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Preferred time, access details, etc." rows={2} />
           </div>
         </div>
       </div>
@@ -208,9 +255,11 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
               <dd className="tabular-nums text-charcoal">{formatMoney(subtotal, currency)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Delivery{county ? ` · ${county}` : ""}</dt>
+              <dt className="text-muted-foreground">
+                Delivery{county && !isOutside ? ` · ${county}` : ""}
+              </dt>
               <dd className="tabular-nums text-charcoal">
-                {freeDelivery ? "Free" : formatMoney(deliveryFee, currency)}
+                {isOutside ? "Quoted after order" : freeDelivery ? "Free" : formatMoney(deliveryFee, currency)}
               </dd>
             </div>
             <div className="flex justify-between border-t border-border pt-2 text-base">
@@ -221,7 +270,12 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
 
           {!county && (
             <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Truck className="size-3.5" /> Select your county to see the delivery fee.
+              <Truck className="size-3.5" /> Select your {areaLabel.toLowerCase()} to see the delivery fee.
+            </p>
+          )}
+          {isOutside && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Truck className="size-3.5" /> Shipping outside Virginia is quoted after you place the order.
             </p>
           )}
 
@@ -233,7 +287,9 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
             )}
           </Button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            No payment now, pay on delivery. We&apos;ll call to confirm.
+            {isVirginia
+              ? "No payment now. Pay cash on delivery. We'll call to confirm."
+              : "No payment now, pay on delivery. We'll call to confirm."}
           </p>
         </div>
       </div>

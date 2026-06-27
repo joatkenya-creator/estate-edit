@@ -19,6 +19,11 @@ type Payload = {
   county: string;
   town?: string;
   address: string;
+  market?: "kenya" | "virginia";
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  deliveryQuotePending?: boolean;
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;
@@ -39,7 +44,9 @@ function buildBody(o: Payload): string {
     `Customer: ${o.fullName}`,
     `Phone:    ${o.phone}`,
     o.email ? `Email:    ${o.email}` : null,
-    `Deliver:  ${[o.address, o.town, o.county].filter(Boolean).join(", ")}`,
+    `Store:    ${o.market === "virginia" ? "Virginia (USA)" : "Kenya"}`,
+    `Deliver:  ${[o.address, o.town, o.county, o.state, o.postalCode].filter(Boolean).join(", ")}`,
+    o.deliveryQuotePending ? `(Outside Virginia: shipping quote required)` : null,
     ``,
     `Items:`,
     lines,
@@ -91,7 +98,7 @@ export async function POST(request: Request): Promise<Response> {
     // cloudflare:email is a Workers-runtime module; keep it out of the bundle.
     const { EmailMessage } = await import(/* webpackIgnore: true */ "cloudflare:email");
 
-    const subject = `New order ${o.orderNumber} — ${formatMoney(o.total, o.currency)} (${o.county})`;
+    const subject = `New order ${o.orderNumber} — ${formatMoney(o.total, o.currency)} (${o.county || o.state || "—"})`;
     const raw = [
       `From: The Estate Edit Orders <${SENDER}>`,
       `To: ${RECIPIENT}`,

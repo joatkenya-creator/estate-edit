@@ -8,6 +8,7 @@ import {
   featuredAssets as staticAssets,
   assetCategoryLabel,
   defaultDeliverySettings,
+  kenyaCounties,
   type Service,
   type Metric,
   type Testimonial,
@@ -267,18 +268,64 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
  * sensible defaults if the row hasn't been created/saved in admin yet.
  */
 export async function getDeliverySettings(): Promise<DeliverySettings> {
+  const region = await getRegion();
+
+  const kenyaFallback: DeliverySettings = { ...defaultDeliverySettings, areas: kenyaCounties };
+  const virginiaFallback: DeliverySettings = {
+    market: "virginia",
+    currency: "USD",
+    enabled: true,
+    message: "Local delivery across Virginia",
+    details: "",
+    flatFee: 75,
+    freeAbove: null,
+    countyRates: {},
+    tierSurcharges: { standard: 0, medium: 25, large: 60, bulky: 120 },
+    fragileSurcharge: 35,
+    areas: [],
+    areaLabel: "Locality",
+    quoteOutsideArea: true,
+  };
+  const fallback = region === "virginia" ? virginiaFallback : kenyaFallback;
+
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("delivery")
       .select(
-        "enabled, message, details, flat_fee, free_above, county_rates, tier_surcharges, fragile_surcharge",
+        "enabled, message, details, flat_fee, free_above, county_rates, tier_surcharges, fragile_surcharge, va_enabled, va_message, va_details, va_flat_fee, va_free_above, va_outside_quote, va_locality_rates, va_tier_surcharges, va_fragile_surcharge",
       )
       .maybeSingle();
 
-    if (error || !data) return defaultDeliverySettings;
+    if (error || !data) return fallback;
+
+    if (region === "virginia") {
+      const rates = (data.va_locality_rates as Record<string, number> | null) ?? {};
+      return {
+        market: "virginia",
+        currency: "USD",
+        enabled: data.va_enabled ?? true,
+        message: data.va_message?.trim() || virginiaFallback.message,
+        details: data.va_details ?? "",
+        flatFee: data.va_flat_fee != null ? Number(data.va_flat_fee) : virginiaFallback.flatFee,
+        freeAbove: data.va_free_above != null ? Number(data.va_free_above) : null,
+        countyRates: rates,
+        tierSurcharges:
+          (data.va_tier_surcharges as Record<string, number> | null) ??
+          virginiaFallback.tierSurcharges,
+        fragileSurcharge:
+          data.va_fragile_surcharge != null
+            ? Number(data.va_fragile_surcharge)
+            : virginiaFallback.fragileSurcharge,
+        areas: Object.keys(rates),
+        areaLabel: "Locality",
+        quoteOutsideArea: data.va_outside_quote ?? true,
+      };
+    }
 
     return {
+      market: "kenya",
+      currency: "KES",
       enabled: data.enabled ?? true,
       message: data.message?.trim() || defaultDeliverySettings.message,
       details: data.details ?? "",
@@ -294,9 +341,12 @@ export async function getDeliverySettings(): Promise<DeliverySettings> {
         data.fragile_surcharge != null
           ? Number(data.fragile_surcharge)
           : defaultDeliverySettings.fragileSurcharge,
+      areas: kenyaCounties,
+      areaLabel: "County",
+      quoteOutsideArea: false,
     };
   } catch {
-    return defaultDeliverySettings;
+    return fallback;
   }
 }
 

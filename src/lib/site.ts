@@ -189,18 +189,28 @@ export type CartItem = {
 
 /** Delivery settings read from the CMS `delivery` global (with fallbacks). */
 export type DeliverySettings = {
+  /** Storefront these settings apply to. */
+  market: "kenya" | "virginia";
+  /** Native currency for this market (KES / USD). */
+  currency: string;
   enabled: boolean;
   message: string;
   details: string;
-  /** County/distance base fee when no per-county rate is set. */
+  /** Distance base fee when no per-destination rate is set. */
   flatFee: number;
   freeAbove: number | null;
-  /** Per-county base (distance), e.g. { Nairobi: 800 }. */
+  /** Per-destination distance base (counties for KE, localities for VA). */
   countyRates: Record<string, number>;
   /** Handling add-on per size tier, e.g. { standard: 0, bulky: 1500 }. */
   tierSurcharges: Record<string, number>;
   /** Extra added for a fragile item. */
   fragileSurcharge: number;
+  /** Destination dropdown options (county / locality names). */
+  areas: string[];
+  /** Label for the destination field ("County" / "Locality"). */
+  areaLabel: string;
+  /** VA: offer an "outside Virginia" choice that defers shipping to a quote. */
+  quoteOutsideArea: boolean;
 };
 
 /** County base fees (KSh) — anchored at the Nairobi 800 floor, scaled by
@@ -219,6 +229,8 @@ export const defaultCountyRates: Record<string, number> = {
 };
 
 export const defaultDeliverySettings: DeliverySettings = {
+  market: "kenya",
+  currency: "KES",
   enabled: true,
   message: "We deliver countrywide",
   details: "",
@@ -227,7 +239,23 @@ export const defaultDeliverySettings: DeliverySettings = {
   countyRates: defaultCountyRates,
   tierSurcharges: { standard: 0, medium: 400, large: 800, bulky: 1500 },
   fragileSurcharge: 500,
+  areas: [],
+  areaLabel: "County",
+  quoteOutsideArea: false,
 };
+
+/** US states + DC — the "outside Virginia" checkout destination dropdown. */
+export const usStates: string[] = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+  "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia",
+  "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky",
+  "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+  "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire",
+  "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+  "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+  "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+  "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+];
 
 /**
  * An asset is buyable (Buy now) only when it has a real price and isn't sold.
