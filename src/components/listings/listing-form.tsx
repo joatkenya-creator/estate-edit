@@ -118,13 +118,13 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
           <>
             <CheckCircle2 className="mb-1 inline size-4 text-green-600" />{" "}
             <strong>Free listing</strong> — {freeRemaining} free slot{freeRemaining === 1 ? "" : "s"} remaining.
-            Post your item at no cost. We earn 10% commission only when it sells.
+            Post your item at no cost. You keep 100% when it sells.
           </>
         ) : (
           <>
             <strong>Paid listing — KES 500</strong>. You&apos;ve used both free slots.
             Complete the form and pay the one-time fee to publish your listing.
-            We earn 10% commission on your sale.
+            You keep 100% of your sale.
           </>
         )}
       </div>

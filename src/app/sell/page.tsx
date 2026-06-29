@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Sell on The Estate Edit",
-  description: "Post your luxury and estate items for sale. First two listings free — 10% commission on sales.",
+  description: "Post your luxury and estate items for sale. Your first two listings are free, and you keep 100% of every sale.",
 };
 
 const STEPS = [
@@ -28,14 +28,14 @@ const STEPS = [
   {
     step: "4",
     title: "Sell & get paid",
-    body: "Buyers contact you directly. When your item sells, we collect a 10% commission.",
+    body: "Buyers contact you directly and pay you. You keep 100% of every sale.",
   },
 ];
 
 const PERKS = [
   { icon: Tag, title: "2 free listings", body: "Post your first two items at no cost." },
   { icon: Shield, title: "Moderation", body: "Every listing is reviewed to keep quality high." },
-  { icon: TrendingUp, title: "10% commission", body: "Only pay when your item actually sells." },
+  { icon: TrendingUp, title: "Keep 100%", body: "No sale commission — what your item sells for is yours." },
 ];
 
 export default async function SellPage() {
@@ -62,7 +62,7 @@ export default async function SellPage() {
             <span className="text-gold">on The Estate Edit</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-white/70">
-            Reach discerning buyers across Kenya. Your first two listings are free — we only earn when you sell.
+            Reach discerning buyers across Kenya. Your first two listings are free, and you keep 100% of every sale.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -146,7 +146,7 @@ export default async function SellPage() {
                   "First 2 listings at no cost",
                   "Active on the marketplace",
                   "Buyers contact you directly",
-                  "10% commission on sale",
+                  "Keep 100% of every sale",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 shrink-0 text-green-600" />
@@ -166,7 +166,7 @@ export default async function SellPage() {
                   "Unlimited listings at KES 500 each",
                   "Priority review (12 hrs)",
                   "Buyers contact you directly",
-                  "10% commission on sale",
+                  "Keep 100% of every sale",
                 ].map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 shrink-0 text-navy" />
@@ -178,7 +178,7 @@ export default async function SellPage() {
           </div>
 
           <p className="mt-6 text-center text-sm text-charcoal/50">
-            The 10% commission is charged on the final sale price. You keep 90%.
+            No sale commission — you keep 100% of the final sale price.
           </p>
         </div>
       </section>

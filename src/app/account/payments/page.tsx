@@ -32,7 +32,7 @@ export default async function PaymentsPage() {
       <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
         <h1 className="font-display text-2xl text-navy">Payments</h1>
         <p className="mt-1 text-sm text-charcoal/60">
-          Listing fees and commission payments for your marketplace activity
+          Listing fee payments for your marketplace activity
         </p>
       </div>
 

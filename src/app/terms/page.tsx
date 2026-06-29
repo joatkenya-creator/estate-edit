@@ -35,7 +35,7 @@ export default function TermsPage() {
 
       <LegalSection title="Engagements & Fees">
         <p>
-          Fees, commissions, and any applicable project or setup charges are agreed in writing before
+          Fees and any applicable project or setup charges are agreed in writing before
           work begins. Unless otherwise stated, quoted amounts exclude taxes, duties, and third-party
           costs such as transport, storage, or repairs.
         </p>

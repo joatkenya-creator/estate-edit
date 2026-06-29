@@ -13,7 +13,8 @@ export type ListingState = {
 };
 
 const LISTING_FEE_KES = 500;
-const COMMISSION_RATE = 10;
+// No sale commission — sellers keep 100%. Listing fees remain the only charge.
+const COMMISSION_RATE = 0;
 
 const CATEGORIES = [
   "furniture", "fine_art", "jewelry", "vehicles", "collectibles",

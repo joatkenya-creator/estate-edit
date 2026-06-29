@@ -74,7 +74,7 @@ export default async function ListingsPage() {
           )}
         </div>
         <p className="mt-1.5 text-xs text-charcoal/50">
-          We earn a 10% commission on every sale. This is deducted when your listing is marked sold.
+          You keep 100% of every sale — there is no sale commission.
         </p>
       </div>
 
