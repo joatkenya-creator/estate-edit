@@ -22,9 +22,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navLinks, siteConfig } from "@/lib/site";
-import { regionTagline } from "@/lib/region";
+import { regionFlag, regionShort, regionTagline } from "@/lib/region";
 import { useRegion } from "@/components/region/region-context";
-import { RegionSwitcher } from "@/components/region/region-switcher";
 import { CartButton } from "@/components/cart/cart-button";
 import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/app/actions/auth";
@@ -33,7 +32,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 function Wordmark({ inverted }: { inverted: boolean }) {
   const { region } = useRegion();
   return (
-    <Link href="/" className="group flex items-center gap-3">
+    <Link href="/" className="group mr-4 flex shrink-0 items-center gap-3 lg:mr-8">
       <Image
         src="/logo-mark.svg"
         alt=""
@@ -51,6 +50,16 @@ function Wordmark({ inverted }: { inverted: boolean }) {
           )}
         >
           The Estate Edit
+          {/* Auto-detected store region (from the visitor's location). Display only. */}
+          <sup
+            title="Your store region, detected automatically from your location"
+            className={cn(
+              "ml-1 align-super text-[0.55rem] font-semibold not-italic tracking-wide",
+              inverted ? "text-gold-soft" : "text-gold",
+            )}
+          >
+            {regionFlag[region]} {regionShort[region]}
+          </sup>
         </span>
         <span
           className={cn(
@@ -66,6 +75,7 @@ function Wordmark({ inverted }: { inverted: boolean }) {
 }
 
 export function SiteHeader() {
+  const { region } = useRegion();
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
 
@@ -99,7 +109,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
         <Wordmark inverted={inverted} />
 
-        <nav className="hidden items-center gap-9 lg:flex">
+        <nav className="hidden items-center gap-6 lg:flex xl:gap-9">
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -127,9 +137,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <RegionSwitcher inverted={inverted} className="hidden sm:inline-flex" />
-
+        <div className="flex shrink-0 items-center gap-3">
           <Button
             asChild
             className="hidden bg-navy text-white hover:bg-navy-soft sm:inline-flex"
@@ -240,9 +248,11 @@ export function SiteHeader() {
                 </SheetClose>
               </nav>
               <div className="mt-auto flex flex-col gap-3 p-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs uppercase tracking-[0.2em] text-white/60">Store</span>
-                  <RegionSwitcher inverted />
+                <div className="flex items-center justify-between text-xs text-white/60">
+                  <span className="uppercase tracking-[0.2em]">Store region</span>
+                  <span className="font-semibold text-gold">
+                    {regionFlag[region]} {regionTagline[region]}
+                  </span>
                 </div>
                 <SheetClose asChild>
                   <Button asChild className="bg-gold text-navy hover:bg-gold-soft">
