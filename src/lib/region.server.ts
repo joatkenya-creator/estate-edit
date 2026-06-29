@@ -6,8 +6,8 @@ import { REGION_COOKIE, isRegion, regionFromCountry, type Region } from "./regio
  * Resolve the active region for the current request (server components + data
  * layer). Priority:
  *   1. the `ee_region` cookie (the visitor's explicit choice via the switcher)
- *   2. Cloudflare's `cf-ipcountry` geo header (US -> Virginia, else Kenya)
- *   3. Kenya (default)
+ *   2. Cloudflare's `cf-ipcountry` geo header (KE -> Kenya, else Virginia)
+ *   3. Virginia (default for unknown / no geo)
  */
 export async function getRegion(): Promise<Region> {
   const cookieStore = await cookies();

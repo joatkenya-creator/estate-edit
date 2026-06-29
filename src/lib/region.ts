@@ -45,7 +45,12 @@ export function isRegion(value: unknown): value is Region {
   return value === "kenya" || value === "virginia";
 }
 
-/** Map a visitor's ISO country to a default region (US -> Virginia, else Kenya). */
+/**
+ * Map a visitor's ISO country to a default region. Only Kenyan (KE) traffic
+ * defaults to the Kenya store; US and everyone else (and unknown / no geo)
+ * default to Virginia. A visitor can still switch markets (the ee_region
+ * cookie overrides this).
+ */
 export function regionFromCountry(country?: string | null): Region {
-  return country?.toUpperCase() === "US" ? "virginia" : "kenya";
+  return country?.toUpperCase() === "KE" ? "kenya" : "virginia";
 }
