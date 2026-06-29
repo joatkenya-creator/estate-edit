@@ -73,9 +73,6 @@ export default async function ListingsPage() {
             </span>
           )}
         </div>
-        <p className="mt-1.5 text-xs text-charcoal/50">
-          You keep 100% of every sale — there is no sale commission.
-        </p>
       </div>
 
       {/* Listings */}

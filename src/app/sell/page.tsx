@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, Tag, TrendingUp, Shield, ArrowRight } from "lucide-react";
+import { CheckCircle2, Tag, Shield, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Sell on The Estate Edit",
-  description: "Post your luxury and estate items for sale. Your first two listings are free, and you keep 100% of every sale.",
+  description: "Post your luxury and estate items for sale. Your first two listings are free.",
 };
 
 const STEPS = [
@@ -25,17 +25,11 @@ const STEPS = [
     title: "Get reviewed",
     body: "Our team reviews your listing for quality. Most listings go live within 24 hours.",
   },
-  {
-    step: "4",
-    title: "Sell & get paid",
-    body: "Buyers contact you directly and pay you. You keep 100% of every sale.",
-  },
 ];
 
 const PERKS = [
   { icon: Tag, title: "2 free listings", body: "Post your first two items at no cost." },
   { icon: Shield, title: "Moderation", body: "Every listing is reviewed to keep quality high." },
-  { icon: TrendingUp, title: "Keep 100%", body: "No sale commission — what your item sells for is yours." },
 ];
 
 export default async function SellPage() {
@@ -62,7 +56,7 @@ export default async function SellPage() {
             <span className="text-gold">on The Estate Edit</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-white/70">
-            Reach discerning buyers across Kenya. Your first two listings are free, and you keep 100% of every sale.
+            Reach discerning buyers across Kenya. Your first two listings are free.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -97,7 +91,7 @@ export default async function SellPage() {
       {/* Perks */}
       <section className="bg-stone py-16">
         <div className="mx-auto max-w-5xl px-4">
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2">
             {PERKS.map(({ icon: Icon, title, body }) => (
               <div key={title} className="rounded-xl border border-border bg-white p-6 shadow-sm text-center">
                 <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-navy/5">
@@ -145,9 +139,7 @@ export default async function SellPage() {
                 {[
                   "First 2 listings at no cost",
                   "Active on the marketplace",
-                  "Buyers contact you directly",
-                  "Keep 100% of every sale",
-                ].map((item) => (
+                  "Buyers contact you directly",                ].map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 shrink-0 text-green-600" />
                     {item}
@@ -164,10 +156,8 @@ export default async function SellPage() {
               <ul className="mt-5 space-y-2.5 text-sm">
                 {[
                   "Unlimited listings at KES 500 each",
-                  "Priority review (12 hrs)",
-                  "Buyers contact you directly",
-                  "Keep 100% of every sale",
-                ].map((item) => (
+                  "Priority review",
+                  "Buyers contact you directly",                ].map((item) => (
                   <li key={item} className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 shrink-0 text-navy" />
                     {item}
@@ -176,10 +166,6 @@ export default async function SellPage() {
               </ul>
             </div>
           </div>
-
-          <p className="mt-6 text-center text-sm text-charcoal/50">
-            No sale commission — you keep 100% of the final sale price.
-          </p>
         </div>
       </section>
 
