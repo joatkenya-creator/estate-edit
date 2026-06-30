@@ -6,7 +6,6 @@ import { SiteFooter } from "@/components/site/footer";
 import { CartProvider } from "@/components/cart/cart-context";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { RegionProvider } from "@/components/region/region-context";
-import { getRegion } from "@/lib/region.server";
 import { JsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { Clarity } from "@/components/seo/clarity";
@@ -73,12 +72,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const region = await getRegion();
   return (
     <html
       lang="en"
@@ -88,7 +86,7 @@ export default async function RootLayout({
         <GoogleAnalytics />
         <Clarity />
         <JsonLd data={organizationJsonLd()} />
-        <RegionProvider initialRegion={region}>
+        <RegionProvider>
           <CartProvider>
             <SiteHeader />
             {children}

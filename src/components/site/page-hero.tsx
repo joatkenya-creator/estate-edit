@@ -17,8 +17,8 @@ export function PageHero({
   return (
     <section className="relative isolate overflow-hidden gradient-navy">
       <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:36px_36px]" />
-      <div className="pointer-events-none absolute -right-24 top-0 size-[28rem] rounded-full bg-gold/10 blur-[120px]" />
-      <div className="pointer-events-none absolute -left-24 bottom-0 size-[24rem] rounded-full bg-crimson/10 blur-[120px]" />
+      <div className="pointer-events-none absolute -right-24 top-0 hidden size-[28rem] rounded-full bg-gold/10 blur-[120px] sm:block" />
+      <div className="pointer-events-none absolute -left-24 bottom-0 hidden size-[24rem] rounded-full bg-crimson/10 blur-[120px] sm:block" />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-36 sm:px-8 sm:pb-24 sm:pt-44">
         <nav className="mb-6 flex items-center gap-2 text-xs text-white/55">

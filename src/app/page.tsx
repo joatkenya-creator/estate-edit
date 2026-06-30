@@ -12,7 +12,8 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 // Statically generated, regenerated every 10 minutes so content edits in
 // Supabase surface without a redeploy.
-export const revalidate = 600;
+// Region-specific (Kenya vs Virginia store), so it must render per request.
+export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (

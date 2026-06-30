@@ -102,7 +102,7 @@ export function SiteHeader() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-500",
         scrolled
-          ? "border-b border-border/70 bg-white/85 backdrop-blur-xl shadow-[0_8px_30px_-20px_rgba(0,35,73,0.4)]"
+          ? "border-b border-border/70 bg-white shadow-[0_8px_30px_-20px_rgba(0,35,73,0.4)]"
           : "bg-transparent",
       )}
     >

@@ -5,15 +5,23 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { Stats } from "@/components/sections/stats";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
+import { getRegion } from "@/lib/region.server";
 
-export const metadata: Metadata = {
-  title: "About | Veteran-Owned Estate Sales Firm",
-  description:
-    "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Kenya, combining valuation, marketing, sale, and logistics under one premium brand.",
-  alternates: { canonical: "/about" },
-};
+// Region-localised copy + stats — render per request.
+export const dynamic = "force-dynamic";
 
-export const revalidate = 600;
+export async function generateMetadata(): Promise<Metadata> {
+  const isVa = (await getRegion()) === "virginia";
+  return {
+    title: isVa
+      ? "About | Veteran-Owned Virginia Estate Firm"
+      : "About | Veteran-Owned Estate Sales Firm",
+    description: isVa
+      ? "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Virginia, combining valuation, marketing, sale, and logistics under one premium brand."
+      : "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Kenya, combining valuation, marketing, sale, and logistics under one premium brand.",
+    alternates: { canonical: "/about" },
+  };
+}
 
 const values = [
   {
@@ -48,7 +56,18 @@ const values = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const isVa = (await getRegion()) === "virginia";
+  const localizedValues = values.map((v) =>
+    v.title === "Trusted Network"
+      ? {
+          ...v,
+          description: isVa
+            ? "Vetted logistics, storage, and vendor partners across Virginia."
+            : "Vetted logistics, storage, and vendor partners across Kenya and East Africa.",
+        }
+      : v,
+  );
   return (
     <main className="flex-1">
       <PageHero
@@ -70,7 +89,7 @@ export default function AboutPage() {
               <div className="mt-6 space-y-5 text-muted-foreground text-pretty">
                 <p>
                   The Estate Edit was founded to bring a genuinely white-glove standard to estate
-                  transitions in East Africa. Where others run a single service, we combine valuation,
+                  transitions in {isVa ? "Virginia" : "East Africa"}. Where others run a single service, we combine valuation,
                   inventory management, marketing, sales, logistics, and transition support under one
                   premium brand.
                 </p>
@@ -107,7 +126,7 @@ export default function AboutPage() {
       <CategoryGrid
         eyebrow="Why Clients Trust Us"
         heading="The standards behind every engagement"
-        items={values}
+        items={localizedValues}
         tone="stone"
       />
 

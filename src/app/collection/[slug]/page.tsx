@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { assetJsonLd } from "@/lib/seo";
 
-export const revalidate = 600;
+// Region-specific pricing/availability — render per request.
+export const dynamic = "force-dynamic";
 
 /** Pre-render every catalogue item; unknown slugs render on demand. */
 export async function generateStaticParams() {

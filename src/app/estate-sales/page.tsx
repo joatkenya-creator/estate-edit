@@ -6,15 +6,22 @@ import { Process } from "@/components/sections/process";
 import { FeaturedAssets } from "@/components/sections/featured-assets";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
+import { getRegion } from "@/lib/region.server";
+import { regionContent } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Luxury Estate Sales in Kenya",
-  description:
-    "Full-service luxury estate sales and estate liquidation in Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach.",
-  alternates: { canonical: "/estate-sales" },
-};
+// Renders region-specific featured assets + copy — render per request.
+export const dynamic = "force-dynamic";
 
-export const revalidate = 600;
+export async function generateMetadata(): Promise<Metadata> {
+  const isVa = (await getRegion()) === "virginia";
+  return {
+    title: isVa ? "Luxury Estate Sales in Virginia" : "Luxury Estate Sales in Kenya",
+    description: isVa
+      ? "Full-service luxury estate sales and estate liquidation in Virginia: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach."
+      : "Full-service luxury estate sales and estate liquidation in Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach.",
+    alternates: { canonical: "/estate-sales" },
+  };
+}
 
 const categories = [
   {
@@ -49,7 +56,8 @@ const categories = [
   },
 ];
 
-export default function EstateSalesPage() {
+export default async function EstateSalesPage() {
+  const region = await getRegion();
   return (
     <main className="flex-1">
       <PageHero
@@ -62,7 +70,7 @@ export default function EstateSalesPage() {
       <CategoryGrid
         eyebrow="What We Handle"
         heading="Luxury assets, expertly placed"
-        intro="Every category is catalogued, valued, and marketed to a private network of qualified buyers across East Africa."
+        intro={`Every category is catalogued, valued, and marketed to a private network of qualified buyers across ${regionContent[region].serves}.`}
         items={categories}
       />
 

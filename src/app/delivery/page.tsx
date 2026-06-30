@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { getDeliverySettings } from "@/lib/queries";
 import { siteConfig } from "@/lib/site";
 
-export const revalidate = 600;
+// Region-specific delivery copy/rates (Kenya vs Virginia) — per request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Delivery & Returns",

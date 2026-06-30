@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { getDeliverySettings } from "@/lib/queries";
 import { CheckoutForm } from "@/components/checkout/checkout-form";
 
-export const revalidate = 600;
+// Region-specific delivery settings (KE counties vs VA localities) — per request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Checkout",

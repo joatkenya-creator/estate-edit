@@ -115,6 +115,7 @@ export const statMetrics: Metric[] = [
  */
 export const regionContent = {
   kenya: {
+    place: "Kenya",
     location: "Nairobi, Kenya",
     description:
       "A luxury estate advisory and transition management firm trusted by affluent families, expatriates, and businesses across East Africa.",
@@ -129,6 +130,7 @@ export const regionContent = {
     ] as Metric[],
   },
   virginia: {
+    place: "Virginia",
     location: "Chesapeake, Virginia",
     description:
       "A luxury estate advisory and transition management firm trusted by affluent families, professionals, and businesses across Virginia.",

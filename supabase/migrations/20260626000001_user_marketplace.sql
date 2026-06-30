@@ -51,13 +51,18 @@ create trigger user_profiles_set_updated_at
   for each row execute function set_updated_at();
 
 -- Auto-create a profile row when a new auth user signs up
+-- NOTE: `set search_path = public` is REQUIRED. This SECURITY DEFINER trigger
+-- runs as supabase_auth_admin (whose search_path is just `auth`), so an
+-- unqualified `user_profiles` can't be resolved → signup fails with
+-- "Database error saving new user". Pin the path AND schema-qualify the table.
 create or replace function handle_new_user()
 returns trigger
 language plpgsql
 security definer
+set search_path = public
 as $$
 begin
-  insert into user_profiles (id, full_name)
+  insert into public.user_profiles (id, full_name)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name', '')
@@ -152,10 +157,11 @@ create or replace function increment_free_listings_sold()
 returns trigger
 language plpgsql
 security definer
+set search_path = public
 as $$
 begin
   if new.status = 'sold' and old.status <> 'sold' and new.is_free_listing = true then
-    update user_profiles
+    update public.user_profiles
        set free_listings_sold = free_listings_sold + 1
      where id = new.user_id;
   end if;

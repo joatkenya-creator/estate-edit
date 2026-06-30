@@ -18,8 +18,8 @@ export function CtaBand({
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <div className="relative overflow-hidden rounded-2xl gradient-navy px-8 py-14 text-center sm:px-16 sm:py-20">
-            <div className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-gold/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 size-64 rounded-full bg-crimson/10 blur-3xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 hidden size-64 rounded-full bg-gold/10 blur-3xl sm:block" />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 hidden size-64 rounded-full bg-crimson/10 blur-3xl sm:block" />
             <div className="relative">
               <h2 className="mx-auto max-w-2xl font-display text-3xl font-light text-white sm:text-5xl text-balance">
                 {title}

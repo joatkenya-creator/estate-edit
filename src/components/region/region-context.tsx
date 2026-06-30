@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
-import { regionCurrency, type Region } from "@/lib/region";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { regionCurrency, regionFromCountry, type Region } from "@/lib/region";
 
 type RegionContextValue = {
   region: Region;
@@ -12,21 +12,35 @@ type RegionContextValue = {
 const RegionContext = createContext<RegionContextValue | null>(null);
 
 /**
- * Provides the geo-detected region to client components (display only). The
- * region is resolved server-side from the visitor's location (cf-ipcountry) and
- * passed in. There is NO manual switcher — visitors cannot change markets, so a
- * Kenyan visitor only sees the Kenya store and US / other only Virginia.
+ * Provides the geo-detected region to client components (DISPLAY ONLY — the
+ * header badge + cart copy). Detection runs on the CLIENT via Cloudflare's
+ * /cdn-cgi/trace, deliberately NOT in the server layout: reading request geo
+ * (headers/cf) there forced every page into dynamic SSR and tripped Worker
+ * CPU limits (error 1102). The catalogue itself is still region-filtered
+ * server-side in the data layer (getRegion), so the content stays correct.
  */
-export function RegionProvider({
-  initialRegion,
-  children,
-}: {
-  initialRegion: Region;
-  children: React.ReactNode;
-}) {
+export function RegionProvider({ children }: { children: React.ReactNode }) {
+  const [region, setRegion] = useState<Region>("kenya");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const text = await fetch("/cdn-cgi/trace", { cache: "no-store" }).then((r) => r.text());
+        const country = text.match(/loc=([A-Z]{2})/)?.[1] ?? null;
+        if (!cancelled) setRegion(regionFromCountry(country));
+      } catch {
+        /* keep the default */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const value = useMemo<RegionContextValue>(
-    () => ({ region: initialRegion, currency: regionCurrency[initialRegion] }),
-    [initialRegion],
+    () => ({ region, currency: regionCurrency[region] }),
+    [region],
   );
   return <RegionContext.Provider value={value}>{children}</RegionContext.Provider>;
 }

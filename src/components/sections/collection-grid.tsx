@@ -104,7 +104,7 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
           Showing {filtered.length} {filtered.length === 1 ? "lot" : "lots"}
         </p>
 
-        <motion.div layout className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div layout className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((asset) => (
               <motion.a
@@ -126,7 +126,7 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
                         src={asset.imageUrl}
                         alt={asset.title}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        sizes="(max-width: 1024px) 50vw, 33vw"
                         className="object-cover"
                       />
                     )}
@@ -135,19 +135,25 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
 
                   <span
                     className={cn(
-                      "absolute right-4 top-4 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-widest",
+                      "absolute right-2 top-2 rounded-full px-2 py-0.5 text-[0.55rem] font-semibold uppercase tracking-widest sm:right-4 sm:top-4 sm:px-3 sm:py-1 sm:text-[0.65rem]",
                       statusStyles[asset.status],
                     )}
                   >
                     {asset.status}
                   </span>
 
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="text-[0.7rem] uppercase tracking-[0.25em] text-gold-soft">
+                  <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
+                    <p className="text-[0.6rem] uppercase tracking-[0.2em] text-gold-soft sm:text-[0.7rem] sm:tracking-[0.25em]">
                       {asset.category}
                     </p>
-                    <h3 className="mt-1 font-display text-xl text-white">{asset.title}</h3>
-                    {asset.meta && <p className="mt-1 text-xs text-white/70">{asset.meta}</p>}
+                    <h3 className="mt-1 font-display text-base leading-snug text-white sm:text-xl">
+                      {asset.title}
+                    </h3>
+                    {asset.meta && (
+                      <p className="mt-0.5 line-clamp-1 text-[0.7rem] text-white/70 sm:mt-1 sm:text-xs">
+                        {asset.meta}
+                      </p>
+                    )}
                   </div>
                 </div>
               </motion.a>
