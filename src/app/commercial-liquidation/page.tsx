@@ -16,15 +16,21 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
+import { getRegion } from "@/lib/region.server";
 
-export const metadata: Metadata = {
-  title: "Commercial Liquidation in Kenya",
-  description:
-    "Discreet commercial and business asset liquidation in Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
-  alternates: { canonical: "/commercial-liquidation" },
-};
+// Region-aware metadata — render per request.
+export const dynamic = "force-dynamic";
 
-export const revalidate = 600;
+export async function generateMetadata(): Promise<Metadata> {
+  const isVa = (await getRegion()) === "virginia";
+  return {
+    title: isVa ? "Commercial Liquidation in Virginia" : "Commercial Liquidation in Kenya",
+    description: isVa
+      ? "Discreet commercial and business asset liquidation in Virginia: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing."
+      : "Discreet commercial and business asset liquidation in Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
+    alternates: { canonical: "/commercial-liquidation" },
+  };
+}
 
 const industries = [
   { icon: HardHat, title: "Construction", description: "Plant, machinery, and site equipment liquidated at scale." },

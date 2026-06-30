@@ -5,13 +5,22 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
+import { getRegion } from "@/lib/region.server";
+import { regionContent } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Expat Relocation Services in Kenya",
-  description:
-    "Relocation support for expatriates moving between Kenya and abroad, including the USA: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
-  alternates: { canonical: "/expat-services" },
-};
+// Region-aware copy + metadata — render per request.
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const isVa = (await getRegion()) === "virginia";
+  return {
+    title: isVa ? "Expat Relocation Services in Virginia" : "Expat Relocation Services in Kenya",
+    description: isVa
+      ? "Relocation support for expatriates and families moving between Virginia and abroad: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure."
+      : "Relocation support for expatriates moving between Kenya and abroad, including the USA: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
+    alternates: { canonical: "/expat-services" },
+  };
+}
 
 const directions = [
   {
@@ -53,19 +62,35 @@ const support = [
   { icon: Compass, title: "Relocation Support", description: "A single point of contact for your entire transition." },
 ];
 
-export default function ExpatServicesPage() {
+export default async function ExpatServicesPage() {
+  const region = await getRegion();
+  const isVa = region === "virginia";
+  const place = regionContent[region].place;
+  const localizedDirections = directions.map((d) => ({
+    ...d,
+    label: d.label.replace("Kenya", place),
+    blurb: d.blurb.replace("Kenya", place),
+  }));
+  const localizedSupport = support.map((s) => ({
+    ...s,
+    description: s.description.replace("Kenya", place),
+  }));
   return (
     <main className="flex-1">
       <PageHero
         eyebrow="Expat Services"
         title="Expat Relocation Services"
-        subtitle="For expatriates and families relocating between Kenya and abroad (including the USA), we manage the estate, the logistics, and the everyday details, so your move feels effortless."
+        subtitle={
+          isVa
+            ? "For expatriates and families relocating between Virginia and abroad, we manage the estate, the logistics, and the everyday details, so your move feels effortless."
+            : "For expatriates and families relocating between Kenya and abroad (including the USA), we manage the estate, the logistics, and the everyday details, so your move feels effortless."
+        }
         crumbs={[{ label: "Expat Services" }]}
       />
 
       <section className="bg-white py-24 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-6 px-5 sm:px-8 lg:grid-cols-2">
-          {directions.map((d, i) => {
+          {localizedDirections.map((d, i) => {
             const Icon = d.icon;
             return (
               <Reveal key={d.title} delay={i}>
@@ -97,14 +122,14 @@ export default function ExpatServicesPage() {
       <CategoryGrid
         eyebrow="Relocation Support"
         heading="Everything handled, under one roof"
-        items={support}
+        items={localizedSupport}
         tone="stone"
       />
 
       <RelatedServices current="expat-services" />
 
       <CtaBand
-        title="Relocating to or from Kenya?"
+        title={isVa ? "Relocating to or from Virginia?" : "Relocating to or from Kenya?"}
         subtitle="Tell us your timeline and we will build a relocation plan tailored to your family or assignment."
         secondary={null}
       />

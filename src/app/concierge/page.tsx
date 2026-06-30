@@ -5,15 +5,21 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { Process } from "@/components/sections/process";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
+import { getRegion } from "@/lib/region.server";
 
-export const metadata: Metadata = {
-  title: "Downsizing & Relocation Concierge",
-  description:
-    "White-glove downsizing, relocation, and estate cleanout services in Kenya: property preparation, donation coordination, vendor management, and storage, handled end to end.",
-  alternates: { canonical: "/concierge" },
-};
+// Region-aware metadata — render per request.
+export const dynamic = "force-dynamic";
 
-export const revalidate = 600;
+export async function generateMetadata(): Promise<Metadata> {
+  const isVa = (await getRegion()) === "virginia";
+  return {
+    title: "Downsizing & Relocation Concierge",
+    description: isVa
+      ? "White-glove downsizing, relocation, and estate cleanout services in Virginia: property preparation, donation coordination, vendor management, and storage, handled end to end."
+      : "White-glove downsizing, relocation, and estate cleanout services in Kenya: property preparation, donation coordination, vendor management, and storage, handled end to end.",
+    alternates: { canonical: "/concierge" },
+  };
+}
 
 const services = [
   {
