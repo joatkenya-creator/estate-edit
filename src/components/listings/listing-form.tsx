@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createListing, type ListingState } from "@/app/actions/listings";
+import { useRegion } from "@/components/region/region-context";
 import { toast } from "sonner";
 
 const CATEGORIES = [
@@ -41,6 +42,9 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
   const [state, action, pending] = useActionState(createListing, initial);
   const [phone, setPhone] = useState("");
   const [paying, setPaying] = useState(false);
+  const { currency } = useRegion();
+  const isKes = currency === "KES";
+  const listingFee = isKes ? 500 : 5;
 
   async function handlePayListing() {
     if (!state.listingId || !phone) {
@@ -94,7 +98,7 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
                 Processing…
               </>
             ) : (
-              `Pay KES ${state.feeAmount?.toLocaleString()} via M-Pesa`
+              `Pay ${currency} ${state.feeAmount?.toLocaleString()}${isKes ? " via M-Pesa" : ""}`
             )}
           </Button>
           <p className="text-xs text-charcoal/50">
@@ -122,7 +126,7 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
           </>
         ) : (
           <>
-            <strong>Paid listing — KES 500</strong>. You&apos;ve used both free slots.
+            <strong>Paid listing — {currency} {listingFee}</strong>. You&apos;ve used both free slots.
             Complete the form and pay the one-time fee to publish your listing.
           </>
         )}
@@ -194,7 +198,7 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="price">Price (KES) *</Label>
+            <Label htmlFor="price">Price ({currency}) *</Label>
             <Input
               id="price"
               name="price"

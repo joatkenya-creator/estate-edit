@@ -6,6 +6,7 @@ type Listing = {
   title: string;
   description?: string | null;
   price: number;
+  currency?: string | null;
   category: string;
   condition?: string | null;
   location?: string | null;
@@ -61,7 +62,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
 
         <div className="mt-auto pt-3">
           <p className="font-display text-lg font-semibold text-navy">
-            KES {Number(listing.price).toLocaleString()}
+            {listing.currency || "KES"} {Number(listing.price).toLocaleString()}
           </p>
 
           <div className="mt-1 flex items-center justify-between text-xs text-charcoal/40">

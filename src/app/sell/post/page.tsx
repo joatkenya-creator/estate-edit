@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ListingForm } from "@/components/listings/listing-form";
+import { getRegion } from "@/lib/region.server";
+import { regionCurrency } from "@/lib/region";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Post a listing",
@@ -11,6 +15,9 @@ export const metadata: Metadata = {
 };
 
 export default async function PostListingPage() {
+  const region = await getRegion();
+  const currency = regionCurrency[region];
+  const listingFee = region === "virginia" ? 5 : 500;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -34,7 +41,7 @@ export default async function PostListingPage() {
         <h1 className="font-display text-3xl text-navy">Your listings are pending</h1>
         <p className="mt-3 text-charcoal/60">
           You&apos;ve used both free listing slots. Once your existing listings sell, you&apos;ll be
-          able to post more at KES 500 per listing.
+          able to post more at {currency} {listingFee} per listing.
         </p>
         <Link
           href="/account/listings"
@@ -58,8 +65,8 @@ export default async function PostListingPage() {
       <h1 className="mb-2 font-display text-3xl text-navy">Post a listing</h1>
       <p className="mb-8 text-charcoal/60">
         {isFree
-          ? `Your first ${freeRemaining === 2 ? "two listings are" : "listing is"} free. No payment required — we earn 10% when it sells.`
-          : "You're on the paid tier. Fill in your item details and pay the KES 500 listing fee to go live."}
+          ? `Your first ${freeRemaining === 2 ? "two listings are" : "listing is"} free. No payment required.`
+          : `You're on the paid tier. Fill in your item details and pay the ${currency} ${listingFee} listing fee to go live.`}
       </p>
 
       <div className="rounded-xl border border-border bg-white p-6 shadow-sm sm:p-8">

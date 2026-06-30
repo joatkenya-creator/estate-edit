@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getRegion } from "@/lib/region.server";
+import { regionCurrency } from "@/lib/region";
 
 export type ListingState = {
   status: "idle" | "success" | "error" | "payment_required";
@@ -13,6 +15,7 @@ export type ListingState = {
 };
 
 const LISTING_FEE_KES = 500;
+const LISTING_FEE_USD = 5;
 // No sale commission — sellers keep 100%. Listing fees remain the only charge.
 const COMMISSION_RATE = 0;
 
@@ -86,6 +89,11 @@ export async function createListing(
     };
   }
 
+  // Seller region -> native currency + listing fee (US sellers price in USD).
+  const region = await getRegion();
+  const currency = regionCurrency[region];
+  const listingFee = region === "virginia" ? LISTING_FEE_USD : LISTING_FEE_KES;
+
   // Create the listing (draft initially if fee required)
   const listingSlug = slug(title);
   const { data: listing, error } = await supabase
@@ -98,11 +106,12 @@ export async function createListing(
       category: safeCategory,
       condition: safeCondition,
       price,
+      currency,
       location: location || null,
       primary_image_url: primaryImageUrl || null,
       is_free_listing: isFree,
       listing_fee_paid: isFree,        // free listings don't need fee payment
-      listing_fee_amount: LISTING_FEE_KES,
+      listing_fee_amount: listingFee,
       commission_rate: COMMISSION_RATE,
       // Free listings go straight to pending_review; paid listings stay draft until fee paid
       status: isFree ? "pending_review" : "draft",
@@ -128,10 +137,10 @@ export async function createListing(
   if (!isFree) {
     return {
       status: "payment_required",
-      message: "Listing created. Complete the KES 500 payment to publish it.",
+      message: `Listing created. Complete the ${currency} ${listingFee} payment to publish it.`,
       listingId: listing.id,
       requiresFee: true,
-      feeAmount: LISTING_FEE_KES,
+      feeAmount: listingFee,
     };
   }
 

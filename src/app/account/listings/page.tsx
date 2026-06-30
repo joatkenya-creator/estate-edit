@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { Tag, Plus, Eye, Edit } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { getRegion } from "@/lib/region.server";
+import { regionCurrency } from "@/lib/region";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = { title: "My Listings" };
 
@@ -21,6 +25,10 @@ export default async function ListingsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
+  const region = await getRegion();
+  const currency = regionCurrency[region];
+  const listingFee = region === "virginia" ? 5 : 500;
+
   const [profileResult, listingsResult] = await Promise.all([
     supabase
       .from("user_profiles")
@@ -29,7 +37,7 @@ export default async function ListingsPage() {
       .single(),
     supabase
       .from("user_listings")
-      .select("id, slug, title, status, price, views, is_free_listing, primary_image_url, created_at")
+      .select("id, slug, title, status, price, currency, views, is_free_listing, primary_image_url, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
   ]);
@@ -54,7 +62,7 @@ export default async function ListingsPage() {
         <Button asChild className="bg-navy text-white hover:bg-navy-soft">
           <Link href="/sell/post">
             <Plus className="mr-2 size-4" />
-            {canPostFree ? "Post free listing" : isPaidTier ? "Post listing (KES 500)" : "Post listing"}
+            {canPostFree ? "Post free listing" : isPaidTier ? `Post listing (${currency} ${listingFee})` : "Post listing"}
           </Link>
         </Button>
       </div>
@@ -64,7 +72,7 @@ export default async function ListingsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="font-medium text-gold-dark">
             {isPaidTier
-              ? "You are on the paid tier — KES 500 per listing"
+              ? `You are on the paid tier — ${currency} ${listingFee} per listing`
               : `Free tier: ${freeUsed}/2 slots used · ${2 - freeUsed} remaining`}
           </span>
           {!isPaidTier && freeUsed >= 2 && (
@@ -116,7 +124,7 @@ export default async function ListingsPage() {
                 </div>
 
                 <p className="mt-1 text-sm font-semibold text-navy">
-                  KES {Number(listing.price).toLocaleString()}
+                  {listing.currency || "KES"} {Number(listing.price).toLocaleString()}
                 </p>
 
                 <div className="mt-2 flex items-center gap-3 text-xs text-charcoal/50">

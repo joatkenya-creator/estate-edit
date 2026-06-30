@@ -4,11 +4,20 @@ import { Store } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ListingCard } from "@/components/listings/listing-card";
 import { Button } from "@/components/ui/button";
+import { getRegion } from "@/lib/region.server";
+import { regionContent } from "@/lib/site";
+import { regionCurrency } from "@/lib/region";
 
-export const metadata: Metadata = {
-  title: "Marketplace — Estate Edit",
-  description: "Browse items posted by sellers across Kenya. Furniture, art, jewellery, vehicles, and more.",
-};
+// Region-specific listings + copy — render per request.
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title: "Marketplace — Estate Edit",
+    description: `Browse items posted by sellers across ${regionContent[region].place}. Furniture, art, jewellery, vehicles, and more.`,
+  };
+}
 
 const CATEGORIES = [
   { value: "", label: "All categories" },
@@ -29,16 +38,18 @@ export default async function MarketplacePage({
   searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   const params = await searchParams;
+  const region = await getRegion();
   const supabase = await createClient();
 
   let query = supabase
     .from("user_listings")
     .select(`
-      slug, title, description, price, category, condition, location,
+      slug, title, description, price, currency, category, condition, location,
       primary_image_url, views,
       user_profiles ( full_name )
     `)
     .eq("status", "active")
+    .eq("currency", regionCurrency[region])
     .order("created_at", { ascending: false })
     .limit(60);
 
@@ -58,7 +69,7 @@ export default async function MarketplacePage({
       <div className="bg-navy py-14 text-center text-white">
         <h1 className="font-display text-4xl">Marketplace</h1>
         <p className="mt-2 text-white/60">
-          Curated items from sellers across Kenya
+          Curated items from sellers across {regionContent[region].place}
         </p>
       </div>
 

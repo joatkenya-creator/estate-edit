@@ -3,6 +3,12 @@ import Link from "next/link";
 import { CheckCircle2, Tag, Shield, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
+import { getRegion } from "@/lib/region.server";
+import { regionContent } from "@/lib/site";
+import { regionCurrency } from "@/lib/region";
+
+// Region-aware copy + listing-fee pricing — render per request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Sell on The Estate Edit",
@@ -33,6 +39,10 @@ const PERKS = [
 ];
 
 export default async function SellPage() {
+  const region = await getRegion();
+  const currency = regionCurrency[region];
+  const listingFee = region === "virginia" ? 5 : 500;
+  const place = regionContent[region].place;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -56,7 +66,7 @@ export default async function SellPage() {
             <span className="text-gold">on The Estate Edit</span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-lg text-white/70">
-            Reach discerning buyers across Kenya. Your first two listings are free.
+            Reach discerning buyers across {place}. Your first two listings are free.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -133,7 +143,7 @@ export default async function SellPage() {
             {/* Free tier */}
             <div className="rounded-xl border-2 border-green-200 bg-white p-6 shadow-sm">
               <h3 className="font-display text-xl text-navy">Free starter</h3>
-              <p className="mt-1 text-3xl font-bold text-green-700">KES 0</p>
+              <p className="mt-1 text-3xl font-bold text-green-700">{currency} 0</p>
               <p className="mt-0.5 text-sm text-charcoal/60">per listing · first 2 listings</p>
               <ul className="mt-5 space-y-2.5 text-sm">
                 {[
@@ -151,11 +161,11 @@ export default async function SellPage() {
             {/* Paid tier */}
             <div className="rounded-xl border-2 border-navy bg-white p-6 shadow-sm">
               <h3 className="font-display text-xl text-navy">Seller tier</h3>
-              <p className="mt-1 text-3xl font-bold text-navy">KES 500</p>
+              <p className="mt-1 text-3xl font-bold text-navy">{currency} {listingFee}</p>
               <p className="mt-0.5 text-sm text-charcoal/60">per listing · from 3rd listing onwards</p>
               <ul className="mt-5 space-y-2.5 text-sm">
                 {[
-                  "Unlimited listings at KES 500 each",
+                  `Unlimited listings at ${currency} ${listingFee} each`,
                   "Priority review",
                   "Buyers contact you directly",                ].map((item) => (
                   <li key={item} className="flex items-center gap-2">

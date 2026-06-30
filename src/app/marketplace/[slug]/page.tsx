@@ -145,7 +145,7 @@ export default async function ListingDetailPage({
           <div className="rounded-xl border border-border bg-white p-6 shadow-sm">
             <h1 className="font-display text-2xl leading-snug text-navy">{listing.title}</h1>
             <p className="mt-3 font-display text-3xl font-semibold text-navy">
-              KES {Number(listing.price).toLocaleString()}
+              {listing.currency || "KES"} {Number(listing.price).toLocaleString()}
             </p>
 
             {isOwner ? (

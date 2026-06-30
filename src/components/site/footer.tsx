@@ -44,8 +44,8 @@ export function SiteFooter() {
   return (
     <footer className="gradient-navy text-white">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-12">
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             {/* Full logo lockup, rendered for the dark footer: gold monogram +
                 white wordmark + the brand tagline. */}
             <Image
