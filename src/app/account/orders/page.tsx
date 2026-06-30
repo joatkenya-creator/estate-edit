@@ -77,7 +77,7 @@ export default async function OrdersPage() {
                   <div className="text-right">
                     <p className="text-xs uppercase tracking-widest text-charcoal/40">Total</p>
                     <p className="font-semibold text-navy">
-                      KES {Number(order.total ?? 0).toLocaleString()}
+                      {order.currency || "KES"} {Number(order.total ?? 0).toLocaleString()}
                     </p>
                   </div>
                   <span
@@ -102,7 +102,7 @@ export default async function OrdersPage() {
                           )}
                         </div>
                         <p className="text-sm text-navy">
-                          KES {Number(item.price ?? 0).toLocaleString()}
+                          {order.currency || "KES"} {Number(item.price ?? 0).toLocaleString()}
                         </p>
                       </li>
                     ))}
@@ -110,7 +110,7 @@ export default async function OrdersPage() {
                 )}
 
                 <div className="flex justify-between border-t border-border px-6 py-3 text-xs text-charcoal/50">
-                  <span>Delivery: KES {Number(order.delivery_fee ?? 0).toLocaleString()}</span>
+                  <span>Delivery: {order.currency || "KES"} {Number(order.delivery_fee ?? 0).toLocaleString()}</span>
                   <span className={`font-medium ${order.payment_status === "paid" ? "text-green-600" : "text-yellow-600"}`}>
                     Payment: {order.payment_status ?? "unpaid"}
                   </span>

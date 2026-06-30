@@ -102,7 +102,9 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
             )}
           </Button>
           <p className="text-xs text-charcoal/50">
-            You will receive an M-Pesa prompt on your phone. Enter your PIN to complete payment.
+            {isKes
+              ? "You will receive an M-Pesa prompt on your phone. Enter your PIN to complete payment. "
+              : ""}
             Your listing goes live immediately after payment is confirmed.
           </p>
         </div>

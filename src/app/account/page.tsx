@@ -16,13 +16,13 @@ export default async function AccountDashboard() {
     supabase.from("user_profiles").select("*").eq("id", user.id).single(),
     supabase
       .from("orders")
-      .select("id, order_number, status, total, created_at")
+      .select("id, order_number, status, total, currency, created_at")
       .eq("email", user.email!)
       .order("created_at", { ascending: false })
       .limit(5),
     supabase
       .from("user_listings")
-      .select("id, title, status, price, views, created_at")
+      .select("id, title, status, price, currency, views, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(5),
@@ -102,7 +102,7 @@ export default async function AccountDashboard() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-navy">
-                    KES {Number(order.total ?? 0).toLocaleString()}
+                    {order.currency || "KES"} {Number(order.total ?? 0).toLocaleString()}
                   </p>
                   <span className="inline-block rounded-full bg-stone px-2 py-0.5 text-xs capitalize text-charcoal/60">
                     {order.status}
@@ -143,7 +143,7 @@ export default async function AccountDashboard() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-medium text-navy">
-                    KES {Number(listing.price).toLocaleString()}
+                    {listing.currency || "KES"} {Number(listing.price).toLocaleString()}
                   </p>
                   <span className={`inline-block rounded-full px-2 py-0.5 text-xs capitalize ${
                     listing.status === "active"

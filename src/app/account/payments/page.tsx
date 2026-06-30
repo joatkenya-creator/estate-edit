@@ -84,7 +84,7 @@ export default async function PaymentsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 font-medium text-navy">
-                      KES {Number(payment.amount).toLocaleString()}
+                      {payment.currency || "KES"} {Number(payment.amount).toLocaleString()}
                     </td>
                     <td className="hidden px-6 py-4 text-xs text-charcoal/50 sm:table-cell">
                       {payment.mpesa_transaction_id ?? "—"}
