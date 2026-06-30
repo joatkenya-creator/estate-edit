@@ -4,6 +4,8 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import { ArrowRight, MoveDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRegion } from "@/components/region/region-context";
+import { regionContent } from "@/lib/site";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -12,6 +14,8 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const HERO_VIDEO: string | null = null;
 
 export function Hero() {
+  const { region } = useRegion();
+  const content = regionContent[region];
   return (
     <section
       id="top"
@@ -83,9 +87,7 @@ export function Hero() {
           transition={{ duration: 0.9, ease, delay: 0.2 }}
           className="mt-8 max-w-xl text-base leading-relaxed text-white/80 text-pretty sm:text-lg"
         >
-          A white-glove luxury estate sales and transition firm in Kenya,
-          trusted by affluent families, expatriates, and businesses across East Africa,
-          combining valuation, marketing, sale, and logistics under one premium brand.
+          {content.lede}
         </motion.p>
 
         <motion.div

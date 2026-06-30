@@ -9,6 +9,7 @@ import {
   assetCategoryLabel,
   defaultDeliverySettings,
   kenyaCounties,
+  regionContent,
   type Service,
   type Metric,
   type Testimonial,
@@ -50,6 +51,8 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function getStats(): Promise<Metric[]> {
+  // Virginia: fixed localised stats (no KES client-value figure). Kenya: CMS.
+  if ((await getRegion()) === "virginia") return regionContent.virginia.stats;
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase

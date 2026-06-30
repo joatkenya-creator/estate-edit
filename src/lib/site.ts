@@ -106,6 +106,44 @@ export const statMetrics: Metric[] = [
   { to: 1.2, prefix: "KES ", suffix: "B", decimals: 1, label: "Client value realised" },
 ];
 
+/**
+ * Region-localised marketing content. The Virginia storefront swaps Kenya / East
+ * Africa references for Virginia (location, served areas, the "across ___"
+ * phrase) and drops the KES client-value stat (US shoppers shouldn't see a KES
+ * figure). Consumed by the footer (client `useRegion`), the stats data layer
+ * (server `getRegion`), the hero, and the contact section.
+ */
+export const regionContent = {
+  kenya: {
+    location: "Nairobi, Kenya",
+    description:
+      "A luxury estate advisory and transition management firm trusted by affluent families, expatriates, and businesses across East Africa.",
+    serves: "East Africa",
+    lede: "A white-glove luxury estate sales and transition firm in Kenya, trusted by affluent families, expatriates, and businesses across East Africa, combining valuation, marketing, sale, and logistics under one premium brand.",
+    areasServed: ["Karen", "Runda", "Muthaiga", "Lavington", "Kilimani", "Westlands"],
+    stats: [
+      { to: 2400, suffix: "+", label: "Assets sold" },
+      { to: 180, suffix: "+", label: "Estates managed" },
+      { to: 65, suffix: "+", label: "Businesses assisted" },
+      { to: 1.2, prefix: "KES ", suffix: "B", decimals: 1, label: "Client value realised" },
+    ] as Metric[],
+  },
+  virginia: {
+    location: "Chesapeake, Virginia",
+    description:
+      "A luxury estate advisory and transition management firm trusted by affluent families, professionals, and businesses across Virginia.",
+    serves: "Virginia",
+    lede: "A white-glove luxury estate sales and transition firm serving Virginia, trusted by affluent families, professionals, and collectors statewide, combining valuation, marketing, sale, and logistics under one premium brand.",
+    areasServed: ["McLean", "Great Falls", "Vienna", "Arlington", "Alexandria", "Virginia Beach"],
+    stats: [
+      { to: 2400, suffix: "+", label: "Assets sold" },
+      { to: 180, suffix: "+", label: "Estates managed" },
+      { to: 65, suffix: "+", label: "Businesses assisted" },
+      { to: 30, suffix: "+", label: "Virginia areas served" },
+    ] as Metric[],
+  },
+} as const;
+
 /** Maps the `asset_category` enum to a display label. */
 export const assetCategoryLabel: Record<string, string> = {
   furniture: "Furniture",

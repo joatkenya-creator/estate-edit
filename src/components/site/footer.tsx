@@ -1,42 +1,46 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Camera, Globe } from "lucide-react";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, regionContent } from "@/lib/site";
+import { useRegion } from "@/components/region/region-context";
 
-const columns = [
-  {
-    title: "Services",
-    links: [
-      { label: "Estate Sales", href: "/estate-sales" },
-      { label: "Commercial Liquidation", href: "/commercial-liquidation" },
-      { label: "Concierge Transition", href: "/concierge" },
-      { label: "Expat Services", href: "/expat-services" },
-      { label: "The Collection", href: "/collection" },
-    ],
-  },
-  {
-    title: "Areas Served",
-    links: [
-      { label: "Karen", href: "/contact" },
-      { label: "Runda", href: "/contact" },
-      { label: "Muthaiga", href: "/contact" },
-      { label: "Lavington", href: "/contact" },
-      { label: "Kilimani", href: "/contact" },
-      { label: "Westlands", href: "/contact" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About Us", href: "/about" },
-      { label: "Our Process", href: "/#process" },
-      { label: "Delivery & Returns", href: "/delivery" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-];
+const SERVICES = {
+  title: "Services",
+  links: [
+    { label: "Estate Sales", href: "/estate-sales" },
+    { label: "Commercial Liquidation", href: "/commercial-liquidation" },
+    { label: "Concierge Transition", href: "/concierge" },
+    { label: "Expat Services", href: "/expat-services" },
+    { label: "The Collection", href: "/collection" },
+  ],
+};
+
+const COMPANY = {
+  title: "Company",
+  links: [
+    { label: "About Us", href: "/about" },
+    { label: "Our Process", href: "/#process" },
+    { label: "Delivery & Returns", href: "/delivery" },
+    { label: "Contact", href: "/contact" },
+  ],
+};
 
 export function SiteFooter() {
+  const { region } = useRegion();
+  const content = regionContent[region];
+
+  // "Areas Served" is region-localised (Kenya neighbourhoods vs affluent Virginia areas).
+  const columns = [
+    SERVICES,
+    {
+      title: "Areas Served",
+      links: content.areasServed.map((area) => ({ label: area, href: "/contact" })),
+    },
+    COMPANY,
+  ];
+
   return (
     <footer className="gradient-navy text-white">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
@@ -60,7 +64,7 @@ export function SiteFooter() {
               Estate Transition · Asset Liquidation · Property Management
             </p>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/65">
-              {siteConfig.description}
+              {content.description}
             </p>
             <div className="mt-6 flex gap-3">
               <a

@@ -17,19 +17,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { submitInquiry, type InquiryState } from "@/app/actions/inquiry";
-import { clientSegments, serviceOptions, siteConfig } from "@/lib/site";
+import { clientSegments, serviceOptions, siteConfig, regionContent } from "@/lib/site";
+import { useRegion } from "@/components/region/region-context";
 
 const initialState: InquiryState = { status: "idle", message: "" };
-
-const contactInfo = [
-  { icon: Phone, label: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/\s+/g, "")}` },
-  { icon: Mail, label: siteConfig.email, href: `mailto:${siteConfig.email}` },
-  {
-    icon: MapPin,
-    label: siteConfig.location,
-    href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.location)}`,
-  },
-];
 
 export type InquiryAsset = {
   slug: string;
@@ -45,6 +36,18 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
   );
   const [state, formAction, isPending] = useActionState(submitInquiry, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+
+  const { region } = useRegion();
+  const location = regionContent[region].location;
+  const contactInfo = [
+    { icon: Phone, label: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/\s+/g, "")}` },
+    { icon: Mail, label: siteConfig.email, href: `mailto:${siteConfig.email}` },
+    {
+      icon: MapPin,
+      label: location,
+      href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`,
+    },
+  ];
 
   const assetPrefill = asset
     ? `I'm interested in "${asset.title}"${
@@ -63,7 +66,7 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
 
   return (
     <section id="contact" className="relative overflow-hidden bg-white py-24 sm:py-32">
-      <div className="pointer-events-none absolute -left-32 top-10 size-96 rounded-full bg-stone blur-3xl" />
+      <div className="pointer-events-none absolute -left-32 top-10 hidden size-96 rounded-full bg-stone blur-3xl sm:block" />
       <div className="relative mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         {/* Editorial column */}
         <div className="flex flex-col">
