@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function PostListingPage() {
   const region = await getRegion();
   const currency = regionCurrency[region];
-  const listingFee = region === "virginia" ? 5 : 500;
+  const listingFee = region === "virginia" ? 8 : 500;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -70,7 +70,7 @@ export default async function PostListingPage() {
       </p>
 
       <div className="rounded-xl border border-border bg-white p-6 shadow-sm sm:p-8">
-        <ListingForm isFree={isFree} freeRemaining={freeRemaining} />
+        <ListingForm isFree={isFree} freeRemaining={freeRemaining} userEmail={user.email ?? ""} />
       </div>
     </main>
   );

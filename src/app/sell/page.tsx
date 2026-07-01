@@ -41,7 +41,7 @@ const PERKS = [
 export default async function SellPage() {
   const region = await getRegion();
   const currency = regionCurrency[region];
-  const listingFee = region === "virginia" ? 5 : 500;
+  const listingFee = region === "virginia" ? 8 : 500;
   const place = regionContent[region].place;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

@@ -34,39 +34,102 @@ const CONDITIONS = [
   { value: "fair", label: "Fair — functional but worn" },
 ];
 
-type Props = { isFree: boolean; freeRemaining: number };
+type Props = { isFree: boolean; freeRemaining: number; userEmail: string };
 
 const initial: ListingState = { status: "idle", message: "" };
 
-export function ListingForm({ isFree, freeRemaining }: Props) {
+type PaystackHandler = { openIframe: () => void };
+type PaystackPop = {
+  setup: (opts: {
+    key: string;
+    email: string;
+    amount: number;
+    currency: string;
+    ref: string;
+    channels: string[];
+    metadata?: Record<string, unknown>;
+    callback: (response: { reference: string }) => void;
+    onClose: () => void;
+  }) => PaystackHandler;
+};
+declare global {
+  interface Window {
+    PaystackPop?: PaystackPop;
+  }
+}
+
+/** Load Paystack's inline popup script once. */
+function loadPaystack(): Promise<PaystackPop> {
+  return new Promise((resolve, reject) => {
+    if (window.PaystackPop) return resolve(window.PaystackPop);
+    const s = document.createElement("script");
+    s.src = "https://js.paystack.co/v1/inline.js";
+    s.async = true;
+    s.onload = () =>
+      window.PaystackPop ? resolve(window.PaystackPop) : reject(new Error("Paystack unavailable"));
+    s.onerror = () => reject(new Error("Failed to load Paystack"));
+    document.body.appendChild(s);
+  });
+}
+
+export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
   const [state, action, pending] = useActionState(createListing, initial);
-  const [phone, setPhone] = useState("");
   const [paying, setPaying] = useState(false);
   const { currency } = useRegion();
   const isKes = currency === "KES";
-  const listingFee = isKes ? 500 : 5;
+  const listingFee = isKes ? 500 : 8;
+  // Kenya can pay by card, bank or M-Pesa; other markets by card or bank.
+  const channels = isKes ? ["card", "bank", "mobile_money"] : ["card", "bank"];
+  const methodsLabel = isKes ? "card, bank or M-Pesa" : "card or bank";
+
+  async function verifyPayment(reference: string) {
+    try {
+      const res = await fetch("/api/paystack/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference, listingId: state.listingId }),
+      });
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (res.ok && data.ok) {
+        toast.success("Payment confirmed — your listing is live!");
+        window.location.href = "/account/listings";
+      } else {
+        toast.error(data.error ?? "We couldn't confirm the payment. If you were charged, contact us.");
+        setPaying(false);
+      }
+    } catch {
+      toast.error("Could not confirm the payment. Please try again.");
+      setPaying(false);
+    }
+  }
 
   async function handlePayListing() {
-    if (!state.listingId || !phone) {
-      toast.error("Enter your M-Pesa phone number first.");
+    if (!state.listingId) return;
+    const key = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    if (!key) {
+      toast.error("Payments are not configured yet. Please try again later.");
       return;
     }
     setPaying(true);
     try {
-      const res = await fetch("/api/mpesa/stk-push", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listingId: state.listingId, phone }),
+      const Paystack = await loadPaystack();
+      const reference = `EE-${state.listingId.slice(0, 8)}-${Date.now().toString(36)}`;
+      const handler = Paystack.setup({
+        key,
+        email: userEmail,
+        amount: Math.round((state.feeAmount ?? listingFee) * 100),
+        currency,
+        ref: reference,
+        channels,
+        metadata: { listingId: state.listingId },
+        callback: (response) => {
+          void verifyPayment(response.reference);
+        },
+        onClose: () => setPaying(false),
       });
-      const data = await res.json() as { error?: string; message?: string };
-      if (!res.ok) {
-        toast.error(data.error ?? "Payment initiation failed.");
-      } else {
-        toast.success(data.message ?? "Check your phone for the M-Pesa prompt.");
-      }
+      handler.openIframe();
     } catch {
-      toast.error("Network error. Please try again.");
-    } finally {
+      toast.error("Could not open the payment window. Please try again.");
       setPaying(false);
     }
   }
@@ -79,18 +142,11 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
         <p className="mt-2 text-sm text-charcoal/70">{state.message}</p>
 
         <div className="mx-auto mt-6 max-w-xs space-y-3">
-          <Label htmlFor="mpesa_phone">Your M-Pesa number</Label>
-          <Input
-            id="mpesa_phone"
-            type="tel"
-            placeholder="+254 700 000 000"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
           <Button
             onClick={handlePayListing}
-            disabled={paying || !phone}
-            className="w-full bg-green-600 text-white hover:bg-green-700"
+            disabled={paying}
+            size="lg"
+            className="w-full bg-navy text-white hover:bg-navy-soft"
           >
             {paying ? (
               <>
@@ -98,14 +154,11 @@ export function ListingForm({ isFree, freeRemaining }: Props) {
                 Processing…
               </>
             ) : (
-              `Pay ${currency} ${state.feeAmount?.toLocaleString()}${isKes ? " via M-Pesa" : ""}`
+              `Pay ${currency} ${(state.feeAmount ?? listingFee).toLocaleString()}`
             )}
           </Button>
           <p className="text-xs text-charcoal/50">
-            {isKes
-              ? "You will receive an M-Pesa prompt on your phone. Enter your PIN to complete payment. "
-              : ""}
-            Your listing goes live immediately after payment is confirmed.
+            Pay securely by {methodsLabel}. Your listing goes live immediately after payment is confirmed.
           </p>
         </div>
       </div>

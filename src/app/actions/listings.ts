@@ -15,7 +15,7 @@ export type ListingState = {
 };
 
 const LISTING_FEE_KES = 500;
-const LISTING_FEE_USD = 5;
+const LISTING_FEE_USD = 8;
 // No sale commission — sellers keep 100%. Listing fees remain the only charge.
 const COMMISSION_RATE = 0;
 
