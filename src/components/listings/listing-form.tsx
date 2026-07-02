@@ -124,7 +124,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
-        toast.success("Payment confirmed — your listing is live!");
+        toast.success("Payment confirmed — your listing is under review and will go live shortly.");
         window.location.href = "/account/listings";
       } else {
         toast.error(data.error ?? "We couldn't confirm the payment. If you were charged, contact us.");

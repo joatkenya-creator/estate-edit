@@ -63,7 +63,9 @@ export async function POST(request: NextRequest) {
 
   await admin
     .from("user_listings")
-    .update({ status: "active", listing_fee_paid: true })
+    // Fee paid, but still run the moderation checklist: send to pending_review
+    // so the ee-moderate-listings cron clears/approves it (like free listings).
+    .update({ status: "pending_review", listing_fee_paid: true })
     .eq("id", listing.id);
 
   return NextResponse.json({ ok: true });
