@@ -25,33 +25,13 @@ export default async function PostListingPage() {
 
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("free_listings_used, free_listings_sold")
+    .select("free_listings_used")
     .eq("id", user.id)
     .single();
 
   const freeUsed = profile?.free_listings_used ?? 0;
-  const freeSold = profile?.free_listings_sold ?? 0;
   const isFree = freeUsed < 2;
   const freeRemaining = Math.max(0, 2 - freeUsed);
-
-  // Block if both free slots used but user hasn't sold both yet
-  if (!isFree && freeSold < 2) {
-    return (
-      <main className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <h1 className="font-display text-3xl text-navy">Your listings are pending</h1>
-        <p className="mt-3 text-charcoal/60">
-          You&apos;ve used both free listing slots. Once your existing listings sell, you&apos;ll be
-          able to post more at {currency} {listingFee} per listing.
-        </p>
-        <Link
-          href="/account/listings"
-          className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-navy hover:underline"
-        >
-          <ArrowLeft className="size-4" /> View my listings
-        </Link>
-      </main>
-    );
-  }
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-16">

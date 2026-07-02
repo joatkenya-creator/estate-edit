@@ -32,7 +32,7 @@ export default async function ListingsPage() {
   const [profileResult, listingsResult] = await Promise.all([
     supabase
       .from("user_profiles")
-      .select("free_listings_used, free_listings_sold")
+      .select("free_listings_used")
       .eq("id", user.id)
       .single(),
     supabase
@@ -45,9 +45,8 @@ export default async function ListingsPage() {
   const profile = profileResult.data;
   const listings = listingsResult.data ?? [];
   const freeUsed = profile?.free_listings_used ?? 0;
-  const freeSold = profile?.free_listings_sold ?? 0;
   const canPostFree = freeUsed < 2;
-  const isPaidTier = freeSold >= 2;
+  const isPaidTier = freeUsed >= 2;
 
   return (
     <div className="space-y-4">
@@ -75,11 +74,6 @@ export default async function ListingsPage() {
               ? `You are on the paid tier — ${currency} ${listingFee} per listing`
               : `Free tier: ${freeUsed}/2 slots used · ${2 - freeUsed} remaining`}
           </span>
-          {!isPaidTier && freeUsed >= 2 && (
-            <span className="text-xs text-charcoal/60">
-              Sell {2 - freeSold} more free item{2 - freeSold === 1 ? "" : "s"} to unlock paid posting
-            </span>
-          )}
         </div>
       </div>
 

@@ -1,13 +1,14 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Loader2, Upload, CheckCircle2, CreditCard } from "lucide-react";
+import { Loader2, Upload, CheckCircle2, CreditCard, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createListing, type ListingState } from "@/app/actions/listings";
 import { useRegion } from "@/components/region/region-context";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 const CATEGORIES = [
@@ -75,12 +76,44 @@ function loadPaystack(): Promise<PaystackPop> {
 export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
   const [state, action, pending] = useActionState(createListing, initial);
   const [paying, setPaying] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
   const { currency } = useRegion();
   const isKes = currency === "KES";
   const listingFee = isKes ? 500 : 8;
   // Kenya can pay by card, bank or M-Pesa; other markets by card or bank.
   const channels = isKes ? ["card", "bank", "mobile_money"] : ["card", "bank"];
   const methodsLabel = isKes ? "card, bank or M-Pesa" : "card or bank";
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `listings/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("listing-images")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (error) throw error;
+      const { data } = supabase.storage.from("listing-images").getPublicUrl(path);
+      setImageUrl(data.publicUrl);
+      toast.success("Photo uploaded.");
+    } catch {
+      toast.error("Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function verifyPayment(reference: string) {
     try {
@@ -260,7 +293,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
               type="number"
               required
               min={1}
-              step={100}
+              step={1}
               placeholder="25000"
             />
           </div>
@@ -270,7 +303,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
             <Input
               id="location"
               name="location"
-              placeholder="Karen, Nairobi"
+              placeholder={isKes ? "Karen, Nairobi" : "McLean, VA"}
             />
           </div>
         </div>
@@ -279,20 +312,38 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
       {/* Image */}
       <section className="space-y-4">
         <h2 className="font-display text-lg text-navy">Photo</h2>
-        <div className="space-y-1.5">
-          <Label htmlFor="primary_image_url">Primary image URL</Label>
-          <Input
-            id="primary_image_url"
-            name="primary_image_url"
-            type="url"
-            placeholder="https://…"
-          />
-          <p className="flex items-center gap-1.5 text-xs text-charcoal/40">
-            <Upload className="size-3" />
-            Paste a direct image link (Google Drive, Dropbox, Cloudinary, etc.).
-            Image upload coming soon.
-          </p>
-        </div>
+        <input type="hidden" name="primary_image_url" value={imageUrl} />
+        {imageUrl ? (
+          <div className="relative inline-block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt="Listing preview"
+              className="aspect-square w-40 rounded-lg border border-border object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => setImageUrl("")}
+              aria-label="Remove photo"
+              className="absolute -right-2 -top-2 grid size-6 place-items-center rounded-full bg-navy text-white shadow"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        ) : (
+          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-stone/40 py-8 text-sm text-charcoal/60 transition-colors hover:bg-stone">
+            {uploading ? <Loader2 className="size-5 animate-spin" /> : <Upload className="size-5" />}
+            {uploading ? "Uploading…" : "Click to upload a photo"}
+            <span className="text-xs text-charcoal/40">JPG or PNG, up to 5 MB</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+        )}
       </section>
 
       <Button

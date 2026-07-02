@@ -32,8 +32,7 @@ export default async function AccountDashboard() {
   const orders = ordersResult.data ?? [];
   const listings = listingsResult.data ?? [];
   const freeUsed = profile?.free_listings_used ?? 0;
-  const freeSold = profile?.free_listings_sold ?? 0;
-  const isPaidTier = freeSold >= 2;
+  const isPaidTier = freeUsed >= 2;
 
   return (
     <div className="space-y-6">

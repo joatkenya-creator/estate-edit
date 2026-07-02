@@ -69,25 +69,30 @@ export async function createListing(
     ? (condition as typeof CONDITIONS[number])
     : null;
 
+  // Instant moderation checklist — mirrors the DB `ee_listing_is_clean` function
+  // that also runs server-side via cron. Reject obviously prohibited / illegal
+  // items at submit time so the seller gets immediate feedback.
+  const PROHIBITED =
+    /\b(guns?|handgun|shotgun|firearms?|rifle|pistol|revolver|glock|weapons?|ammo|ammunition|explosives?|grenade|cocaine|heroin|meth|methamphetamine|cannabis|marijuana|weed|mdma|ecstasy|lsd|fentanyl|ivory|rhino horn|pangolin|counterfeit|forged|stolen|fake id|passport|ssn|social security|human organ)\b/i;
+  if (PROHIBITED.test(`${title} ${description ?? ""}`)) {
+    return {
+      status: "error",
+      message:
+        "This listing appears to include prohibited or restricted items and can't be posted.",
+    };
+  }
+
   // Check user's free tier status
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("free_listings_used, free_listings_sold")
+    .select("free_listings_used")
     .eq("id", user.id)
     .single();
 
   const freeUsed = profile?.free_listings_used ?? 0;
-  const freeSold = profile?.free_listings_sold ?? 0;
   const isFree = freeUsed < 2;
-  const isPaidTier = freeSold >= 2;
-
-  // If free slots are exhausted and not yet on paid tier → block
-  if (!isFree && !isPaidTier) {
-    return {
-      status: "error",
-      message: "You've used both free listing slots. Sell your existing items first to unlock paid posting.",
-    };
-  }
+  // Once both free slots are used, the seller can post paid listings immediately —
+  // they do NOT need to have sold their free listings first.
 
   // Seller region -> native currency + listing fee (US sellers price in USD).
   const region = await getRegion();
