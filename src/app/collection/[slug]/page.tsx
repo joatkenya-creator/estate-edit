@@ -7,7 +7,7 @@ import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
 import { getAllAssetSlugs, getAssetBySlug, getDeliverySettings } from "@/lib/queries";
-import { divisionLabel, formatMoney, isPurchasable, type AssetDetail } from "@/lib/site";
+import { divisionLabel, formatPriceRange, isPurchasable, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
 import { assetJsonLd } from "@/lib/seo";
@@ -121,7 +121,7 @@ export default async function AssetPage({
               <p className="mt-6 font-display text-2xl text-navy">Price on request</p>
             ) : (
               <p className="mt-6 font-display text-2xl text-navy">
-                {formatMoney(asset.price, asset.currency)}
+                {formatPriceRange(asset.price, asset.priceMax, asset.currency)}
               </p>
             )}
 

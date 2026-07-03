@@ -293,7 +293,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
               type="number"
               required
               min={1}
-              step={1}
+              step="0.01"
               placeholder="25000"
             />
           </div>

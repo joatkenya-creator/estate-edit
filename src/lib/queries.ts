@@ -150,7 +150,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("assets")
-      .select("slug, title, category, category_other, division, status, price, currency, price_on_request, delivery_tier, fragile, primary_image_url, metadata, sort_order")
+      .select("slug, title, category, category_other, division, status, price, price_max, currency, price_on_request, delivery_tier, fragile, primary_image_url, metadata, sort_order")
       .eq("_status", "published")
       .eq("market", region)
       .order("sort_order");
@@ -174,6 +174,7 @@ export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
         tone: meta.tone ?? tones[i % tones.length],
         imageUrl: a.primary_image_url ?? undefined,
         price: a.price ?? undefined,
+        priceMax: a.price_max ?? undefined,
         currency: a.currency ?? "KES",
         priceOnRequest: a.price_on_request ?? false,
         deliveryTier: a.delivery_tier ?? undefined,
@@ -207,7 +208,7 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
     const { data, error } = await supabase
       .from("assets")
       .select(
-        "id, slug, title, description, division, category, category_other, status, condition, price, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata, delivery_tier, fragile",
+        "id, slug, title, description, division, category, category_other, status, condition, price, price_max, currency, price_on_request, brand, era, provenance, dimensions, location, primary_image_url, gallery, tags, metadata, delivery_tier, fragile",
       )
       .eq("slug", slug)
       .eq("_status", "published")
@@ -247,6 +248,7 @@ export async function getAssetBySlug(slug: string): Promise<AssetDetail | null> 
       dimensions: data.dimensions ?? undefined,
       location: data.location ?? undefined,
       price: data.price ?? undefined,
+      priceMax: data.price_max ?? undefined,
       currency: data.currency ?? "KES",
       priceOnRequest: data.price_on_request ?? false,
       tags: (data.tags as string[] | null) ?? [],

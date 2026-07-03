@@ -180,6 +180,8 @@ export type CatalogueItem = FeaturedAsset & {
   division: string;
   // Commerce fields (so cards can offer Add to cart for buyable items).
   price?: number;
+  /** Upper bound of a price range (e.g. vehicles). When set, item is enquire-only. */
+  priceMax?: number;
   currency?: string;
   priceOnRequest?: boolean;
   deliveryTier?: string;
@@ -208,9 +210,21 @@ export type AssetDetail = CatalogueItem & {
 
 // ----- Commerce (Phase 2: self-checkout) -----
 
-/** Format an amount like "KES 45,000". */
+/** Format an amount like "KES 45,000" or "USD 5,398.12" (up to 2 decimals). */
 export function formatMoney(amount: number, currency = "KES"): string {
-  return `${currency} ${Math.round(amount).toLocaleString("en-US")}`;
+  return `${currency} ${amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+}
+
+/** Format a single price, or a range ("KES 2,000,000 – 2,500,000") when priceMax is set. */
+export function formatPriceRange(
+  price: number,
+  priceMax: number | null | undefined,
+  currency = "KES",
+): string {
+  if (priceMax != null && priceMax > price) {
+    return `${formatMoney(price, currency)} – ${priceMax.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  }
+  return formatMoney(price, currency);
 }
 
 /** A line in the shopping cart (persisted client-side). */
@@ -303,11 +317,15 @@ export const usStates: string[] = [
  */
 export function isPurchasable(a: {
   price?: number | null;
+  priceMax?: number | null;
   priceOnRequest?: boolean;
   status?: string;
 }): boolean {
+  // A price range (priceMax > price) has no single checkout price → enquire only.
+  const hasRange = typeof a.priceMax === "number" && a.priceMax > (a.price ?? 0);
   return (
     !a.priceOnRequest &&
+    !hasRange &&
     typeof a.price === "number" &&
     a.price > 0 &&
     a.status !== "sold"

@@ -679,6 +679,7 @@ export type Database = {
           market: string | null
           metadata: Json | null
           price: number | null
+          price_max: number | null
           price_on_request: boolean | null
           primary_image_url: string | null
           provenance: string | null
