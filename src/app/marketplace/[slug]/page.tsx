@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, MapPin, Tag, Eye, Calendar, MessageCircle } from "lucide-react";
+import { ArrowLeft, MapPin, Tag, Eye, Calendar, MessageCircle, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { getRegion } from "@/lib/region.server";
 import { Button } from "@/components/ui/button";
 
 export const revalidate = 60;
@@ -64,6 +66,20 @@ export default async function ListingDetailPage({
 
   const { data: { user } } = await supabase.auth.getUser();
   const isOwner = user?.id === listing.user_id;
+
+  // Virginia sellers are contacted by email (no phone shown); Kenya keeps phone
+  // (WhatsApp / call). The seller's email lives in auth.users, not the profile.
+  const isVa = (await getRegion()) === "virginia";
+  let sellerEmail: string | null = null;
+  if (isVa && !isOwner) {
+    try {
+      const admin = createAdminClient();
+      const { data: authUser } = await admin.auth.admin.getUserById(listing.user_id);
+      sellerEmail = authUser?.user?.email ?? null;
+    } catch {
+      sellerEmail = null;
+    }
+  }
 
   const category = listing.category?.replace(/_/g, " ") ?? "";
   const condition = listing.condition?.replace(/_/g, " ") ?? "";
@@ -154,6 +170,22 @@ export default async function ListingDetailPage({
                 <Link href="/account/listings" className="font-medium text-navy hover:underline">
                   Manage it
                 </Link>
+              </div>
+            ) : isVa ? (
+              /* Virginia: email only — no phone shown. */
+              <div className="mt-5 space-y-3">
+                {sellerEmail ? (
+                  <Button asChild className="w-full bg-navy text-white hover:bg-navy-soft">
+                    <a href={`mailto:${sellerEmail}?subject=${encodeURIComponent(`Interested in: ${listing.title}`)}`}>
+                      <Mail className="mr-2 size-4" />
+                      Email seller
+                    </a>
+                  </Button>
+                ) : (
+                  <p className="text-center text-sm text-charcoal/50">
+                    Seller hasn&apos;t added contact details yet.
+                  </p>
+                )}
               </div>
             ) : (
               <div className="mt-5 space-y-3">
