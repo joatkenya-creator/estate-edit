@@ -278,12 +278,14 @@ export function SiteHeader() {
                     </Link>
                   </SheetClose>
                 )}
-                <a
-                  href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-                  className="text-center text-xs text-white/60 transition-colors hover:text-gold"
-                >
-                  {siteConfig.phone}
-                </a>
+                {region !== "virginia" && (
+                  <a
+                    href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+                    className="text-center text-xs text-white/60 transition-colors hover:text-gold"
+                  >
+                    {siteConfig.phone}
+                  </a>
+                )}
               </div>
             </SheetContent>
           </Sheet>

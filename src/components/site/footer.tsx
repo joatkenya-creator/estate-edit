@@ -116,13 +116,17 @@ export function SiteFooter() {
             </Link>
           </nav>
           <p className="flex items-center gap-2">
-            <a
-              href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-              className="transition-colors hover:text-white"
-            >
-              {siteConfig.phone}
-            </a>
-            <span className="text-white/25">·</span>
+            {region !== "virginia" && (
+              <>
+                <a
+                  href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {siteConfig.phone}
+                </a>
+                <span className="text-white/25">·</span>
+              </>
+            )}
             <a
               href={`mailto:${siteConfig.email}`}
               className="transition-colors hover:text-white"

@@ -97,7 +97,11 @@ export default async function DeliveryPage() {
               <Link href="/collection">Browse the collection</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-12 border-navy/20 px-8 text-navy hover:bg-navy hover:text-white">
-              <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>Call {siteConfig.phone}</a>
+              {isVa ? (
+                <a href={`mailto:${siteConfig.email}`}>Email us</a>
+              ) : (
+                <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>Call {siteConfig.phone}</a>
+              )}
             </Button>
           </div>
         </div>

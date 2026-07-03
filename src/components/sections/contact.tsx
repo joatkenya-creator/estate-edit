@@ -40,7 +40,10 @@ export function Contact({ asset }: { asset?: InquiryAsset }) {
   const { region } = useRegion();
   const location = regionContent[region].location;
   const contactInfo = [
-    { icon: Phone, label: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/\s+/g, "")}` },
+    // Virginia store: no phone shown — email + location only.
+    ...(region !== "virginia"
+      ? [{ icon: Phone, label: siteConfig.phone, href: `tel:${siteConfig.phone.replace(/\s+/g, "")}` }]
+      : []),
     { icon: Mail, label: siteConfig.email, href: `mailto:${siteConfig.email}` },
     {
       icon: MapPin,

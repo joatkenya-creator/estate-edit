@@ -65,10 +65,21 @@ export default async function ConfirmationPage({
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          Questions? Call us on{" "}
-          <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} className="font-medium text-navy hover:text-gold">
-            {siteConfig.phone}
-          </a>
+          {isUs ? (
+            <>
+              Questions? Email us at{" "}
+              <a href={`mailto:${siteConfig.email}`} className="font-medium text-navy hover:text-gold">
+                {siteConfig.email}
+              </a>
+            </>
+          ) : (
+            <>
+              Questions? Call us on{" "}
+              <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} className="font-medium text-navy hover:text-gold">
+                {siteConfig.phone}
+              </a>
+            </>
+          )}
         </p>
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
