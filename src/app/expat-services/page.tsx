@@ -5,12 +5,17 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
+import { buildOpenGraph } from "@/lib/seo";
+
+const title = "Expat Relocation Services in Kenya";
+const description =
+  "Relocation support for expats moving between Kenya and abroad: furnished housing on arrival; household liquidation and vehicle sales on departure.";
 
 export const metadata: Metadata = {
-  title: "Expat Relocation Services in Kenya",
-  description:
-    "Relocation support for expatriates moving between Kenya and abroad, including the USA: furnished housing, sourcing, and school guidance on arrival; household liquidation, vehicle sales, and storage on departure.",
+  title,
+  description,
   alternates: { canonical: "/expat-services" },
+  openGraph: buildOpenGraph({ title, description, path: "/expat-services" }),
 };
 
 const directions = [

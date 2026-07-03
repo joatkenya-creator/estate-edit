@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/site/legal";
 import { siteConfig } from "@/lib/site";
+import { buildOpenGraph } from "@/lib/seo";
+
+const title = "Terms of Service";
+const description =
+  "The terms governing your use of The Estate Edit's website and services.";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description:
-    "The terms governing your use of The Estate Edit's website and services.",
+  title,
+  description,
+  alternates: { canonical: "/terms" },
+  openGraph: buildOpenGraph({ title, description, path: "/terms" }),
 };
 
 export default function TermsPage() {

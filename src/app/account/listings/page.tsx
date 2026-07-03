@@ -9,7 +9,7 @@ import { regionCurrency } from "@/lib/region";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "My Listings" };
+export const metadata: Metadata = { title: "My Listings", robots: { index: false } };
 
 const STATUS_STYLES: Record<string, string> = {
   draft: "bg-stone text-charcoal/60",

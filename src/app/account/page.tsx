@@ -5,7 +5,7 @@ import { ShoppingBag, Tag, ArrowRight, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Dashboard", robots: { index: false } };
 
 export default async function AccountDashboard() {
   const supabase = await createClient();

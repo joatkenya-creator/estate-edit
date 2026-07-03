@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
-import { getAllAssetSlugs, getAssetBySlug, getDeliverySettings } from "@/lib/queries";
+import { getAllAssetSlugs, getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
 import { divisionLabel, formatPriceRange, isPurchasable, type AssetDetail } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetJsonLd } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -30,13 +30,17 @@ export async function generateMetadata({
   const asset = await getAssetBySlug(slug);
   if (!asset) return { title: "Asset not found" };
   const ogImage = asset.images[0]?.url ?? asset.imageUrl;
+  const description = asset.description ?? assetFallbackDescription(asset);
   return {
     title: asset.title,
-    description:
-      asset.description ??
-      `${asset.category} available through The Estate Edit. Enquire in confidence.`,
+    description,
     alternates: { canonical: `/collection/${slug}` },
-    ...(ogImage ? { openGraph: { images: [{ url: ogImage }] } } : {}),
+    openGraph: buildOpenGraph({
+      title: asset.title,
+      description,
+      path: `/collection/${slug}`,
+      images: ogImage ? [{ url: ogImage }] : undefined,
+    }),
   };
 }
 
@@ -73,9 +77,19 @@ export default async function AssetPage({
   const buyable = isPurchasable(asset);
   const delivery = buyable ? await getDeliverySettings() : null;
 
+  const productJsonLd = assetJsonLd(asset);
+
+  // More internal links between asset pages: same category first, then fill
+  // with the rest of the catalogue.
+  const catalogue = await getCatalogueAssets();
+  const related = [...catalogue]
+    .filter((item) => item.slug !== asset.slug)
+    .sort((a, b) => Number(b.categoryKey === asset.categoryKey) - Number(a.categoryKey === asset.categoryKey))
+    .slice(0, 4);
+
   return (
     <main className="flex-1 bg-white">
-      <JsonLd data={assetJsonLd(asset)} />
+      {productJsonLd && <JsonLd data={productJsonLd} />}
       {/* Breadcrumb header */}
       <section className="relative isolate overflow-hidden gradient-navy">
         <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:36px_36px]" />
@@ -221,6 +235,34 @@ export default async function AssetPage({
           </div>
         </div>
       </section>
+
+      {/* More from the collection */}
+      {related.length > 0 && (
+        <section className="border-t border-border bg-stone/40 py-14 sm:py-20">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <h2 className="font-display text-2xl text-navy">More from the collection</h2>
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {related.map((item) => (
+                <Link key={item.slug} href={`/collection/${item.slug}`} className="group block">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-charcoal/5">
+                    {item.imageUrl && (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <p className="mt-2 text-[0.65rem] uppercase tracking-[0.2em] text-crimson">
+                    {item.category}
+                  </p>
+                  <h3 className="text-sm text-navy group-hover:underline">{item.title}</h3>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }

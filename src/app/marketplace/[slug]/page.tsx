@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getRegion } from "@/lib/region.server";
 import { Button } from "@/components/ui/button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildOpenGraph, clampDescription, listingJsonLd } from "@/lib/seo";
 
 export const revalidate = 60;
 
@@ -18,16 +20,29 @@ export async function generateMetadata({
   const supabase = await createClient();
   const { data } = await supabase
     .from("user_listings")
-    .select("title, description")
+    .select("title, description, primary_image_url, location")
     .eq("slug", slug)
     .eq("status", "active")
     .single();
 
   if (!data) return { title: "Listing not found" };
 
+  const title = data.title ?? "Listing";
+  const description = clampDescription(
+    data.description ??
+      `${title} — available on The Estate Edit Marketplace${data.location ? ` in ${data.location}` : ""}. Enquire directly with the seller.`,
+  );
+
   return {
-    title: data.title ?? "Listing",
-    description: data.description?.slice(0, 155) ?? undefined,
+    title,
+    description,
+    alternates: { canonical: `/marketplace/${slug}` },
+    openGraph: buildOpenGraph({
+      title,
+      description,
+      path: `/marketplace/${slug}`,
+      images: data.primary_image_url ? [{ url: data.primary_image_url }] : undefined,
+    }),
   };
 }
 
@@ -86,12 +101,33 @@ export default async function ListingDetailPage({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-      <Link
-        href="/marketplace"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-charcoal/60 hover:text-navy"
-      >
-        <ArrowLeft className="size-4" /> Back to Marketplace
-      </Link>
+      <JsonLd
+        data={listingJsonLd({
+          slug: listing.slug,
+          title: listing.title,
+          description: listing.description,
+          price: listing.price,
+          currency: listing.currency,
+          primary_image_url: listing.primary_image_url,
+          condition: listing.condition,
+        })}
+      />
+      <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-charcoal/60">
+        <Link href="/marketplace" className="inline-flex items-center gap-2 hover:text-navy">
+          <ArrowLeft className="size-4" /> Back to Marketplace
+        </Link>
+        {category && (
+          <>
+            <span className="text-charcoal/30">/</span>
+            <Link
+              href={`/marketplace?category=${listing.category}`}
+              className="capitalize hover:text-navy hover:underline"
+            >
+              {category}
+            </Link>
+          </>
+        )}
+      </nav>
 
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         {/* Left: Image + details */}

@@ -6,6 +6,7 @@ import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 export const metadata: Metadata = {
   title: "Forgot password",
   description: "Reset your Estate Edit account password.",
+  robots: { index: false },
 };
 
 export default function ForgotPasswordPage() {

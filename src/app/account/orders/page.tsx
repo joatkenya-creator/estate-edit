@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Package } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "My Orders" };
+export const metadata: Metadata = { title: "My Orders", robots: { index: false } };
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-yellow-50 text-yellow-700",

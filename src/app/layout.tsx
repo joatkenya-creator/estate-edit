@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s · The Estate Edit",
   },
   description:
-    "White-glove luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes, vehicles, fine art, and business assets.",
+    "Luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.",
   keywords: [
     "estate sales Nairobi",
     "luxury estate sales Kenya",

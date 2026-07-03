@@ -6,20 +6,24 @@ import { Stats } from "@/components/sections/stats";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 import { getRegion } from "@/lib/region.server";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Region-localised copy + stats — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isVa = (await getRegion()) === "virginia";
+  const title = isVa
+    ? "About | Veteran-Owned Virginia Estate Firm"
+    : "About | Veteran-Owned Estate Sales Firm";
+  const description = isVa
+    ? "The Estate Edit is a veteran-owned luxury estate sales firm in Virginia, combining valuation, marketing, sale, and logistics under one brand."
+    : "The Estate Edit is a veteran-owned luxury estate sales firm in Kenya, combining valuation, marketing, sale, and logistics under one premium brand.";
   return {
-    title: isVa
-      ? "About | Veteran-Owned Virginia Estate Firm"
-      : "About | Veteran-Owned Estate Sales Firm",
-    description: isVa
-      ? "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Virginia, combining valuation, marketing, sale, and logistics under one premium brand."
-      : "The Estate Edit is a veteran-owned luxury estate sales and transition management firm in Kenya, combining valuation, marketing, sale, and logistics under one premium brand.",
+    title,
+    description,
     alternates: { canonical: "/about" },
+    openGraph: buildOpenGraph({ title, description, path: "/about" }),
   };
 }
 

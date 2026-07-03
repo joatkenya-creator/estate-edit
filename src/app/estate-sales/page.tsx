@@ -8,18 +8,22 @@ import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Renders region-specific featured assets + copy — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isVa = (await getRegion()) === "virginia";
+  const title = isVa ? "Luxury Estate Sales in Virginia" : "Luxury Estate Sales in Kenya";
+  const description = isVa
+    ? "Full-service luxury estate sales and liquidation in Virginia: household contents, inherited estates, collectibles, vehicles, and fine art."
+    : "Full-service luxury estate sales and liquidation in Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery.";
   return {
-    title: isVa ? "Luxury Estate Sales in Virginia" : "Luxury Estate Sales in Kenya",
-    description: isVa
-      ? "Full-service luxury estate sales and estate liquidation in Virginia: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach."
-      : "Full-service luxury estate sales and estate liquidation in Kenya: household contents, inherited estates, collectibles, vehicles, fine art, and jewellery, with editorial photography and private buyer outreach.",
+    title,
+    description,
     alternates: { canonical: "/estate-sales" },
+    openGraph: buildOpenGraph({ title, description, path: "/estate-sales" }),
   };
 }
 

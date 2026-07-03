@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getAllAssetSlugs } from "@/lib/queries";
+import { getAllAssetSlugs, getAllListingSlugs } from "@/lib/queries";
 import { SITE_URL } from "@/lib/seo";
 
 // Regenerate periodically so newly published assets appear without a redeploy.
@@ -16,6 +16,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/commercial-liquidation", priority: 0.8, changeFrequency: "monthly" },
     { path: "/concierge", priority: 0.8, changeFrequency: "monthly" },
     { path: "/expat-services", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/marketplace", priority: 0.8, changeFrequency: "daily" },
+    { path: "/delivery", priority: 0.5, changeFrequency: "monthly" },
+    { path: "/sell", priority: 0.5, changeFrequency: "monthly" },
     { path: "/about", priority: 0.6, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
     { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
@@ -38,12 +41,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ("EntityRef: expecting ';'") and broke the whole sitemap. Image discovery
   // is already covered by OG tags + Product JSON-LD.
   const slugs = await getAllAssetSlugs();
-  const assetEntries: MetadataRoute.Sitemap = slugs.map((slug) => ({
+  // De-duped defensively: a stale/duplicate slug here would otherwise surface
+  // as the same URL twice in one sitemap.
+  const assetEntries: MetadataRoute.Sitemap = [...new Set(slugs)].map((slug) => ({
     url: `${SITE_URL}/collection/${slug}`,
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
-  return [...staticEntries, ...assetEntries];
+  const listingSlugs = await getAllListingSlugs();
+  const listingEntries: MetadataRoute.Sitemap = [...new Set(listingSlugs)].map((slug) => ({
+    url: `${SITE_URL}/marketplace/${slug}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...assetEntries, ...listingEntries];
 }

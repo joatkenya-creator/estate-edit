@@ -17,18 +17,22 @@ import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 import { getRegion } from "@/lib/region.server";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Region-aware metadata — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isVa = (await getRegion()) === "virginia";
+  const title = isVa ? "Commercial Liquidation in Virginia" : "Commercial Liquidation in Kenya";
+  const description = isVa
+    ? "Discreet commercial and business asset liquidation in Virginia: equipment and fleet liquidation, office and warehouse clearance, and online auctions."
+    : "Discreet commercial and business asset liquidation in Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions.";
   return {
-    title: isVa ? "Commercial Liquidation in Virginia" : "Commercial Liquidation in Kenya",
-    description: isVa
-      ? "Discreet commercial and business asset liquidation in Virginia: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing."
-      : "Discreet commercial and business asset liquidation in Kenya: equipment and fleet liquidation, office and warehouse clearance, and online auctions for closures, relocations, and downsizing.",
+    title,
+    description,
     alternates: { canonical: "/commercial-liquidation" },
+    openGraph: buildOpenGraph({ title, description, path: "/commercial-liquidation" }),
   };
 }
 

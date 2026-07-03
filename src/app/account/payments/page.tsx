@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { CreditCard } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Payments" };
+export const metadata: Metadata = { title: "Payments", robots: { index: false } };
 
 export default async function PaymentsPage() {
   const supabase = await createClient();

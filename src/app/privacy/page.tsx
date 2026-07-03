@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/site/legal";
 import { siteConfig } from "@/lib/site";
+import { buildOpenGraph } from "@/lib/seo";
+
+const title = "Privacy Policy";
+const description =
+  "How The Estate Edit collects, uses, and protects your personal information.";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "How The Estate Edit collects, uses, and protects your personal information.",
+  title,
+  description,
+  alternates: { canonical: "/privacy" },
+  openGraph: buildOpenGraph({ title, description, path: "/privacy" }),
 };
 
 export default function PrivacyPage() {

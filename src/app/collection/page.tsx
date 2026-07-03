@@ -5,20 +5,24 @@ import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getCatalogueAssets } from "@/lib/queries";
 import { getRegion } from "@/lib/region.server";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Region-specific catalogue (Kenya vs Virginia) — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isVa = (await getRegion()) === "virginia";
+  const title = isVa
+    ? "Luxury Assets for Sale in Virginia"
+    : "Luxury Assets for Sale in Kenya & Worldwide";
+  const description = isVa
+    ? "A curated catalogue of luxury estate and commercial assets for sale across Virginia — furniture, vehicles, fine art, jewellery, and equipment."
+    : "A curated catalogue of luxury estate and commercial assets for sale across Kenya and internationally — furniture, vehicles, fine art, and jewellery.";
   return {
-    title: isVa
-      ? "Luxury Assets for Sale in Virginia"
-      : "Luxury Assets for Sale in Kenya & Worldwide",
-    description: isVa
-      ? "Browse luxury estate and commercial assets for sale across Virginia: furniture, vehicles, fine art, jewellery, and equipment from active estates and liquidations. Local Virginia delivery. Enquire in confidence."
-      : "Browse luxury estate and commercial assets for sale across Kenya and to international buyers: furniture, vehicles, fine art, jewellery, and equipment from active estates and liquidations. Countrywide delivery. Enquire in confidence.",
+    title,
+    description,
     alternates: { canonical: "/collection" },
+    openGraph: buildOpenGraph({ title, description, path: "/collection" }),
   };
 }
 

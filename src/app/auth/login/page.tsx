@@ -6,6 +6,7 @@ import { LoginForm } from "@/components/auth/login-form";
 export const metadata: Metadata = {
   title: "Sign in",
   description: "Sign in to your Estate Edit account.",
+  robots: { index: false },
 };
 
 export default async function LoginPage({

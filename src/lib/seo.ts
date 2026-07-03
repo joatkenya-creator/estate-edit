@@ -5,6 +5,7 @@
  * Virginia (USA) market — it has no physical presence there, so Virginia is
  * modelled as an `areaServed`, not an address/location.
  */
+import type { Metadata } from "next";
 import { siteConfig, type AssetDetail } from "./site";
 
 /** Canonical production origin. Keep in sync with metadataBase in layout.tsx. */
@@ -12,6 +13,54 @@ export const SITE_URL = "https://estateedit.org";
 
 /** Default social/share image (absolute). */
 export const OG_IMAGE = `${SITE_URL}/hero/estate.jpg`;
+
+/** Absolute canonical URL for a root-relative path (e.g. "/collection"). */
+export function canonicalUrl(path: string): string {
+  return path === "/" ? SITE_URL : `${SITE_URL}${path}`;
+}
+
+/**
+ * Full `openGraph` object for a page. Next.js REPLACES (doesn't deep-merge)
+ * the parent layout's `openGraph` whenever a route defines its own, so every
+ * page that sets one must supply the full shape itself — otherwise it silently
+ * loses `siteName`/`locale`/`og:url` from the root layout.
+ */
+export function buildOpenGraph({
+  title,
+  description,
+  path,
+  images,
+  type = "website",
+}: {
+  title: string;
+  description: string;
+  path: string;
+  images?: { url: string; width?: number; height?: number; alt?: string }[];
+  type?: "website" | "article";
+}): NonNullable<Metadata["openGraph"]> {
+  return {
+    title,
+    description,
+    url: canonicalUrl(path),
+    siteName: siteConfig.name,
+    locale: "en_KE",
+    type,
+    images: images ?? [{ url: OG_IMAGE, width: 1200, height: 630, alt: siteConfig.name }],
+  };
+}
+
+/** Clamp text to a display-friendly meta description length without cutting mid-word. */
+export function clampDescription(text: string, max = 155): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 0 ? lastSpace : max).trimEnd()}…`;
+}
+
+/** Fallback description for a catalogue asset with no editor-written copy. */
+export function assetFallbackDescription(asset: Pick<AssetDetail, "title" | "category">): string {
+  return `${asset.title} — ${asset.category} available through ${siteConfig.name}, Nairobi. Viewing by appointment; enquire in confidence.`;
+}
 
 /** Phone in E.164 (digits + leading +), required by schema.org. */
 const phoneE164 = siteConfig.phone.replace(/[^\d+]/g, "");
@@ -51,18 +100,31 @@ const AVAILABILITY: Record<AssetDetail["status"], string> = {
   sold: "https://schema.org/SoldOut",
 };
 
-/** Product schema for an individual catalogue asset. */
+/** One year out, as YYYY-MM-DD (Google's expected `priceValidUntil` format). */
+function oneYearFromNow(): string {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Product schema for an individual catalogue asset. Returns null for
+ * "price on request" items: Google requires `price` + `priceCurrency` on any
+ * Offer that's present, so an Offer with neither is an invalid rich-results
+ * error — omitting the whole block is correct until a real price exists.
+ */
 export function assetJsonLd(asset: AssetDetail) {
+  const hasPrice = asset.price != null && !asset.priceOnRequest;
+  if (!hasPrice) return null;
+
   const url = `${SITE_URL}/collection/${asset.slug}`;
   const image = asset.images[0]?.url ?? asset.imageUrl ?? OG_IMAGE;
-
-  const hasPrice = asset.price != null && !asset.priceOnRequest;
 
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: asset.title,
-    description: asset.description ?? `${asset.category} available through ${siteConfig.name}.`,
+    description: asset.description ?? assetFallbackDescription(asset),
     image: [image],
     category: asset.category,
     ...(asset.brand ? { brand: { "@type": "Brand", name: asset.brand } } : {}),
@@ -70,21 +132,54 @@ export function assetJsonLd(asset: AssetDetail) {
       "@type": "Offer",
       url,
       availability: AVAILABILITY[asset.status],
-      ...(hasPrice
-        ? {
-            price: asset.price,
-            priceCurrency: asset.currency,
-            // Signals "delivery available" countrywide for purchasable items.
-            shippingDetails: {
-              "@type": "OfferShippingDetails",
-              shippingDestination: {
-                "@type": "DefinedRegion",
-                addressCountry: "KE",
-              },
-            },
-          }
-        : {}),
+      price: asset.price,
+      priceCurrency: asset.currency,
+      priceValidUntil: oneYearFromNow(),
+      // Signals "delivery available" countrywide for purchasable items.
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "KE",
+        },
+      },
       seller: { "@id": `${SITE_URL}/#organization` },
+    },
+  };
+}
+
+/** Product schema for a user-posted marketplace listing (always priced). */
+export function listingJsonLd(listing: {
+  slug: string;
+  title: string;
+  description?: string | null;
+  price: number | string;
+  currency?: string | null;
+  primary_image_url?: string | null;
+  condition?: string | null;
+}) {
+  const url = `${SITE_URL}/marketplace/${listing.slug}`;
+  const itemCondition = listing.condition?.includes("new")
+    ? "https://schema.org/NewCondition"
+    : "https://schema.org/UsedCondition";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: listing.title,
+    description:
+      listing.description ??
+      `${listing.title} — available on The Estate Edit Marketplace. Enquire directly with the seller.`,
+    image: [listing.primary_image_url ?? OG_IMAGE],
+    itemCondition,
+    offers: {
+      "@type": "Offer",
+      url,
+      price: listing.price,
+      priceCurrency: listing.currency || "KES",
+      availability: "https://schema.org/InStock",
+      priceValidUntil: oneYearFromNow(),
+      seller: { "@type": "Organization", name: siteConfig.name },
     },
   };
 }

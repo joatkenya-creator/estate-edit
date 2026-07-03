@@ -6,18 +6,22 @@ import { Process } from "@/components/sections/process";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getRegion } from "@/lib/region.server";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Region-aware metadata — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const isVa = (await getRegion()) === "virginia";
+  const title = "Downsizing & Relocation Concierge";
+  const description = isVa
+    ? "White-glove downsizing, relocation, and estate cleanout services in Virginia: property preparation, donation coordination, vendor management, and storage."
+    : "White-glove downsizing, relocation, and estate cleanout services in Kenya: property preparation, donation coordination, vendor management, and storage.";
   return {
-    title: "Downsizing & Relocation Concierge",
-    description: isVa
-      ? "White-glove downsizing, relocation, and estate cleanout services in Virginia: property preparation, donation coordination, vendor management, and storage, handled end to end."
-      : "White-glove downsizing, relocation, and estate cleanout services in Kenya: property preparation, donation coordination, vendor management, and storage, handled end to end.",
+    title,
+    description,
     alternates: { canonical: "/concierge" },
+    openGraph: buildOpenGraph({ title, description, path: "/concierge" }),
   };
 }
 

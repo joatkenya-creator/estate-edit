@@ -134,6 +134,24 @@ export async function getAllAssetSlugs(): Promise<string[]> {
   }
 }
 
+/**
+ * All active marketplace listing slugs, across both markets, for the
+ * sitemap. Region-agnostic, so it is safe to call at build time.
+ */
+export async function getAllListingSlugs(): Promise<string[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("user_listings")
+      .select("slug")
+      .eq("status", "active");
+    if (error || !data?.length) return [];
+    return data.map((l) => l.slug).filter((s): s is string => Boolean(s));
+  } catch {
+    return [];
+  }
+}
+
 export async function getCatalogueAssets(): Promise<CatalogueItem[]> {
   const region = await getRegion();
   // Static fallback content is Kenya-only; the Virginia store shows an empty

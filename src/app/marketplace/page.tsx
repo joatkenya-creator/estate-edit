@@ -7,15 +7,21 @@ import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
 import { regionCurrency } from "@/lib/region";
+import { buildOpenGraph } from "@/lib/seo";
 
 // Region-specific listings + copy — render per request.
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();
+  const title = "Marketplace — Estate Edit";
+  const description = `Browse items posted by sellers across ${regionContent[region].place}. Furniture, art, jewellery, vehicles, and more.`;
   return {
-    title: "Marketplace — Estate Edit",
-    description: `Browse items posted by sellers across ${regionContent[region].place}. Furniture, art, jewellery, vehicles, and more.`,
+    title,
+    description,
+    // Category/search filters are thin slices of the same catalogue — canonicalize to the base listing.
+    alternates: { canonical: "/marketplace" },
+    openGraph: buildOpenGraph({ title, description, path: "/marketplace" }),
   };
 }
 
@@ -51,7 +57,9 @@ export default async function MarketplacePage({
     .eq("status", "active")
     .eq("currency", regionCurrency[region])
     .order("created_at", { ascending: false })
-    .limit(60);
+    // Kept above the sitemap's listing count so every URL we tell search
+    // engines about is also reachable via an on-page link (avoids orphans).
+    .limit(200);
 
   if (params.category) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

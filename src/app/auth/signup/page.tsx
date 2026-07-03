@@ -6,6 +6,7 @@ import { SignUpForm } from "@/components/auth/signup-form";
 export const metadata: Metadata = {
   title: "Create account",
   description: "Create your Estate Edit account to post and sell items.",
+  robots: { index: false },
 };
 
 export default function SignUpPage() {

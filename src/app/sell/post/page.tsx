@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Post a listing",
   description: "List your item for sale on The Estate Edit marketplace.",
+  robots: { index: false }, // auth-gated form, no unique content to index
 };
 
 export default async function PostListingPage() {
