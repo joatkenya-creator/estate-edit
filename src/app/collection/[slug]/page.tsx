@@ -5,6 +5,7 @@ import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
+import { ShareButtons } from "@/components/collection/share-buttons";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
 import { getAllAssetSlugs, getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
 import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetDetail } from "@/lib/site";
@@ -246,6 +247,8 @@ export default async function AssetPage({
                 </Link>
               </Button>
             </div>
+
+            <ShareButtons url={`${SITE_URL}/collection/${asset.slug}`} title={asset.title} />
           </div>
         </div>
       </section>

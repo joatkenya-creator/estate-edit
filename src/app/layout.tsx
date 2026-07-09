@@ -11,6 +11,7 @@ import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { Clarity } from "@/components/seo/clarity";
 import { MetaPixel } from "@/components/seo/meta-pixel";
 import { GoogleAds } from "@/components/seo/google-ads";
+import { UtmTracker } from "@/components/marketing/utm-tracker";
 import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -89,6 +90,7 @@ export default function RootLayout({
         <Clarity />
         <MetaPixel />
         <GoogleAds />
+        <UtmTracker />
         <JsonLd data={organizationJsonLd()} />
         <RegionProvider>
           <CartProvider>

@@ -14,6 +14,7 @@ const SERVICES = {
     { label: "Concierge Transition", href: "/concierge" },
     { label: "Expat Services", href: "/expat-services" },
     { label: "The Collection", href: "/collection" },
+    { label: "Sell With Us", href: "/sell-with-us" },
   ],
 };
 

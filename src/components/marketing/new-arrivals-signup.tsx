@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createPublicClient } from "@/lib/supabase/public";
 import { useRegion } from "@/components/region/region-context";
+import { getUtm } from "@/lib/utm";
 
 /**
  * New-arrivals alert capture — builds the lead list (email + optional phone for
@@ -30,11 +31,13 @@ export function NewArrivalsSignup({ source = "new-arrivals" }: { source?: string
     setSubmitting(true);
     try {
       const supabase = createPublicClient();
+      const utm = getUtm();
       const { error } = await supabase.from("subscribers").insert({
         email: email.trim(),
         phone: phone.trim() || null,
         market: region,
         source,
+        metadata: Object.keys(utm).length ? utm : null,
       });
       if (error) throw new Error(error.message);
       setDone(true);

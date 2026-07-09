@@ -1,6 +1,7 @@
 import { createPublicClient } from "@/lib/supabase/public";
 import type { Json } from "@/lib/supabase/database.types";
 import type { CartItem } from "@/lib/site";
+import { getUtm } from "@/lib/utm";
 
 /**
  * Client-safe order placement. The shopper's browser inserts the order with the
@@ -70,6 +71,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
     currency: input.currency,
     payment_status: "unpaid",
     source: input.source || "checkout",
+    metadata: ((u) => (Object.keys(u).length ? (u as unknown as Json) : null))(getUtm()),
   });
 
   if (error) throw new Error(error.message);

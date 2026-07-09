@@ -70,6 +70,17 @@ export async function submitInquiry(
   const assetCategory = clean(formData.get("asset_category"));
   const hasAsset = Boolean(assetSlug || assetTitle);
 
+  // Optional explicit source (e.g. the "Sell with us" form) + first-touch UTM.
+  const sourceOverride = clean(formData.get("source"));
+  let utm: Record<string, string> = {};
+  try {
+    const raw = clean(formData.get("utm"));
+    if (raw) utm = JSON.parse(raw) as Record<string, string>;
+  } catch {
+    utm = {};
+  }
+  const hasUtm = Object.keys(utm).length > 0;
+
   const payload = {
     // `status` is a NOT NULL column on the Payload-owned inquiries table; its
     // Payload defaultValue is app-level only, so set it explicitly for the
@@ -87,18 +98,24 @@ export async function submitInquiry(
     message,
     asset_description: inquiryType === "asset_review" ? message : null,
     consent: formData.get("consent") === "on",
-    // Real provenance: the asset slug when known, else the generic CTA.
-    source: assetSlug ? `asset:${assetSlug}` : "homepage_contact",
-    metadata: hasAsset
-      ? {
-          asset: {
-            slug: assetSlug,
-            title: assetTitle,
-            category: assetCategory,
-            url: assetSlug ? `/collection/${assetSlug}` : null,
-          },
-        }
-      : null,
+    // Real provenance: explicit source (e.g. sell_with_us) > asset slug > generic.
+    source: sourceOverride ?? (assetSlug ? `asset:${assetSlug}` : "homepage_contact"),
+    metadata:
+      hasAsset || hasUtm
+        ? {
+            ...(hasAsset
+              ? {
+                  asset: {
+                    slug: assetSlug,
+                    title: assetTitle,
+                    category: assetCategory,
+                    url: assetSlug ? `/collection/${assetSlug}` : null,
+                  },
+                }
+              : {}),
+            ...(hasUtm ? { utm } : {}),
+          }
+        : null,
   };
 
   try {
