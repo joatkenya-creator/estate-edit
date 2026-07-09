@@ -9,6 +9,8 @@ import { RegionProvider } from "@/components/region/region-context";
 import { JsonLd } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from "@/components/seo/google-analytics";
 import { Clarity } from "@/components/seo/clarity";
+import { MetaPixel } from "@/components/seo/meta-pixel";
+import { GoogleAds } from "@/components/seo/google-ads";
 import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -85,6 +87,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <GoogleAnalytics />
         <Clarity />
+        <MetaPixel />
+        <GoogleAds />
         <JsonLd data={organizationJsonLd()} />
         <RegionProvider>
           <CartProvider>

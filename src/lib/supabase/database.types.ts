@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      subscribers: {
+        Row: {
+          categories: Json | null
+          consent: boolean | null
+          created_at: string
+          email: string
+          id: string
+          market: string | null
+          metadata: Json | null
+          phone: string | null
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          categories?: Json | null
+          consent?: boolean | null
+          created_at?: string
+          email: string
+          id?: string
+          market?: string | null
+          metadata?: Json | null
+          phone?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          categories?: Json | null
+          consent?: boolean | null
+          created_at?: string
+          email?: string
+          id?: string
+          market?: string | null
+          metadata?: Json | null
+          phone?: string | null
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery: {
         Row: {
           county_rates: Json | null

@@ -7,10 +7,11 @@ import { AssetGallery } from "@/components/collection/asset-gallery";
 import { AssetPurchase } from "@/components/collection/asset-purchase";
 import { DeliveryBadge } from "@/components/commerce/delivery-badge";
 import { getAllAssetSlugs, getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
-import { divisionLabel, formatPriceRange, isPurchasable, type AssetDetail } from "@/lib/site";
+import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetDetail } from "@/lib/site";
+import { getRegion } from "@/lib/region.server";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetFallbackDescription, assetJsonLd, buildOpenGraph } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph, SITE_URL } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -76,6 +77,12 @@ export default async function AssetPage({
 
   const buyable = isPurchasable(asset);
   const delivery = buyable ? await getDeliverySettings() : null;
+
+  // Market-routed enquiry: Kenya buyers convert on WhatsApp; other markets go to
+  // the contact form (captured as a lead in the CMS).
+  const region = await getRegion();
+  const enquireText = `Hi, I'm interested in "${asset.title}"${asset.category ? ` (${asset.category})` : ""} — ${SITE_URL}/collection/${asset.slug}`;
+  const whatsappHref = `https://wa.me/${siteConfig.phone.replace(/\D/g, "")}?text=${encodeURIComponent(enquireText)}`;
 
   const productJsonLd = assetJsonLd(asset);
 
@@ -206,19 +213,26 @@ export default async function AssetPage({
                     : "bg-navy text-white hover:bg-navy-soft",
                 )}
               >
-                <Link
-                  href={{
-                    pathname: "/contact",
-                    query: {
-                      asset: asset.slug,
-                      title: asset.title,
-                      category: asset.category,
-                    },
-                  }}
-                >
-                  {buyable ? "Ask about this item" : "Enquire about this piece"}
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                </Link>
+                {region === "kenya" ? (
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
+                    {buyable ? "Ask on WhatsApp" : "Enquire on WhatsApp"}
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                  </a>
+                ) : (
+                  <Link
+                    href={{
+                      pathname: "/contact",
+                      query: {
+                        asset: asset.slug,
+                        title: asset.title,
+                        category: asset.category,
+                      },
+                    }}
+                  >
+                    {buyable ? "Ask about this item" : "Enquire about this piece"}
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                )}
               </Button>
               <Button
                 asChild

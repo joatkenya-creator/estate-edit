@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Store } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ListingCard } from "@/components/listings/listing-card";
+import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
 import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
@@ -150,6 +151,7 @@ export default async function MarketplacePage({
           </>
         )}
       </div>
+      <NewArrivalsSignup source="marketplace" />
     </main>
   );
 }

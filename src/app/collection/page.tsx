@@ -3,6 +3,7 @@ import { PageHero } from "@/components/site/page-hero";
 import { CollectionGrid } from "@/components/sections/collection-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
+import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
 import { getCatalogueAssets } from "@/lib/queries";
 import { getRegion } from "@/lib/region.server";
 import { buildOpenGraph } from "@/lib/seo";
@@ -43,6 +44,7 @@ export default async function CollectionPage() {
         crumbs={[{ label: "Collection" }]}
       />
       <CollectionGrid items={assets} />
+      <NewArrivalsSignup source="collection" />
       <RelatedServices current="collection" />
       <CtaBand
         title="Seeking something in particular?"
