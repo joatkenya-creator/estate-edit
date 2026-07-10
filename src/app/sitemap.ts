@@ -1,9 +1,23 @@
 import type { MetadataRoute } from "next";
 import { getAllAssetSlugs, getAllListingSlugs } from "@/lib/queries";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, US_SITE_URL } from "@/lib/seo";
 
 // Regenerate periodically so newly published assets appear without a redeploy.
 export const revalidate = 3600;
+
+/**
+ * hreflang alternates for pages that exist in BOTH markets (same route, region-
+ * varying content) — declares the Kenya + Virginia URLs so each is indexed and
+ * Google serves the right one. Individual catalogue items/listings belong to a
+ * single market, so they are NOT given cross-region alternates.
+ */
+function languages(path: string) {
+  return {
+    "en-KE": `${SITE_URL}${path}`,
+    "en-US": `${US_SITE_URL}${path}`,
+    "x-default": `${SITE_URL}${path}`,
+  };
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -30,6 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: r.changeFrequency,
     priority: r.priority,
+    alternates: { languages: languages(r.path) },
   }));
 
   // Dynamic catalogue pages. getCatalogueAssets is resilient (falls back to

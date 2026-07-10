@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
 import { regionCurrency } from "@/lib/region";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-specific listings + copy — render per request.
 export const dynamic = "force-dynamic";
@@ -21,8 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     // Category/search filters are thin slices of the same catalogue — canonicalize to the base listing.
-    alternates: { canonical: "/marketplace" },
-    openGraph: buildOpenGraph({ title, description, path: "/marketplace" }),
+    alternates: regionAlternates("/marketplace", region),
+    openGraph: buildOpenGraph({ title, description, path: "/marketplace", region }),
   };
 }
 

@@ -8,7 +8,7 @@ import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Renders region-specific featured assets + copy — render per request.
 export const dynamic = "force-dynamic";
@@ -22,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: "/estate-sales" },
-    openGraph: buildOpenGraph({ title, description, path: "/estate-sales" }),
+    alternates: regionAlternates("/estate-sales", isVa ? "virginia" : "kenya"),
+    openGraph: buildOpenGraph({ title, description, path: "/estate-sales", region: isVa ? "virginia" : "kenya" }),
   };
 }
 

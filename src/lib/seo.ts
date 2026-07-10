@@ -7,9 +7,37 @@
  */
 import type { Metadata } from "next";
 import { siteConfig, type AssetDetail } from "./site";
+import { type Region } from "./region";
 
-/** Canonical production origin. Keep in sync with metadataBase in layout.tsx. */
+/** Canonical production origin (Kenya / primary market). */
 export const SITE_URL = "https://estateedit.org";
+
+/** Virginia (USA) storefront origin — the `us.` subdomain. */
+export const US_SITE_URL = "https://us.estateedit.org";
+
+/** Origin for a given market. */
+export function siteUrlForRegion(region: Region): string {
+  return region === "virginia" ? US_SITE_URL : SITE_URL;
+}
+
+/**
+ * Region-aware canonical + hreflang alternates for a page. Each market
+ * self-references its own host (so both are indexed, not deduped), and the
+ * hreflang set tells Google which URL to serve each searcher. Kenya is
+ * `x-default`. Apply this in the `generateMetadata` of every region-varying
+ * page (pass the resolved `getRegion()`).
+ */
+export function regionAlternates(path: string, region: Region): NonNullable<Metadata["alternates"]> {
+  const suffix = path === "/" ? "/" : path;
+  return {
+    canonical: `${siteUrlForRegion(region)}${suffix}`,
+    languages: {
+      "en-KE": `${SITE_URL}${suffix}`,
+      "en-US": `${US_SITE_URL}${suffix}`,
+      "x-default": `${SITE_URL}${suffix}`,
+    },
+  };
+}
 
 /** Default social/share image (absolute). */
 export const OG_IMAGE = `${SITE_URL}/hero/estate.jpg`;
@@ -31,19 +59,21 @@ export function buildOpenGraph({
   path,
   images,
   type = "website",
+  region = "kenya",
 }: {
   title: string;
   description: string;
   path: string;
   images?: { url: string; width?: number; height?: number; alt?: string }[];
   type?: "website" | "article";
+  region?: Region;
 }): NonNullable<Metadata["openGraph"]> {
   return {
     title,
     description,
-    url: canonicalUrl(path),
+    url: `${siteUrlForRegion(region)}${path === "/" ? "/" : path}`,
     siteName: siteConfig.name,
-    locale: "en_KE",
+    locale: region === "virginia" ? "en_US" : "en_KE",
     type,
     images: images ?? [{ url: OG_IMAGE, width: 1200, height: 630, alt: siteConfig.name }],
   };

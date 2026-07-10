@@ -1,35 +1,23 @@
 import "server-only";
 import { headers } from "next/headers";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
-import { regionFromCountry, type Region } from "./region";
+import { type Region } from "./region";
 
 /**
- * Detect the visitor's ISO country. Cloudflare's request `cf` object is the
- * most reliable source on Workers; the `cf-ipcountry` header is a fallback.
- * Returns null in local dev / build (no request geo).
- */
-async function detectCountry(): Promise<string | null> {
-  try {
-    const { cf } = await getCloudflareContext({ async: true });
-    const country = (cf as { country?: string } | undefined)?.country;
-    if (country) return country;
-  } catch {
-    /* not in the Cloudflare runtime (local dev / build) */
-  }
-  try {
-    return (await headers()).get("cf-ipcountry");
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Resolve the active region purely from the visitor's location (KE -> Kenya,
- * everyone else -> Virginia). There is NO manual override — a visitor cannot
- * switch markets, so Kenyan traffic only ever sees the Kenya store and US /
- * other traffic only the Virginia store. Defaults to Virginia when geo is
- * unavailable.
+ * Resolve the active market from the request HOST, so each region has its own
+ * crawlable URL (this is what lets BOTH markets rank — see [[region.ts]]):
+ *   - us.estateedit.org  -> Virginia (USD store)
+ *   - estateedit.org     -> Kenya (primary / default), and anything else
+ *
+ * Host-based (not geo-IP) is deliberate: a US-based crawler hitting the apex
+ * must see the Kenya store, and the Virginia store lives at a distinct URL that
+ * crawlers can index independently. hreflang links the two.
  */
 export async function getRegion(): Promise<Region> {
-  return regionFromCountry(await detectCountry());
+  try {
+    const host = ((await headers()).get("host") ?? "").toLowerCase();
+    return host.startsWith("us.") ? "virginia" : "kenya";
+  } catch {
+    // Build / non-request context — default to the primary market.
+    return "kenya";
+  }
 }

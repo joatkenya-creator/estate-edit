@@ -36,7 +36,9 @@
   // records automatically; Cloudflare issues the SSL cert.
   "routes": [
     { "pattern": "estateedit.org", "custom_domain": true },
-    { "pattern": "www.estateedit.org", "custom_domain": true }
+    { "pattern": "www.estateedit.org", "custom_domain": true },
+    // Virginia (USD) storefront — same Worker, region resolved from this host.
+    { "pattern": "us.estateedit.org", "custom_domain": true }
   ]
 
   // --- Optional: persistent ISR / Next cache via R2 ------------------------

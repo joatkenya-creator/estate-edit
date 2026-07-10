@@ -6,7 +6,7 @@ import { Stats } from "@/components/sections/stats";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 import { getRegion } from "@/lib/region.server";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-localised copy + stats — render per request.
 export const dynamic = "force-dynamic";
@@ -22,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: "/about" },
-    openGraph: buildOpenGraph({ title, description, path: "/about" }),
+    alternates: regionAlternates("/about", isVa ? "virginia" : "kenya"),
+    openGraph: buildOpenGraph({ title, description, path: "/about", region: isVa ? "virginia" : "kenya" }),
   };
 }
 

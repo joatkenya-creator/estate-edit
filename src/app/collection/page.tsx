@@ -6,7 +6,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
 import { getCatalogueAssets } from "@/lib/queries";
 import { getRegion } from "@/lib/region.server";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-specific catalogue (Kenya vs Virginia) — render per request.
 export const dynamic = "force-dynamic";
@@ -22,8 +22,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: "/collection" },
-    openGraph: buildOpenGraph({ title, description, path: "/collection" }),
+    alternates: regionAlternates("/collection", isVa ? "virginia" : "kenya"),
+    openGraph: buildOpenGraph({ title, description, path: "/collection", region: isVa ? "virginia" : "kenya" }),
   };
 }
 

@@ -7,8 +7,13 @@ import { Process } from "@/components/sections/process";
 import { Clients } from "@/components/sections/clients";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
+import { getRegion } from "@/lib/region.server";
+import { regionAlternates } from "@/lib/seo";
 
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return { alternates: regionAlternates("/", region) };
+}
 
 // Statically generated, regenerated every 10 minutes so content edits in
 // Supabase surface without a redeploy.

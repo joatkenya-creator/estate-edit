@@ -4,7 +4,8 @@ import { Truck, MapPin, Wallet, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getDeliverySettings } from "@/lib/queries";
 import { siteConfig } from "@/lib/site";
-import { buildOpenGraph } from "@/lib/seo";
+import { getRegion } from "@/lib/region.server";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-specific delivery copy/rates (Kenya vs Virginia) — per request.
 export const dynamic = "force-dynamic";
@@ -13,12 +14,15 @@ const deliveryTitle = "Delivery & Returns";
 const deliveryDescription =
   "How The Estate Edit delivers: delivery fees, timelines, payment on delivery, and returns.";
 
-export const metadata: Metadata = {
-  title: deliveryTitle,
-  description: deliveryDescription,
-  alternates: { canonical: "/delivery" },
-  openGraph: buildOpenGraph({ title: deliveryTitle, description: deliveryDescription, path: "/delivery" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title: deliveryTitle,
+    description: deliveryDescription,
+    alternates: regionAlternates("/delivery", region),
+    openGraph: buildOpenGraph({ title: deliveryTitle, description: deliveryDescription, path: "/delivery", region }),
+  };
+}
 
 /** Fallback copy shown when the CMS delivery `details` field is empty. */
 const DETAILS_KE = [

@@ -6,7 +6,7 @@ import { Process } from "@/components/sections/process";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { getRegion } from "@/lib/region.server";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-aware metadata — render per request.
 export const dynamic = "force-dynamic";
@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: "/concierge" },
-    openGraph: buildOpenGraph({ title, description, path: "/concierge" }),
+    alternates: regionAlternates("/concierge", isVa ? "virginia" : "kenya"),
+    openGraph: buildOpenGraph({ title, description, path: "/concierge", region: isVa ? "virginia" : "kenya" }),
   };
 }
 

@@ -12,7 +12,7 @@ import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetD
 import { getRegion } from "@/lib/region.server";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetFallbackDescription, assetJsonLd, buildOpenGraph, SITE_URL } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph, regionAlternates, SITE_URL } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -33,15 +33,17 @@ export async function generateMetadata({
   if (!asset) return { title: "Asset not found" };
   const ogImage = asset.images[0]?.url ?? asset.imageUrl;
   const description = asset.description ?? assetFallbackDescription(asset);
+  const region = await getRegion();
   return {
     title: asset.title,
     description,
-    alternates: { canonical: `/collection/${slug}` },
+    alternates: regionAlternates(`/collection/${slug}`, region),
     openGraph: buildOpenGraph({
       title: asset.title,
       description,
       path: `/collection/${slug}`,
       images: ogImage ? [{ url: ogImage }] : undefined,
+      region,
     }),
   };
 }
