@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAllAssetSlugs, getAllListingSlugs } from "@/lib/queries";
-import { SITE_URL, US_SITE_URL } from "@/lib/seo";
+import { SITE_URL, US_SITE_URL, siteUrlForRegion } from "@/lib/seo";
+import { areaSlug } from "@/lib/region";
+import { regionContent } from "@/lib/site";
 
 // Regenerate periodically so newly published assets appear without a redeploy.
 export const revalidate = 3600;
@@ -73,5 +75,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...assetEntries, ...listingEntries];
+  // Area landing pages — each locality belongs to a single market (like
+  // catalogue items), so no cross-region hreflang alternates.
+  const areaEntries: MetadataRoute.Sitemap = (["kenya", "virginia"] as const).flatMap((region) =>
+    regionContent[region].areasServed.map((area) => ({
+      url: `${siteUrlForRegion(region)}/areas/${areaSlug(area)}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  );
+
+  return [...staticEntries, ...assetEntries, ...listingEntries, ...areaEntries];
 }

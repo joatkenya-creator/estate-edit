@@ -51,6 +51,11 @@ export function isRegion(value: unknown): value is Region {
   return value === "kenya" || value === "virginia";
 }
 
+/** URL-safe slug for an "Areas Served" locality, e.g. "Great Falls" -> "great-falls". */
+export function areaSlug(area: string): string {
+  return area.toLowerCase().replace(/\s+/g, "-");
+}
+
 /**
  * Map a visitor's ISO country to a default region. Only Kenyan (KE) traffic
  * defaults to the Kenya store; US and everyone else (and unknown / no geo)

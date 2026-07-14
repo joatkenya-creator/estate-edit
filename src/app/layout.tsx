@@ -13,7 +13,8 @@ import { Clarity } from "@/components/seo/clarity";
 import { MetaPixel } from "@/components/seo/meta-pixel";
 import { GoogleAds } from "@/components/seo/google-ads";
 import { UtmTracker } from "@/components/marketing/utm-tracker";
-import { OG_IMAGE, SITE_URL, organizationJsonLd } from "@/lib/seo";
+import { OG_IMAGE, buildOpenGraph, organizationJsonLd } from "@/lib/seo";
+import { getRegion } from "@/lib/region.server";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,52 +30,72 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://estateedit.org"),
-  title: {
-    default: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
-    template: "%s · The Estate Edit",
-  },
-  description:
-    "Luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.",
-  keywords: [
-    "estate sales Nairobi",
-    "luxury estate sales Kenya",
-    "estate liquidation Nairobi",
-    "commercial liquidation Kenya",
-    "business asset liquidation Nairobi",
-    "expat relocation Nairobi",
-    "downsizing services Nairobi",
-    "fleet liquidation Kenya",
-    "asset valuation Kenya",
-    "estate sale company Nairobi",
-  ],
-  openGraph: {
-    title: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
-    description:
-      "Luxury estates, commercial liquidations, and seamless transitions in Nairobi, Kenya. White-glove valuation, marketing, and sale of high-value assets.",
-    type: "website",
-    locale: "en_KE",
-    url: SITE_URL,
-    siteName: "The Estate Edit",
-    images: [
-      { url: OG_IMAGE, width: 1200, height: 630, alt: "The Estate Edit" },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit",
-    description:
-      "Luxury estates, commercial liquidations, and seamless transitions in Nairobi, Kenya. White-glove valuation, marketing, and sale of high-value assets.",
-    images: [OG_IMAGE],
-  },
-  // Search engine ownership verification (renders <meta name=...> in <head>).
-  verification: {
-    other: {
-      "msvalidate.01": "22FD0F6E044C99B01F2A9FD628E4DF8C", // Bing Webmaster Tools
+/**
+ * Region-aware fallback metadata for pages that don't set their own
+ * title/description/openGraph (e.g. the homepage only overrides `alternates`).
+ * Without this branch, a Virginia visitor would silently inherit
+ * Nairobi-branded title/OG/Twitter tags on every under-specified page.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  const isVa = region === "virginia";
+
+  const title = isVa
+    ? "Luxury Estate Sales & Liquidation in Virginia | The Estate Edit"
+    : "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit";
+  const description = isVa
+    ? "Luxury estate sales, commercial liquidation, and concierge transitions serving Virginia. Discreet valuation, marketing, and sale of homes and fine art."
+    : "Luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.";
+  const keywords = isVa
+    ? [
+        "estate sales Virginia",
+        "luxury estate sales Virginia",
+        "estate liquidation Virginia",
+        "commercial liquidation Virginia",
+        "business asset liquidation Virginia",
+        "downsizing services Virginia",
+        "asset valuation Virginia",
+        "estate sale company Virginia",
+        "estate sales Northern Virginia",
+      ]
+    : [
+        "estate sales Nairobi",
+        "luxury estate sales Kenya",
+        "estate liquidation Nairobi",
+        "commercial liquidation Kenya",
+        "business asset liquidation Nairobi",
+        "expat relocation Nairobi",
+        "downsizing services Nairobi",
+        "fleet liquidation Kenya",
+        "asset valuation Kenya",
+        "estate sale company Nairobi",
+      ];
+
+  const openGraph = buildOpenGraph({ title, description, path: "/", region });
+
+  return {
+    metadataBase: new URL("https://estateedit.org"),
+    title: {
+      default: title,
+      template: "%s · The Estate Edit",
     },
-  },
-};
+    description,
+    keywords,
+    openGraph,
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
+    // Search engine ownership verification (renders <meta name=...> in <head>).
+    verification: {
+      other: {
+        "msvalidate.01": "22FD0F6E044C99B01F2A9FD628E4DF8C", // Bing Webmaster Tools
+      },
+    },
+  };
+}
 
 export default function RootLayout({
   children,

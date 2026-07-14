@@ -78,7 +78,14 @@ export async function getStats(): Promise<Metric[]> {
   }
 }
 
+/**
+ * All current testimonials (DB and static fallback) are Kenya clients — the
+ * `testimonials` table has no region column to filter by. Rather than show
+ * Nairobi social proof to Virginia visitors, withhold the section there until
+ * real Virginia quotes exist.
+ */
 export async function getTestimonials(): Promise<Testimonial[]> {
+  if ((await getRegion()) === "virginia") return [];
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase

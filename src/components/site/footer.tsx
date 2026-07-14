@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Camera, Globe } from "lucide-react";
 import { siteConfig, regionContent } from "@/lib/site";
+import { areaSlug } from "@/lib/region";
 import { useRegion } from "@/components/region/region-context";
 
 const SERVICES = {
@@ -37,7 +38,7 @@ export function SiteFooter() {
     SERVICES,
     {
       title: "Areas Served",
-      links: content.areasServed.map((area) => ({ label: area, href: "/contact" })),
+      links: content.areasServed.map((area) => ({ label: area, href: `/areas/${areaSlug(area)}` })),
     },
     COMPANY,
   ];

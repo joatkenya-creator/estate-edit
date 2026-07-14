@@ -4,6 +4,7 @@ import { getTestimonials } from "@/lib/queries";
 
 export async function Testimonials() {
   const testimonials = await getTestimonials();
+  if (testimonials.length === 0) return null;
   return (
     <section className="gradient-stone py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
