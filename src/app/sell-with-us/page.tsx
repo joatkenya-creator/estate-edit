@@ -21,7 +21,7 @@ const points = [
   { icon: TrendingUp, title: "Maximise value", body: "Market valuation and private buyer outreach to realise the best price." },
   { icon: Camera, title: "Editorial marketing", body: "Professional photography and listings across our channels." },
   { icon: ShieldCheck, title: "Discreet & careful", body: "Confidential handling of high-value pieces, start to finish." },
-  { icon: Users, title: "Qualified buyers", body: "A private network of collectors, expats, and businesses." },
+  { icon: Users, title: "Qualified buyers", body: "A private network of collectors, expatriates, and businesses." },
 ];
 
 export default async function SellWithUsPage() {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, User, Tag } from "lucide-react";
+import { Menu, User, Tag, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { navLinks, siteConfig } from "@/lib/site";
+import { navLinks, serviceLinks, siteConfig } from "@/lib/site";
 import { regionFlag, regionShort, regionTagline } from "@/lib/region";
 import { useRegion } from "@/components/region/region-context";
 import { CartButton } from "@/components/cart/cart-button";
@@ -74,6 +74,37 @@ function Wordmark({ inverted }: { inverted: boolean }) {
   );
 }
 
+function ServicesMenu({ inverted }: { inverted: boolean }) {
+  return (
+    <div className="group relative">
+      <button
+        type="button"
+        className={cn(
+          "flex items-center gap-1 text-sm font-medium tracking-wide transition-colors",
+          inverted ? "text-white/85 hover:text-white" : "text-charcoal/75 hover:text-navy",
+        )}
+      >
+        Services
+        <ChevronDown className="size-3.5 transition-transform duration-200 group-hover:rotate-180" />
+      </button>
+
+      <div className="invisible absolute left-0 top-full w-64 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <div className="overflow-hidden rounded-lg border border-border bg-white py-1.5 shadow-xl">
+          {serviceLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="block px-4 py-2.5 text-sm text-charcoal/75 transition-colors hover:bg-stone hover:text-navy"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SiteHeader() {
   const { region } = useRegion();
   const [scrolled, setScrolled] = useState(false);
@@ -110,7 +141,8 @@ export function SiteHeader() {
         <Wordmark inverted={inverted} />
 
         <div className="flex items-center gap-5 sm:gap-6">
-          <nav className="hidden items-center gap-5 2xl:flex">
+          <nav className="hidden items-center gap-5 xl:flex">
+            <ServicesMenu inverted={inverted} />
             {navLinks.map((link) => (
               <Link
                 key={link.label}
@@ -143,7 +175,7 @@ export function SiteHeader() {
           <span
             aria-hidden
             className={cn(
-              "hidden h-5 w-px 2xl:block",
+              "hidden h-5 w-px xl:block",
               inverted ? "bg-white/20" : "bg-charcoal/15",
             )}
           />
@@ -165,7 +197,7 @@ export function SiteHeader() {
                   <button
                     aria-label="Account menu"
                     className={cn(
-                      "hidden size-9 items-center justify-center rounded-full border transition-colors 2xl:flex",
+                      "hidden size-9 items-center justify-center rounded-full border transition-colors xl:flex",
                       inverted
                         ? "border-white/30 text-white hover:bg-white/10"
                         : "border-border text-navy hover:bg-stone",
@@ -201,7 +233,7 @@ export function SiteHeader() {
               <Link
                 href="/auth/login"
                 className={cn(
-                  "hidden text-sm font-medium transition-colors 2xl:block",
+                  "hidden text-sm font-medium transition-colors xl:block",
                   inverted ? "text-white/80 hover:text-white" : "text-charcoal/70 hover:text-navy",
                 )}
               >
@@ -215,7 +247,7 @@ export function SiteHeader() {
                 <button
                   aria-label="Open menu"
                   className={cn(
-                    "inline-flex size-10 items-center justify-center rounded-md border transition-colors 2xl:hidden",
+                    "inline-flex size-10 items-center justify-center rounded-md border transition-colors xl:hidden",
                     inverted
                       ? "border-white/30 text-white hover:bg-white/10"
                       : "border-border text-navy hover:bg-stone",
@@ -231,6 +263,21 @@ export function SiteHeader() {
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="mt-2 flex flex-col gap-1 px-4">
+                  <div className="border-b border-white/10 py-3">
+                    <p className="mb-1 text-xs uppercase tracking-[0.2em] text-gold-soft">
+                      Services
+                    </p>
+                    {serviceLinks.map((link) => (
+                      <SheetClose asChild key={link.label}>
+                        <Link
+                          href={link.href}
+                          className="block py-2.5 text-lg text-white/85 transition-colors hover:text-gold"
+                        >
+                          {link.label}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                  </div>
                   {navLinks.map((link) => (
                     <SheetClose asChild key={link.label}>
                       <Link

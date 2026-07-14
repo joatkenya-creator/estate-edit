@@ -64,7 +64,7 @@ export function Clients() {
                     <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-white/10 text-gold">
                       <Icon className="size-6" strokeWidth={1.5} />
                     </div>
-                    <p className="eyebrow mb-2">Expat Services</p>
+                    <p className="eyebrow mb-2">Expatriate Services</p>
                     <h3 className="font-display text-2xl text-white">{block.title}</h3>
                     <ul className="mt-5 grid gap-2 sm:grid-cols-2">
                       {block.points.map((p) => (

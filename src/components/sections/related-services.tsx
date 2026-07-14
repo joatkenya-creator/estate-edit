@@ -19,7 +19,7 @@ const LINKS: Record<ServiceKey, { href: string; anchor: string }> = {
     anchor: "commercial liquidation",
   },
   concierge: { href: "/concierge", anchor: "downsizing and relocation concierge services" },
-  "expat-services": { href: "/expat-services", anchor: "expat relocation services" },
+  "expat-services": { href: "/expat-services", anchor: "expatriate relocation services" },
   collection: { href: "/collection", anchor: "luxury assets for sale" },
 };
 

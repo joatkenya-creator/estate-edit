@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
+import { cn } from "@/lib/utils";
 import type { Metric } from "@/lib/site";
 
 function format(n: number, decimals = 0) {
@@ -42,8 +43,18 @@ function CountUp({ to, prefix = "", suffix = "", decimals = 0 }: Metric) {
 }
 
 export function StatsGrid({ metrics }: { metrics: Metric[] }) {
+  // Border/column breakpoint scales with the metric count so a 3-up row
+  // (Kenya, since dropping the KES value stat) doesn't leave a gap where a
+  // 4th column would have been.
+  const wide = metrics.length >= 4;
+
   return (
-    <div className="grid grid-cols-2 gap-y-12 lg:grid-cols-4">
+    <div
+      className={cn(
+        "grid gap-y-12",
+        wide ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-1 sm:grid-cols-3",
+      )}
+    >
       {metrics.map((m, i) => (
         <motion.div
           key={m.label}
@@ -51,7 +62,12 @@ export function StatsGrid({ metrics }: { metrics: Metric[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative px-4 text-center lg:border-r lg:border-white/10 lg:last:border-none"
+          className={cn(
+            "relative px-4 text-center",
+            wide
+              ? "lg:border-r lg:border-white/10 lg:last:border-none"
+              : "sm:border-r sm:border-white/10 sm:last:border-none",
+          )}
         >
           <div className="font-display text-4xl font-light tabular-nums text-white sm:text-5xl lg:text-6xl">
             <CountUp {...m} />

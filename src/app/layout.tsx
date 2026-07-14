@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
     : "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit";
   const description = isVa
     ? "Luxury estate sales, commercial liquidation, and concierge transitions serving Virginia. Discreet valuation, marketing, and sale of homes and fine art."
-    : "Luxury estate sales, commercial liquidation, and expat relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.";
+    : "Luxury estate sales, commercial liquidation, and expatriate relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.";
   const keywords = isVa
     ? [
         "estate sales Virginia",
@@ -64,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
         "estate liquidation Nairobi",
         "commercial liquidation Kenya",
         "business asset liquidation Nairobi",
-        "expat relocation Nairobi",
+        "expatriate relocation Nairobi",
         "downsizing services Nairobi",
         "fleet liquidation Kenya",
         "asset valuation Kenya",

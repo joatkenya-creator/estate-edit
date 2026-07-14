@@ -32,8 +32,8 @@ export default function TermsPage() {
 
       <LegalSection title="Our Services">
         <p>
-          We provide luxury estate sales, commercial liquidation, concierge transition, and expat
-          relocation services. Information on this website is provided for general guidance and does
+          We provide luxury estate sales, commercial liquidation, concierge transition, and
+          expatriate relocation services. Information on this website is provided for general guidance and does
           not constitute a binding offer. The specific scope, terms, and fees of any engagement are
           set out in a separate written agreement.
         </p>

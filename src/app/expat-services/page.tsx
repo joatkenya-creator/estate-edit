@@ -7,9 +7,9 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
 import { buildOpenGraph } from "@/lib/seo";
 
-const title = "Expat Relocation Services in Kenya";
+const title = "Expatriate Relocation Services in Kenya";
 const description =
-  "Relocation support for expats moving between Kenya and abroad: furnished housing on arrival; household liquidation and vehicle sales on departure.";
+  "Relocation support for expatriates moving between Kenya and abroad: furnished housing on arrival; household liquidation and vehicle sales on departure.";
 
 export const metadata: Metadata = {
   title,
@@ -62,10 +62,10 @@ export default function ExpatServicesPage() {
   return (
     <main className="flex-1">
       <PageHero
-        eyebrow="Expat Services"
-        title="Expat Relocation Services"
+        eyebrow="Expatriate Services"
+        title="Expatriate Relocation Services"
         subtitle="For expatriates and families relocating between Kenya and abroad (including the USA), we manage the estate, the logistics, and the everyday details, so your move feels effortless."
-        crumbs={[{ label: "Expat Services" }]}
+        crumbs={[{ label: "Expatriate Services" }]}
       />
 
       <section className="bg-white py-24 sm:py-28">

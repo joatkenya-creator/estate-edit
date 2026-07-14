@@ -13,7 +13,7 @@ const SERVICES = {
     { label: "Estate Sales", href: "/estate-sales" },
     { label: "Commercial Liquidation", href: "/commercial-liquidation" },
     { label: "Concierge Transition", href: "/concierge" },
-    { label: "Expat Services", href: "/expat-services" },
+    { label: "Expatriate Services", href: "/expat-services" },
     { label: "The Collection", href: "/collection" },
     { label: "Sell With Us", href: "/sell-with-us" },
   ],

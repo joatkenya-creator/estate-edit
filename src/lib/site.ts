@@ -20,11 +20,15 @@ export const siteConfig = {
   },
 };
 
-export const navLinks = [
+/** The four service divisions, grouped under the header's "Services" dropdown. */
+export const serviceLinks = [
   { label: "Estate Sales", href: "/estate-sales" },
   { label: "Commercial Liquidation", href: "/commercial-liquidation" },
   { label: "Concierge", href: "/concierge" },
-  { label: "Expat Services", href: "/expat-services" },
+  { label: "Expatriate Services", href: "/expat-services" },
+] as const;
+
+export const navLinks = [
   { label: "Collection", href: "/collection" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "About", href: "/about" },
@@ -100,10 +104,9 @@ export type Metric = {
 };
 
 export const statMetrics: Metric[] = [
-  { to: 2400, suffix: "+", label: "Assets sold" },
-  { to: 180, suffix: "+", label: "Estates managed" },
-  { to: 65, suffix: "+", label: "Businesses assisted" },
-  { to: 1.2, prefix: "KES ", suffix: "B", decimals: 1, label: "Client value realised" },
+  { to: 300, suffix: "+", label: "Assets sold" },
+  { to: 25, suffix: "+", label: "Estates managed" },
+  { to: 12, suffix: "+", label: "Businesses assisted" },
 ];
 
 /**
@@ -123,10 +126,9 @@ export const regionContent = {
     lede: "A white-glove luxury estate sales and transition firm in Kenya, trusted by affluent families, expatriates, and businesses across East Africa, combining valuation, marketing, sale, and logistics under one premium brand.",
     areasServed: ["Karen", "Runda", "Muthaiga", "Lavington", "Kilimani", "Westlands"],
     stats: [
-      { to: 2400, suffix: "+", label: "Assets sold" },
-      { to: 180, suffix: "+", label: "Estates managed" },
-      { to: 65, suffix: "+", label: "Businesses assisted" },
-      { to: 1.2, prefix: "KES ", suffix: "B", decimals: 1, label: "Client value realised" },
+      { to: 300, suffix: "+", label: "Assets sold" },
+      { to: 25, suffix: "+", label: "Estates managed" },
+      { to: 12, suffix: "+", label: "Businesses assisted" },
     ] as Metric[],
   },
   virginia: {
@@ -138,9 +140,9 @@ export const regionContent = {
     lede: "A white-glove luxury estate sales and transition firm serving Virginia, trusted by affluent families, professionals, and collectors statewide, combining valuation, marketing, sale, and logistics under one premium brand.",
     areasServed: ["McLean", "Great Falls", "Vienna", "Arlington", "Alexandria", "Virginia Beach"],
     stats: [
-      { to: 2400, suffix: "+", label: "Assets sold" },
-      { to: 180, suffix: "+", label: "Estates managed" },
-      { to: 65, suffix: "+", label: "Businesses assisted" },
+      { to: 300, suffix: "+", label: "Assets sold" },
+      { to: 25, suffix: "+", label: "Estates managed" },
+      { to: 12, suffix: "+", label: "Businesses assisted" },
       { to: 30, suffix: "+", label: "Virginia areas served" },
     ] as Metric[],
   },
@@ -379,7 +381,7 @@ export const divisionLabel: Record<string, string> = {
   estate_sales: "Estate Sales",
   commercial_liquidation: "Commercial Liquidation",
   concierge: "Concierge",
-  expat_services: "Expat Services",
+  expat_services: "Expatriate Services",
 };
 
 /** Maps a service division to its dedicated marketing page. */
@@ -482,7 +484,7 @@ export const clientTypes = [
   { title: "Families", description: "Navigating downsizing or inherited estates with dignity." },
   { title: "Estate Executors", description: "Settling estates efficiently and transparently." },
   { title: "Business Owners", description: "Closing, relocating, or reducing commercial assets." },
-  { title: "Expats", description: "Arriving in or departing from Kenya with ease." },
+  { title: "Expatriates", description: "Arriving in or departing from Kenya with ease." },
   { title: "Embassies", description: "Diplomatic relocations handled with discretion." },
   { title: "Corporations", description: "Fleet, office, and warehouse liquidation at scale." },
 ] as const;
@@ -511,9 +513,9 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "As an expat family leaving Nairobi, they handled our entire household sale and move. White-glove from start to finish.",
+      "As an expatriate family leaving Nairobi, they handled our entire household sale and move. White-glove from start to finish.",
     author: "The Bauer Family",
-    role: "Expat Departure",
+    role: "Expatriate Departure",
     location: "Runda",
   },
 ];
@@ -523,7 +525,7 @@ export const clientSegments = [
   { value: "family", label: "Family" },
   { value: "estate_executor", label: "Estate Executor" },
   { value: "business_owner", label: "Business Owner" },
-  { value: "expat", label: "Expat (Arriving / Leaving)" },
+  { value: "expat", label: "Expatriate (Arriving / Leaving)" },
   { value: "embassy", label: "Embassy / Diplomatic" },
   { value: "corporation", label: "Corporation" },
 ] as const;
@@ -532,5 +534,5 @@ export const serviceOptions = [
   { value: "estate_sales", label: "Estate Sales" },
   { value: "commercial_liquidation", label: "Commercial Liquidation" },
   { value: "concierge", label: "Concierge Transition" },
-  { value: "expat_services", label: "Expat Services" },
+  { value: "expat_services", label: "Expatriate Services" },
 ] as const;
