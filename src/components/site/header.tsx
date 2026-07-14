@@ -32,7 +32,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 function Wordmark({ inverted }: { inverted: boolean }) {
   const { region } = useRegion();
   return (
-    <Link href="/" className="group mr-4 flex shrink-0 items-center gap-3 lg:mr-8">
+    <Link href="/" className="group flex shrink-0 items-center gap-3">
       <Image
         src="/logo-mark.svg"
         alt=""
@@ -106,189 +106,193 @@ export function SiteHeader() {
           : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-5 sm:px-8">
+      <div className="mx-auto flex h-20 max-w-[100rem] items-center justify-between px-5 sm:px-8">
         <Wordmark inverted={inverted} />
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-9">
-          {navLinks.map((link) => (
+        <div className="flex items-center gap-5 sm:gap-6">
+          <nav className="hidden items-center gap-5 2xl:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className={cn(
+                  "group relative text-sm font-medium tracking-wide transition-colors",
+                  inverted ? "text-white/85 hover:text-white" : "text-charcoal/75 hover:text-navy",
+                )}
+              >
+                {link.label}
+                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
+              </Link>
+            ))}
+
+            {/* Sell link */}
             <Link
-              key={link.label}
-              href={link.href}
+              href="/sell"
               className={cn(
-                "group relative text-sm font-medium tracking-wide transition-colors",
-                inverted ? "text-white/85 hover:text-white" : "text-charcoal/75 hover:text-navy",
+                "group relative flex items-center gap-1.5 border-l pl-5 text-sm font-medium tracking-wide transition-colors",
+                inverted
+                  ? "border-white/20 text-gold-soft hover:text-gold"
+                  : "border-border text-gold hover:text-gold-dark",
               )}
             >
-              {link.label}
-              <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
+              <Tag className="size-3.5" />
+              Sell
             </Link>
-          ))}
+          </nav>
 
-          {/* Sell link */}
-          <Link
-            href="/sell"
+          <span
+            aria-hidden
             className={cn(
-              "group relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors",
-              inverted ? "text-gold-soft hover:text-gold" : "text-gold hover:text-gold-dark",
+              "hidden h-5 w-px 2xl:block",
+              inverted ? "bg-white/20" : "bg-charcoal/15",
             )}
-          >
-            <Tag className="size-3.5" />
-            Sell
-          </Link>
-        </nav>
+          />
 
-        <div className="flex shrink-0 items-center gap-3">
-          <Button
-            asChild
-            className="hidden bg-navy text-white hover:bg-navy-soft sm:inline-flex"
-          >
-            <Link href="/contact">Book a Consultation</Link>
-          </Button>
+          <div className="flex shrink-0 items-center gap-3">
+            <Button
+              asChild
+              className="hidden bg-navy text-white hover:bg-navy-soft sm:inline-flex"
+            >
+              <Link href="/contact">Book a Consultation</Link>
+            </Button>
 
-          <CartButton inverted={inverted} />
+            <CartButton inverted={inverted} />
 
-          {/* Account menu (desktop) */}
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            {/* Account menu (desktop) */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    aria-label="Account menu"
+                    className={cn(
+                      "hidden size-9 items-center justify-center rounded-full border transition-colors 2xl:flex",
+                      inverted
+                        ? "border-white/30 text-white hover:bg-white/10"
+                        : "border-border text-navy hover:bg-stone",
+                    )}
+                  >
+                    <User className="size-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-44">
+                  <DropdownMenuItem asChild>
+                    <Link href="/account">My Account</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/listings">My Listings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/sell/post">Post a Listing</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <form action={signOut}>
+                      <button type="submit" className="w-full text-left text-red-600">
+                        Sign out
+                      </button>
+                    </form>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                href="/auth/login"
+                className={cn(
+                  "hidden text-sm font-medium transition-colors 2xl:block",
+                  inverted ? "text-white/80 hover:text-white" : "text-charcoal/70 hover:text-navy",
+                )}
+              >
+                Sign in
+              </Link>
+            )}
+
+            {/* Mobile menu */}
+            <Sheet>
+              <SheetTrigger asChild>
                 <button
-                  aria-label="Account menu"
+                  aria-label="Open menu"
                   className={cn(
-                    "hidden size-9 items-center justify-center rounded-full border transition-colors lg:flex",
+                    "inline-flex size-10 items-center justify-center rounded-md border transition-colors 2xl:hidden",
                     inverted
                       ? "border-white/30 text-white hover:bg-white/10"
                       : "border-border text-navy hover:bg-stone",
                   )}
                 >
-                  <User className="size-4" />
+                  <Menu className="size-5" />
                 </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem asChild>
-                  <Link href="/account">My Account</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/listings">My Listings</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/orders">My Orders</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/sell/post">Post a Listing</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <form action={signOut}>
-                    <button type="submit" className="w-full text-left text-red-600">
-                      Sign out
-                    </button>
-                  </form>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link
-              href="/auth/login"
-              className={cn(
-                "hidden text-sm font-medium transition-colors lg:block",
-                inverted ? "text-white/80 hover:text-white" : "text-charcoal/70 hover:text-navy",
-              )}
-            >
-              Sign in
-            </Link>
-          )}
-
-          {/* Mobile menu */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <button
-                aria-label="Open menu"
-                className={cn(
-                  "inline-flex size-10 items-center justify-center rounded-md border transition-colors lg:hidden",
-                  inverted
-                    ? "border-white/30 text-white hover:bg-white/10"
-                    : "border-border text-navy hover:bg-stone",
-                )}
-              >
-                <Menu className="size-5" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80 bg-navy text-white border-navy-soft">
-              <SheetHeader>
-                <SheetTitle className="font-display text-2xl text-white">
-                  The Estate Edit
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="mt-2 flex flex-col gap-1 px-4">
-                {navLinks.map((link) => (
-                  <SheetClose asChild key={link.label}>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 bg-navy text-white border-navy-soft">
+                <SheetHeader>
+                  <SheetTitle className="font-display text-2xl text-white">
+                    The Estate Edit
+                  </SheetTitle>
+                </SheetHeader>
+                <nav className="mt-2 flex flex-col gap-1 px-4">
+                  {navLinks.map((link) => (
+                    <SheetClose asChild key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="border-b border-white/10 py-4 text-lg text-white/85 transition-colors hover:text-gold"
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                  ))}
+                  <SheetClose asChild>
                     <Link
-                      href={link.href}
-                      className="border-b border-white/10 py-4 text-lg text-white/85 transition-colors hover:text-gold"
+                      href="/sell"
+                      className="border-b border-white/10 py-4 text-lg text-gold hover:text-gold-soft flex items-center gap-2"
                     >
-                      {link.label}
+                      <Tag className="size-4" /> Sell
                     </Link>
                   </SheetClose>
-                ))}
-                <SheetClose asChild>
-                  <Link
-                    href="/sell"
-                    className="border-b border-white/10 py-4 text-lg text-gold hover:text-gold-soft flex items-center gap-2"
-                  >
-                    <Tag className="size-4" /> Sell
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link
-                    href="/marketplace"
-                    className="border-b border-white/10 py-4 text-lg text-white/85 hover:text-gold"
-                  >
-                    Marketplace
-                  </Link>
-                </SheetClose>
-              </nav>
-              <div className="mt-auto flex flex-col gap-3 p-6">
-                <div className="flex items-center justify-between text-xs text-white/60">
-                  <span className="uppercase tracking-[0.2em]">Store region</span>
-                  <span className="font-semibold text-gold">
-                    {regionFlag[region]} {regionTagline[region]}
-                  </span>
+                </nav>
+                <div className="mt-auto flex flex-col gap-3 p-6">
+                  <div className="flex items-center justify-between text-xs text-white/60">
+                    <span className="uppercase tracking-[0.2em]">Store region</span>
+                    <span className="font-semibold text-gold">
+                      {regionFlag[region]} {regionTagline[region]}
+                    </span>
+                  </div>
+                  <SheetClose asChild>
+                    <Button asChild className="bg-gold text-navy hover:bg-gold-soft">
+                      <Link href="/contact">Book a Consultation</Link>
+                    </Button>
+                  </SheetClose>
+                  {user ? (
+                    <SheetClose asChild>
+                      <Link
+                        href="/account"
+                        className="text-center text-sm font-medium text-white/80 hover:text-gold"
+                      >
+                        My Account
+                      </Link>
+                    </SheetClose>
+                  ) : (
+                    <SheetClose asChild>
+                      <Link
+                        href="/auth/login"
+                        className="text-center text-sm font-medium text-white/80 hover:text-gold"
+                      >
+                        Sign in
+                      </Link>
+                    </SheetClose>
+                  )}
+                  {region !== "virginia" && (
+                    <a
+                      href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
+                      className="text-center text-xs text-white/60 transition-colors hover:text-gold"
+                    >
+                      {siteConfig.phone}
+                    </a>
+                  )}
                 </div>
-                <SheetClose asChild>
-                  <Button asChild className="bg-gold text-navy hover:bg-gold-soft">
-                    <Link href="/contact">Book a Consultation</Link>
-                  </Button>
-                </SheetClose>
-                {user ? (
-                  <SheetClose asChild>
-                    <Link
-                      href="/account"
-                      className="text-center text-sm font-medium text-white/80 hover:text-gold"
-                    >
-                      My Account
-                    </Link>
-                  </SheetClose>
-                ) : (
-                  <SheetClose asChild>
-                    <Link
-                      href="/auth/login"
-                      className="text-center text-sm font-medium text-white/80 hover:text-gold"
-                    >
-                      Sign in
-                    </Link>
-                  </SheetClose>
-                )}
-                {region !== "virginia" && (
-                  <a
-                    href={`tel:${siteConfig.phone.replace(/\s+/g, "")}`}
-                    className="text-center text-xs text-white/60 transition-colors hover:text-gold"
-                  >
-                    {siteConfig.phone}
-                  </a>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>

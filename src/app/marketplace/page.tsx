@@ -75,14 +75,18 @@ export default async function MarketplacePage({
   return (
     <main className="min-h-screen bg-stone">
       {/* Header */}
-      <div className="bg-navy py-14 text-center text-white">
-        <h1 className="font-display text-4xl">Marketplace</h1>
-        <p className="mt-2 text-white/60">
-          Curated items from sellers across {regionContent[region].place}
-        </p>
+      <div className="relative overflow-hidden bg-navy pb-8 pt-28 text-center text-white sm:pb-10 sm:pt-36">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:36px_36px]" />
+        <div className="pointer-events-none absolute -right-20 -top-16 hidden size-72 rounded-full bg-gold/10 blur-[100px] sm:block" />
+        <div className="relative">
+          <h1 className="font-display text-4xl sm:text-5xl">Marketplace</h1>
+          <p className="mx-auto mt-3 max-w-xl px-5 text-sm text-white/60 sm:text-base">
+            Curated items from sellers across {regionContent[region].place}
+          </p>
+        </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-6 sm:px-6 sm:pt-8">
         {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <form className="flex flex-1 items-center gap-2">
