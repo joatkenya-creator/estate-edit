@@ -147,7 +147,11 @@ export function assetJsonLd(asset: AssetDetail) {
   const hasPrice = asset.price != null && !asset.priceOnRequest;
   if (!hasPrice) return null;
 
-  const url = `${SITE_URL}/collection/${asset.slug}`;
+  // Each asset belongs to a single market — link to its own home domain, not
+  // always the Kenya apex (see the matching canonical fix in
+  // collection/[slug]/page.tsx).
+  const assetOrigin = asset.currency === "USD" ? US_SITE_URL : SITE_URL;
+  const url = `${assetOrigin}/collection/${asset.slug}`;
   const image = asset.images[0]?.url ?? asset.imageUrl ?? OG_IMAGE;
 
   return {
@@ -188,7 +192,8 @@ export function listingJsonLd(listing: {
   primary_image_url?: string | null;
   condition?: string | null;
 }) {
-  const url = `${SITE_URL}/marketplace/${listing.slug}`;
+  const listingOrigin = listing.currency === "USD" ? US_SITE_URL : SITE_URL;
+  const url = `${listingOrigin}/marketplace/${listing.slug}`;
   const itemCondition = listing.condition?.includes("new")
     ? "https://schema.org/NewCondition"
     : "https://schema.org/UsedCondition";

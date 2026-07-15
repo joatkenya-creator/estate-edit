@@ -12,7 +12,7 @@ import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetD
 import { getRegion } from "@/lib/region.server";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetFallbackDescription, assetJsonLd, buildOpenGraph, regionAlternates, SITE_URL } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph, siteUrlForRegion, SITE_URL } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -33,17 +33,21 @@ export async function generateMetadata({
   if (!asset) return { title: "Asset not found" };
   const ogImage = asset.images[0]?.url ?? asset.imageUrl;
   const description = asset.description ?? assetFallbackDescription(asset);
-  const region = await getRegion();
+  // Each asset belongs to a single market — canonicalize to ITS home domain
+  // (derived from its own currency), not whichever host the request came in
+  // on. No hreflang: this content doesn't have a real counterpart in the
+  // other region, so declaring en-KE/en-US alternates here would be wrong.
+  const assetRegion = asset.currency === "USD" ? "virginia" : "kenya";
   return {
     title: asset.title,
     description,
-    alternates: regionAlternates(`/collection/${slug}`, region),
+    alternates: { canonical: `${siteUrlForRegion(assetRegion)}/collection/${slug}` },
     openGraph: buildOpenGraph({
       title: asset.title,
       description,
       path: `/collection/${slug}`,
       images: ogImage ? [{ url: ogImage }] : undefined,
-      region,
+      region: assetRegion,
     }),
   };
 }
