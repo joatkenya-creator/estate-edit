@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
 import { regionCurrency } from "@/lib/region";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-aware copy + listing-fee pricing — render per request.
 export const dynamic = "force-dynamic";
@@ -14,12 +14,15 @@ export const dynamic = "force-dynamic";
 const sellTitle = "Sell on The Estate Edit";
 const sellDescription = "Post your luxury and estate items for sale. Your first two listings are free.";
 
-export const metadata: Metadata = {
-  title: sellTitle,
-  description: sellDescription,
-  alternates: { canonical: "/sell" },
-  openGraph: buildOpenGraph({ title: sellTitle, description: sellDescription, path: "/sell" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title: sellTitle,
+    description: sellDescription,
+    alternates: regionAlternates("/sell", region),
+    openGraph: buildOpenGraph({ title: sellTitle, description: sellDescription, path: "/sell", region }),
+  };
+}
 
 const STEPS = [
   {

@@ -12,26 +12,44 @@ type RegionContextValue = {
 const RegionContext = createContext<RegionContextValue | null>(null);
 
 /**
- * Provides the active region to client components (DISPLAY ONLY — the header
- * badge, cart/footer copy). Region is derived from the HOST (us.* -> Virginia),
- * matching the server resolver in region.server.ts, so the whole app agrees.
+ * Provides the active region to client components (the header badge,
+ * cart/footer copy — including the footer's "Areas Served" LINKS, which are
+ * real crawlable hrefs, not just display text).
  *
- * We read the host on the CLIENT (not the server layout) on purpose: reading
- * request headers in the layout forced every page into dynamic SSR and tripped
- * Worker CPU limits (error 1102). Initial state is "kenya" (matches SSR HTML,
- * so no hydration mismatch); on the us. subdomain it flips to "virginia" after
- * mount — a brief, cosmetic badge flip on the secondary market only.
+ * `initialRegion` is resolved server-side (host-based, see region.server.ts)
+ * and passed down from the root layout, which already calls `headers()` for
+ * its own metadata — that call is request-memoized by Next, so seeding this
+ * provider from it is free and doesn't add a new dynamic-rendering trigger.
+ *
+ * Previously this defaulted to "kenya" and corrected itself client-side after
+ * mount, on the theory that reading headers here was what tripped a Worker
+ * CPU-limit error (1102). That default was wrong: it made the Virginia
+ * domain's server-rendered footer link to Kenya-only pages like
+ * /areas/karen (404 on us.estateedit.org) instead of its own /areas/mclean
+ * etc., which Ahrefs flagged as broken links + orphan pages across nearly
+ * every page on the Virginia site. The actual dynamic-rendering cost is the
+ * root layout's `headers()` call itself (unavoidable for host-based region
+ * detection) plus per-request Supabase fetches — the fetches are now cached
+ * (see queries.ts), so seeding this from the server is safe.
  */
-export function RegionProvider({ children }: { children: React.ReactNode }) {
-  const [region, setRegion] = useState<Region>("kenya");
+export function RegionProvider({
+  children,
+  initialRegion,
+}: {
+  children: React.ReactNode;
+  initialRegion: Region;
+}) {
+  const [region, setRegion] = useState<Region>(initialRegion);
 
+  // Defensive fallback only (e.g. a cached/static shell served before the
+  // server region was known) — normally a no-op since initialRegion is
+  // already correct.
   useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      window.location.hostname.toLowerCase().startsWith("us.")
-    ) {
-      setRegion("virginia");
-    }
+    const fromHost = window.location.hostname.toLowerCase().startsWith("us.")
+      ? "virginia"
+      : "kenya";
+    if (fromHost !== region) setRegion(fromHost);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value = useMemo<RegionContextValue>(

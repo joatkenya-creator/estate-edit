@@ -87,6 +87,19 @@ export function clampDescription(text: string, max = 155): string {
   return `${cut.slice(0, lastSpace > 0 ? lastSpace : max).trimEnd()}…`;
 }
 
+/**
+ * Clamp a CMS/user-entered title (asset name, listing title) to a search-
+ * result-friendly length without cutting mid-word. Default budget leaves
+ * room for the " · The Estate Edit" suffix the root layout's title template
+ * appends, so the rendered <title> stays under ~60 characters.
+ */
+export function clampTitle(text: string, max = 48): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).trimEnd();
+}
+
 /** Fallback description for a catalogue asset with no editor-written copy. */
 export function assetFallbackDescription(asset: Pick<AssetDetail, "title" | "category">): string {
   return `${asset.title} — ${asset.category} available through ${siteConfig.name}, Nairobi. Viewing by appointment; enquire in confidence.`;
@@ -107,7 +120,12 @@ export function organizationJsonLd() {
     name: siteConfig.name,
     url: SITE_URL,
     image: OG_IMAGE,
-    logo: OG_IMAGE,
+    // No `logo` field: Google's Logo rich-result spec requires a roughly
+    // square image (not wider than tall). OG_IMAGE is a 1200x630 landscape
+    // hero photo — using it as `logo` fails that validation on every page
+    // (this schema renders site-wide via the root layout). Omitting an
+    // optional field is safer than shipping an image that fails the check;
+    // add a real square logo asset here if the Logo rich result matters.
     description: siteConfig.description,
     telephone: phoneE164,
     email: siteConfig.email,
@@ -177,7 +195,12 @@ export function assetJsonLd(asset: AssetDetail) {
           addressCountry: "KE",
         },
       },
-      seller: { "@id": `${SITE_URL}/#organization` },
+      // A full inline object, not a bare `@id` pointer: the Organization
+      // entity it would reference lives in a SEPARATE <script> tag (root
+      // layout) from this Product block (asset page), and Google's Rich
+      // Results validator generally can't resolve an @id across disconnected
+      // JSON-LD blocks — it read as an invalid/unresolvable seller.
+      seller: { "@type": "Organization", "@id": `${assetOrigin}/#organization`, name: siteConfig.name },
     },
   };
 }

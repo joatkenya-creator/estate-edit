@@ -41,8 +41,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const isVa = region === "virginia";
 
   const title = isVa
-    ? "Luxury Estate Sales & Liquidation in Virginia | The Estate Edit"
-    : "Luxury Estate Sales & Liquidation in Nairobi, Kenya | The Estate Edit";
+    ? "Estate Sales & Liquidation, Virginia | The Estate Edit"
+    : "Estate Sales & Liquidation, Nairobi | The Estate Edit";
   const description = isVa
     ? "Luxury estate sales, commercial liquidation, and concierge transitions serving Virginia. Discreet valuation, marketing, and sale of homes and fine art."
     : "Luxury estate sales, commercial liquidation, and expatriate relocation in Nairobi, Kenya. Discreet valuation, marketing, and sale of homes and fine art.";
@@ -97,11 +97,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Request-memoized by Next (same headers() call generateMetadata already
+  // makes for this request) — free to call again here.
+  const region = await getRegion();
+
   return (
     <html
       lang="en"
@@ -114,7 +118,7 @@ export default function RootLayout({
         <GoogleAds />
         <UtmTracker />
         <JsonLd data={organizationJsonLd()} />
-        <RegionProvider>
+        <RegionProvider initialRegion={region}>
           <CartProvider>
             <SiteHeader />
             {children}

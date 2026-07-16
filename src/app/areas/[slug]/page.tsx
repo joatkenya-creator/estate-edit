@@ -30,12 +30,9 @@ export async function generateMetadata({
   if (!resolved) return { title: "Area not found" };
 
   const { region, area } = resolved;
-  const place = region === "virginia" ? `${area}, Virginia` : `${area}, Nairobi`;
-  const title = `Estate Sales & Liquidation in ${place}`;
-  const description =
-    region === "virginia"
-      ? `Luxury estate sales, liquidation, and concierge transitions for families and businesses in ${area}, Virginia. Discreet valuation, marketing, and sale of homes and fine art.`
-      : `Luxury estate sales, liquidation, and concierge transitions for families and businesses in ${area}, Nairobi. Discreet valuation, marketing, and sale of homes and fine art.`;
+  const place = region === "virginia" ? "Virginia" : "Nairobi";
+  const title = `${area} Estate Sales & Liquidation`;
+  const description = `Luxury estate sales, liquidation, and concierge transitions for families and businesses in ${area}, ${place} — discreet valuation, marketing, and sale.`;
 
   return {
     title,

@@ -12,7 +12,7 @@ import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetD
 import { getRegion } from "@/lib/region.server";
 import { cn } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetFallbackDescription, assetJsonLd, buildOpenGraph, siteUrlForRegion, SITE_URL } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph, clampDescription, clampTitle, siteUrlForRegion, SITE_URL } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -32,18 +32,26 @@ export async function generateMetadata({
   const asset = await getAssetBySlug(slug);
   if (!asset) return { title: "Asset not found" };
   const ogImage = asset.images[0]?.url ?? asset.imageUrl;
-  const description = asset.description ?? assetFallbackDescription(asset);
+  // Short editor-written descriptions read as thin content to search engines
+  // — fall back to the fuller templated description below ~70 characters,
+  // then clamp the long end so neither too-short nor too-long trips Ahrefs.
+  const rawDescription =
+    asset.description && asset.description.length >= 70
+      ? asset.description
+      : assetFallbackDescription(asset);
+  const description = clampDescription(rawDescription);
+  const title = clampTitle(asset.title);
   // Each asset belongs to a single market — canonicalize to ITS home domain
   // (derived from its own currency), not whichever host the request came in
   // on. No hreflang: this content doesn't have a real counterpart in the
   // other region, so declaring en-KE/en-US alternates here would be wrong.
   const assetRegion = asset.currency === "USD" ? "virginia" : "kenya";
   return {
-    title: asset.title,
+    title,
     description,
     alternates: { canonical: `${siteUrlForRegion(assetRegion)}/collection/${slug}` },
     openGraph: buildOpenGraph({
-      title: asset.title,
+      title,
       description,
       path: `/collection/${slug}`,
       images: ogImage ? [{ url: ogImage }] : undefined,

@@ -42,13 +42,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
   ];
 
-  const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((r) => ({
-    url: `${SITE_URL}${r.path}`,
-    lastModified: now,
-    changeFrequency: r.changeFrequency,
-    priority: r.priority,
-    alternates: { languages: languages(r.path) },
-  }));
+  // Each of these routes is served on BOTH domains with region-appropriate
+  // content (see the matching generateMetadata in every one of these pages),
+  // so each needs its OWN sitemap entry — one Kenya, one Virginia — not just
+  // a single Kenya entry with a one-way hreflang hint. Without the Virginia
+  // entry, the Virginia copy of every marketing/legal page is a real,
+  // 200-OK, indexable page that's simply absent from the sitemap.
+  const staticEntries: MetadataRoute.Sitemap = staticRoutes.flatMap((r) =>
+    (["kenya", "virginia"] as const).map((region) => ({
+      url: `${siteUrlForRegion(region)}${r.path}`,
+      lastModified: now,
+      changeFrequency: r.changeFrequency,
+      priority: r.priority,
+      alternates: { languages: languages(r.path) },
+    })),
+  );
 
   // Dynamic catalogue pages. getAllAssetSlugsWithMarket/getAllListingSlugsWithMarket
   // are resilient (fall back to static/empty content on DB error), so this never

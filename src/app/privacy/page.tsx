@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import { LegalShell, LegalSection } from "@/components/site/legal";
 import { siteConfig } from "@/lib/site";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
+import { getRegion } from "@/lib/region.server";
 
 const title = "Privacy Policy";
 const description =
   "How The Estate Edit collects, uses, and protects your personal information.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/privacy" },
-  openGraph: buildOpenGraph({ title, description, path: "/privacy" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title,
+    description,
+    alternates: regionAlternates("/privacy", region),
+    openGraph: buildOpenGraph({ title, description, path: "/privacy", region }),
+  };
+}
 
 export default function PrivacyPage() {
   return (

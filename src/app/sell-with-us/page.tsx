@@ -2,20 +2,23 @@ import type { Metadata } from "next";
 import { TrendingUp, Camera, ShieldCheck, Users } from "lucide-react";
 import { ConsignForm } from "@/components/marketing/consign-form";
 import { getRegion } from "@/lib/region.server";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
-const title = "Sell With Us — Consign Your Estate & Luxury Assets";
+const title = "Sell With Us: Consign Your Assets";
 const description =
-  "Consign luxury, estate, and commercial assets with The Estate Edit. Professional valuation, editorial marketing, and a private buyer network. Request a free valuation.";
+  "Consign luxury, estate, and commercial assets with The Estate Edit — professional valuation, editorial marketing, and a private buyer network.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/sell-with-us" },
-  openGraph: buildOpenGraph({ title, description, path: "/sell-with-us" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title,
+    description,
+    alternates: regionAlternates("/sell-with-us", region),
+    openGraph: buildOpenGraph({ title, description, path: "/sell-with-us", region }),
+  };
+}
 
 const points = [
   { icon: TrendingUp, title: "Maximise value", body: "Market valuation and private buyer outreach to realise the best price." },

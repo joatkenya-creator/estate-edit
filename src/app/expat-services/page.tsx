@@ -5,18 +5,22 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
+import { getRegion } from "@/lib/region.server";
 
 const title = "Expatriate Relocation Services in Kenya";
 const description =
   "Relocation support for expatriates moving between Kenya and abroad: furnished housing on arrival; household liquidation and vehicle sales on departure.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/expat-services" },
-  openGraph: buildOpenGraph({ title, description, path: "/expat-services" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title,
+    description,
+    alternates: regionAlternates("/expat-services", region),
+    openGraph: buildOpenGraph({ title, description, path: "/expat-services", region }),
+  };
+}
 
 const directions = [
   {

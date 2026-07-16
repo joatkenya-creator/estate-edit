@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site/page-hero";
 import { Contact } from "@/components/sections/contact";
-import { buildOpenGraph } from "@/lib/seo";
+import { buildOpenGraph, regionAlternates } from "@/lib/seo";
+import { getRegion } from "@/lib/region.server";
 
 const title = "Contact & Consultations";
 const description =
   "Book a private consultation or request an asset review with The Estate Edit, luxury estate and transition management in Kenya.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/contact" },
-  openGraph: buildOpenGraph({ title, description, path: "/contact" }),
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const region = await getRegion();
+  return {
+    title,
+    description,
+    alternates: regionAlternates("/contact", region),
+    openGraph: buildOpenGraph({ title, description, path: "/contact", region }),
+  };
+}
 
 export default async function ContactPage({
   searchParams,
