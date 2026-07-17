@@ -113,13 +113,13 @@ export function SiteFooter() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row">
         <div className="flex items-center gap-3">
-          <Image
+          {/*<Image
             src="/sdvosb-seal.svg"
             alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) — VA Verified"
             width={40}
             height={40}
             unoptimized
-          />
+          /> */}
           <p>© {new Date().getFullYear()} The Estate Edit. All rights reserved.</p>
         </div>
           <nav className="flex items-center gap-4">
