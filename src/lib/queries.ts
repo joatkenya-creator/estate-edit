@@ -2,7 +2,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { createPublicClient } from "@/lib/supabase/public";
 import { getRegion } from "@/lib/region.server";
-import { type Region } from "@/lib/region";
+import { type Region, regionCurrency } from "@/lib/region";
 import {
   services as staticServices,
   statMetrics as staticMetrics,
@@ -533,4 +533,66 @@ export async function getFeaturedAssets(
 ): Promise<FeaturedAsset[]> {
   const region = await getRegion();
   return getCachedFeaturedAssets(region, opts.limit ?? "none", opts.latest ?? false);
+}
+
+export type MarketplaceListing = {
+  slug: string;
+  title: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  category: string;
+  condition: string | null;
+  location: string | null;
+  primary_image_url: string | null;
+  views: number;
+  user_profiles: { full_name?: string | null } | null;
+};
+
+// Marketplace browse/search is the highest-traffic, most-write-volatile page
+// on the site — a short cache (vs. no cache at all) is the single biggest
+// lever on Postgres load without staling results meaningfully for shoppers.
+// Uses the anon client (not the cookie-bound SSR client) so the result is
+// cacheable across visitors; RLS already restricts reads to active listings.
+const getCachedMarketplaceListings = unstable_cache(
+  async (region: Region, category: string, q: string): Promise<MarketplaceListing[]> => {
+    try {
+      const supabase = createPublicClient();
+      let query = supabase
+        .from("user_listings")
+        .select(
+          "slug, title, description, price, currency, category, condition, location, primary_image_url, views, user_profiles ( full_name )",
+        )
+        .eq("status", "active")
+        .eq("currency", regionCurrency[region])
+        .order("created_at", { ascending: false })
+        .limit(200);
+
+      if (category) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        query = query.eq("category", category as any);
+      }
+      if (q) query = query.ilike("title", `%${q}%`);
+
+      const { data, error } = await query;
+      if (error || !data) return [];
+
+      return data.map((l) => ({
+        ...l,
+        user_profiles: Array.isArray(l.user_profiles) ? (l.user_profiles[0] ?? null) : l.user_profiles,
+      }));
+    } catch {
+      return [];
+    }
+  },
+  ["marketplace-listings"],
+  { revalidate: 60 },
+);
+
+export async function getMarketplaceListings(
+  region: Region,
+  category: string,
+  q: string,
+): Promise<MarketplaceListing[]> {
+  return getCachedMarketplaceListings(region, category, q);
 }

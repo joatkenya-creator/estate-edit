@@ -4,6 +4,8 @@ import { sendBatch } from "@/lib/resend";
 import { sendWhatsAppTemplate, toE164Ke, whatsappConfigured } from "@/lib/whatsapp";
 import { formatPriceRange } from "@/lib/site";
 import { SITE_URL } from "@/lib/seo";
+import { timingSafeEqual } from "@/lib/timing-safe";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -67,9 +69,17 @@ function buildEmail(items: Item[], market: "kenya" | "virginia"): string {
  */
 export async function POST(request: NextRequest) {
   const provided =
-    new URL(request.url).searchParams.get("token") ?? request.headers.get("x-broadcast-token");
-  if (!process.env.BROADCAST_TOKEN || provided !== process.env.BROADCAST_TOKEN) {
+    new URL(request.url).searchParams.get("token") ?? request.headers.get("x-broadcast-token") ?? "";
+  const expected = process.env.BROADCAST_TOKEN;
+  if (!expected || !timingSafeEqual(provided, expected)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  // Defense-in-depth: caps how much a leaked token could be used to spam the
+  // subscriber list before it's revoked.
+  const limit = await rateLimit("broadcast", { limit: 10, windowSeconds: 3600 });
+  if (!limit.allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
 
   const body = (await request.json().catch(() => ({}))) as {

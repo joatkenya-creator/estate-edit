@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { sendEmail } from "@/lib/email";
 import { sendSms } from "@/lib/sms";
 import { formatMoney, type CartItem } from "@/lib/site";
@@ -197,4 +198,91 @@ export async function notifyCustomer(data: OrderNotificationData): Promise<void>
   }
 
   await Promise.allSettled(tasks);
+}
+
+export type StaffOrderAlertData = {
+  orderNumber: string;
+  fullName: string;
+  phone: string;
+  email?: string;
+  county?: string;
+  town?: string;
+  state?: string;
+  postalCode?: string;
+  address: string;
+  market?: "kenya" | "virginia";
+  deliveryQuotePending?: boolean;
+  items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
+  total: number;
+  currency: string;
+};
+
+const STAFF_ALERT_SENDER = "orders@estateedit.org";
+const STAFF_ALERT_RECIPIENT = "joatkenya120@gmail.com";
+
+function buildStaffAlertBody(o: StaffOrderAlertData): string {
+  const lines = o.items
+    .map((it) => `  • ${it.quantity} × ${it.title} — ${formatMoney(it.price * it.quantity, o.currency)}`)
+    .join("\n");
+  return [
+    `New order ${o.orderNumber}`,
+    ``,
+    `Customer: ${o.fullName}`,
+    `Phone:    ${o.phone}`,
+    o.email ? `Email:    ${o.email}` : null,
+    `Store:    ${o.market === "virginia" ? "Virginia (USA)" : "Kenya"}`,
+    `Deliver:  ${[o.address, o.town, o.county, o.state, o.postalCode].filter(Boolean).join(", ")}`,
+    o.deliveryQuotePending ? `(Outside Virginia: shipping quote required)` : null,
+    ``,
+    `Items:`,
+    lines,
+    ``,
+    `Subtotal: ${formatMoney(o.subtotal, o.currency)}`,
+    `Delivery: ${formatMoney(o.deliveryFee, o.currency)}`,
+    `Total:    ${formatMoney(o.total, o.currency)}`,
+    ``,
+    `Payment is on delivery. Triage this order in the CMS → Sales → Orders.`,
+  ]
+    .filter((l) => l !== null)
+    .join("\n");
+}
+
+/**
+ * Sends the new-order alert to staff via the Cloudflare Send Email binding
+ * (ORDER_EMAIL), which delivers to the verified Email Routing destination.
+ * Never throws — a failure here must not affect the order that already saved.
+ */
+export async function sendStaffOrderAlert(o: StaffOrderAlertData): Promise<void> {
+  try {
+    const { env } = getCloudflareContext();
+    const binding = (env as Record<string, unknown>).ORDER_EMAIL as
+      | { send: (msg: unknown) => Promise<void> }
+      | undefined;
+
+    // No binding (e.g. local dev) — skip silently.
+    if (!binding) return;
+
+    // cloudflare:email is a Workers-runtime module; keep it out of the bundle.
+    const { EmailMessage } = await import(/* webpackIgnore: true */ "cloudflare:email");
+
+    const subject = `New order ${o.orderNumber} — ${formatMoney(o.total, o.currency)} (${o.county || o.state || "—"})`;
+    const raw = [
+      `From: The Estate Edit Orders <${STAFF_ALERT_SENDER}>`,
+      `To: ${STAFF_ALERT_RECIPIENT}`,
+      `Reply-To: ${o.email || STAFF_ALERT_RECIPIENT}`,
+      `Subject: ${subject}`,
+      `Message-ID: <${crypto.randomUUID()}@estateedit.org>`,
+      `Date: ${new Date().toUTCString()}`,
+      `MIME-Version: 1.0`,
+      `Content-Type: text/plain; charset=utf-8`,
+      ``,
+      buildStaffAlertBody(o),
+    ].join("\r\n");
+
+    await binding.send(new EmailMessage(STAFF_ALERT_SENDER, STAFF_ALERT_RECIPIENT, raw));
+  } catch (err) {
+    console.error("sendStaffOrderAlert failed", err);
+  }
 }

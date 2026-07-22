@@ -8,6 +8,7 @@ import { getRegion } from "@/lib/region.server";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildOpenGraph, clampDescription, listingJsonLd } from "@/lib/seo";
+import { recordViewDebounced } from "@/lib/view-counter";
 
 export const revalidate = 60;
 
@@ -68,23 +69,28 @@ export default async function ListingDetailPage({
 
   if (!listing) notFound();
 
-  // Increment view count (fire-and-forget)
-  supabase
-    .from("user_listings")
-    .update({ views: listing.views + 1 })
-    .eq("id", listing.id)
-    .then(() => {});
+  // Debounced view-count increment (fire-and-forget) — see
+  // src/lib/view-counter.ts for why this isn't a plain per-request write.
+  void recordViewDebounced(listing.id, async (incrementBy) => {
+    await supabase
+      .from("user_listings")
+      .update({ views: listing.views + incrementBy })
+      .eq("id", listing.id);
+  });
 
   const profile = Array.isArray(listing.user_profiles)
     ? listing.user_profiles[0]
     : listing.user_profiles;
 
-  const { data: { user } } = await supabase.auth.getUser();
+  // Independent reads — run together instead of one after the other.
+  const [{ data: { user } }, isVa] = await Promise.all([
+    supabase.auth.getUser(),
+    getRegion().then((r) => r === "virginia"),
+  ]);
   const isOwner = user?.id === listing.user_id;
 
   // Virginia sellers are contacted by email (no phone shown); Kenya keeps phone
   // (WhatsApp / call). The seller's email lives in auth.users, not the profile.
-  const isVa = (await getRegion()) === "virginia";
   let sellerEmail: string | null = null;
   if (isVa && !isOwner) {
     try {

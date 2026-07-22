@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { initiateStkPush } from "@/lib/mpesa";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -9,6 +10,15 @@ export async function POST(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+  }
+
+  // Per-user cap: bounds how many STK prompts any one account can trigger.
+  const userLimit = await rateLimit(`stk-push:user:${user.id}`, { limit: 5, windowSeconds: 600 });
+  if (!userLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many payment attempts. Please wait a few minutes and try again." },
+      { status: 429 },
+    );
   }
 
   // listing_payments has no client-write RLS policy (writes are system-owned),
@@ -20,6 +30,17 @@ export async function POST(request: NextRequest) {
 
   if (!listingId || !phone) {
     return NextResponse.json({ error: "listingId and phone are required" }, { status: 400 });
+  }
+
+  // Per-target-phone cap: an STK push sends a real prompt to whatever phone
+  // number is supplied, regardless of who owns the account — this stops that
+  // number from being spammed even by different accounts.
+  const phoneLimit = await rateLimit(`stk-push:phone:${phone}`, { limit: 3, windowSeconds: 3600 });
+  if (!phoneLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many payment prompts sent to this phone number. Please try again later." },
+      { status: 429 },
+    );
   }
 
   // Fetch the listing to verify ownership and fee amount

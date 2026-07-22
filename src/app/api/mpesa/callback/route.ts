@@ -8,13 +8,16 @@ export async function POST(request: NextRequest) {
   // push knows. Without this, anyone could POST a fake "paid" result and activate
   // a listing for free.
   const expectedToken = process.env.MPESA_CALLBACK_TOKEN;
-  if (expectedToken) {
-    const token = new URL(request.url).searchParams.get("token");
-    if (token !== expectedToken) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-  } else {
-    console.warn("MPESA_CALLBACK_TOKEN not set — callback is unauthenticated.");
+  if (!expectedToken) {
+    // Fail closed: without a configured secret we cannot verify this callback
+    // actually came from Safaricom, so refuse to process it rather than
+    // trusting an unauthenticated request that could activate listings for free.
+    console.error("MPESA_CALLBACK_TOKEN not set — refusing to process callback.");
+    return NextResponse.json({ error: "Callback not configured" }, { status: 503 });
+  }
+  const token = new URL(request.url).searchParams.get("token");
+  if (token !== expectedToken) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   let body: StkCallbackBody;

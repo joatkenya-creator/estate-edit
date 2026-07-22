@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Store } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
 import { ListingCard } from "@/components/listings/listing-card";
 import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
 import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
-import { regionCurrency } from "@/lib/region";
+import { getMarketplaceListings } from "@/lib/queries";
 import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 
 // Region-specific listings + copy — render per request.
@@ -46,31 +45,7 @@ export default async function MarketplacePage({
 }) {
   const params = await searchParams;
   const region = await getRegion();
-  const supabase = await createClient();
-
-  let query = supabase
-    .from("user_listings")
-    .select(`
-      slug, title, description, price, currency, category, condition, location,
-      primary_image_url, views,
-      user_profiles ( full_name )
-    `)
-    .eq("status", "active")
-    .eq("currency", regionCurrency[region])
-    .order("created_at", { ascending: false })
-    // Kept above the sitemap's listing count so every URL we tell search
-    // engines about is also reachable via an on-page link (avoids orphans).
-    .limit(200);
-
-  if (params.category) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query = query.eq("category", params.category as any);
-  }
-  if (params.q) {
-    query = query.ilike("title", `%${params.q}%`);
-  }
-
-  const { data: listings } = await query;
+  const listings = await getMarketplaceListings(region, params.category ?? "", params.q ?? "");
 
   return (
     <main className="min-h-screen bg-stone">
@@ -137,20 +112,9 @@ export default async function MarketplacePage({
               {params.category && ` in ${params.category.replace(/_/g, " ")}`}
             </p>
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-              {listings.map((listing) => {
-                const profile = Array.isArray(listing.user_profiles)
-                  ? listing.user_profiles[0]
-                  : listing.user_profiles;
-                return (
-                  <ListingCard
-                    key={listing.slug}
-                    listing={{
-                      ...listing,
-                      user_profiles: profile as { full_name?: string | null } | null,
-                    }}
-                  />
-                );
-              })}
+              {listings.map((listing) => (
+                <ListingCard key={listing.slug} listing={listing} />
+              ))}
             </div>
           </>
         )}

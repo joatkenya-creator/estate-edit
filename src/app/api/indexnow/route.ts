@@ -1,5 +1,6 @@
 import sitemap from "@/app/sitemap";
 import { submitToIndexNow } from "@/lib/indexnow";
+import { timingSafeEqual } from "@/lib/timing-safe";
 
 /**
  * Re-submits every URL currently in the sitemap to IndexNow (Bing, Yandex,
@@ -13,8 +14,9 @@ import { submitToIndexNow } from "@/lib/indexnow";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request): Promise<Response> {
-  const secret = request.headers.get("x-indexnow-secret");
-  if (!secret || secret !== process.env.INDEXNOW_SECRET) {
+  const secret = request.headers.get("x-indexnow-secret") ?? "";
+  const expected = process.env.INDEXNOW_SECRET;
+  if (!expected || !timingSafeEqual(secret, expected)) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 

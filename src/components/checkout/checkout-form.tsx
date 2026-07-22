@@ -18,7 +18,7 @@ import {
   type DeliverySettings,
 } from "@/lib/site";
 import { useCart } from "@/components/cart/cart-context";
-import { placeOrder } from "@/lib/orders";
+import { placeOrder } from "@/app/actions/place-order";
 import { quoteDelivery } from "@/app/actions/delivery-quote";
 
 const selectClass =
@@ -114,7 +114,7 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
     }
     setSubmitting(true);
     try {
-      const { orderNumber } = await placeOrder({
+      const placed = await placeOrder({
         fullName,
         phone,
         email,
@@ -127,23 +127,26 @@ export function CheckoutForm({ settings }: { settings: DeliverySettings }) {
         address,
         deliveryNotes: notes,
         deliveryQuotePending: isOutside,
-        items,
-        subtotal,
-        deliveryFee,
-        total,
-        currency,
+        items: items.map((it) => ({ slug: it.slug, quantity: it.quantity })),
         source: "checkout",
       });
       clear();
+      // Use the server-recomputed total (authoritative) rather than the local
+      // estimate — they should normally match, but the server value is what
+      // was actually recorded on the order.
       const params = new URLSearchParams({
-        order: orderNumber,
-        total: String(total),
-        currency,
+        order: placed.orderNumber,
+        total: String(placed.total),
+        currency: placed.currency,
       });
       router.push(`/checkout/confirmation?${params.toString()}`);
     } catch (err) {
       console.error(err);
-      toast.error("Sorry, we couldn't place your order. Please try again.");
+      toast.error(
+        err instanceof Error && err.message
+          ? err.message
+          : "Sorry, we couldn't place your order. Please try again.",
+      );
       setSubmitting(false);
     }
   }

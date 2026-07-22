@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { timingSafeEqual } from "@/lib/timing-safe";
 
 /**
  * Paystack webhook — server-to-server "payment succeeded" notification. This is
@@ -37,9 +38,9 @@ export async function POST(request: NextRequest) {
   if (!secret) return NextResponse.json({ error: "not configured" }, { status: 500 });
 
   const raw = await request.text();
-  const signature = request.headers.get("x-paystack-signature");
+  const signature = request.headers.get("x-paystack-signature") ?? "";
   const expected = await hmacSha512Hex(secret, raw);
-  if (!signature || signature !== expected) {
+  if (!timingSafeEqual(signature, expected)) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 

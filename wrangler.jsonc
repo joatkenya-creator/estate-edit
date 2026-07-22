@@ -21,6 +21,13 @@
     }
   ],
 
+  // --- Abuse-prevention rate limiting (KV-backed) ---------------------------
+  // Used by src/lib/rate-limit.ts to throttle the M-Pesa STK-push endpoint
+  // (per-user + per-target-phone) and checkout order placement (per-IP).
+  "kv_namespaces": [
+    { "binding": "RATE_LIMIT_KV", "id": "6127260ea1174713be78b441ac8edd1e" }
+  ],
+
   // --- Order notifications via Cloudflare Email Routing -------------------
   // Lets the Worker send the new-order alert to a VERIFIED destination address.
   // Before this works: enable Email Routing on estateedit.org and verify this

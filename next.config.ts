@@ -50,6 +50,42 @@ const nextConfig: NextConfig = {
       },
     ]);
   },
+  async headers() {
+    // Verified against a local production build (`npm run build && next start`,
+    // which activates the same production-only scripts as the live site) across
+    // home/collection/marketplace/checkout/login: every script/style/img/connect
+    // source actually requested matches this list, and product images either
+    // proxy same-origin through next/image or hit the one Supabase host below.
+    // The one thing NOT exercised end-to-end is Paystack's inline-widget iframe
+    // (frame-src) — that only opens mid-transaction on the seller listing-fee
+    // flow, which needs a real payment to trigger. If that popup ever fails to
+    // open after a deploy, it's almost certainly this list missing Paystack's
+    // current iframe host — check the console and add it here.
+    const csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://js.paystack.co https://connect.facebook.net https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https://czvrsproxqlpcnvbaltq.supabase.co https://images.unsplash.com https://www.facebook.com https://www.googletagmanager.com",
+      "font-src 'self' data:",
+      "connect-src 'self' https://czvrsproxqlpcnvbaltq.supabase.co https://api.paystack.co https://www.google-analytics.com https://analytics.google.com https://connect.facebook.net https://www.facebook.com",
+      "frame-src https://checkout.paystack.com https://js.paystack.co https://standard.paystack.co",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ].join("; ");
+
+    const securityHeaders = [
+      { key: "Content-Security-Policy", value: csp },
+      { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+    ];
+
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
 };
 
 export default nextConfig;
