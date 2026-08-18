@@ -6,6 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionCurrency } from "@/lib/region";
+import { paystackPublicKey } from "@/lib/paystack-key";
+import { PayListingButton } from "@/components/listings/pay-listing-button";
+import { RemoveListingButton } from "@/components/listings/remove-listing-button";
+import { MarkSoldButton } from "@/components/listings/mark-sold-button";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +31,7 @@ export default async function ListingsPage() {
 
   const region = await getRegion();
   const currency = regionCurrency[region];
-  const listingFee = region === "virginia" ? 5 : 500;
+  const listingFee = region === "virginia" ? 8 : 500;
 
   const [profileResult, listingsResult] = await Promise.all([
     supabase
@@ -37,7 +41,9 @@ export default async function ListingsPage() {
       .single(),
     supabase
       .from("user_listings")
-      .select("id, slug, title, status, price, currency, views, is_free_listing, primary_image_url, created_at")
+      .select(
+        "id, slug, title, status, price, currency, views, is_free_listing, listing_fee_paid, listing_fee_amount, primary_image_url, created_at",
+      )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
   ]);
@@ -47,6 +53,7 @@ export default async function ListingsPage() {
   const freeUsed = profile?.free_listings_used ?? 0;
   const canPostFree = freeUsed < 2;
   const isPaidTier = freeUsed >= 2;
+  const paystackKey = paystackPublicKey();
 
   return (
     <div className="space-y-4">
@@ -129,6 +136,23 @@ export default async function ListingsPage() {
                   <span>{listing.is_free_listing ? "Free listing" : "Paid listing"}</span>
                 </div>
 
+                {listing.status === "draft" && !listing.listing_fee_paid && (
+                  <div className="mt-3 space-y-1.5 rounded-lg border border-gold/30 bg-gold/5 p-3">
+                    <p className="text-xs text-gold-dark">
+                      Not published yet — pay the listing fee to send it for review.
+                    </p>
+                    <PayListingButton
+                      listingId={listing.id}
+                      amount={Number(listing.listing_fee_amount ?? listingFee)}
+                      currency={listing.currency || currency}
+                      email={user.email ?? ""}
+                      paystackKey={paystackKey}
+                      size="sm"
+                      className="w-full bg-navy text-white hover:bg-navy-soft"
+                    />
+                  </div>
+                )}
+
                 <div className="mt-3 flex gap-2">
                   {listing.status === "active" && (
                     <Link
@@ -145,6 +169,18 @@ export default async function ListingsPage() {
                     >
                       <Edit className="size-3" /> Edit
                     </Link>
+                  )}
+                  {(listing.status === "active" || listing.status === "sold") && (
+                    <MarkSoldButton
+                      listingId={listing.id}
+                      isSold={listing.status === "sold"}
+                    />
+                  )}
+                  {listing.status !== "withdrawn" && (
+                    <RemoveListingButton
+                      listingId={listing.id}
+                      isDraft={listing.status === "draft"}
+                    />
                   )}
                 </div>
               </div>

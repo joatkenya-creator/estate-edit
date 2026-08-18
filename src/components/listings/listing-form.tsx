@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { Loader2, Upload, CheckCircle2, CreditCard, X } from "lucide-react";
+import { PayListingButton } from "@/components/listings/pay-listing-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,54 +36,23 @@ const CONDITIONS = [
   { value: "fair", label: "Fair — functional but worn" },
 ];
 
-type Props = { isFree: boolean; freeRemaining: number; userEmail: string };
+type Props = {
+  isFree: boolean;
+  freeRemaining: number;
+  userEmail: string;
+  /** Paystack public key, read on the server at request time. */
+  paystackKey: string;
+};
 
 const initial: ListingState = { status: "idle", message: "" };
 
-type PaystackHandler = { openIframe: () => void };
-type PaystackPop = {
-  setup: (opts: {
-    key: string;
-    email: string;
-    amount: number;
-    currency: string;
-    ref: string;
-    channels: string[];
-    metadata?: Record<string, unknown>;
-    callback: (response: { reference: string }) => void;
-    onClose: () => void;
-  }) => PaystackHandler;
-};
-declare global {
-  interface Window {
-    PaystackPop?: PaystackPop;
-  }
-}
-
-/** Load Paystack's inline popup script once. */
-function loadPaystack(): Promise<PaystackPop> {
-  return new Promise((resolve, reject) => {
-    if (window.PaystackPop) return resolve(window.PaystackPop);
-    const s = document.createElement("script");
-    s.src = "https://js.paystack.co/v1/inline.js";
-    s.async = true;
-    s.onload = () =>
-      window.PaystackPop ? resolve(window.PaystackPop) : reject(new Error("Paystack unavailable"));
-    s.onerror = () => reject(new Error("Failed to load Paystack"));
-    document.body.appendChild(s);
-  });
-}
-
-export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
+export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: Props) {
   const [state, action, pending] = useActionState(createListing, initial);
-  const [paying, setPaying] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const { currency } = useRegion();
   const isKes = currency === "KES";
   const listingFee = isKes ? 500 : 8;
-  // Kenya can pay by card, bank or M-Pesa; other markets by card or bank.
-  const channels = isKes ? ["card", "bank", "mobile_money"] : ["card", "bank"];
   const methodsLabel = isKes ? "card, bank or M-Pesa" : "card or bank";
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -115,58 +85,6 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
     }
   }
 
-  async function verifyPayment(reference: string) {
-    try {
-      const res = await fetch("/api/paystack/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference, listingId: state.listingId }),
-      });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
-      if (res.ok && data.ok) {
-        toast.success("Payment confirmed — your listing is under review and will go live shortly.");
-        window.location.href = "/account/listings";
-      } else {
-        toast.error(data.error ?? "We couldn't confirm the payment. If you were charged, contact us.");
-        setPaying(false);
-      }
-    } catch {
-      toast.error("Could not confirm the payment. Please try again.");
-      setPaying(false);
-    }
-  }
-
-  async function handlePayListing() {
-    if (!state.listingId) return;
-    const key = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
-    if (!key) {
-      toast.error("Payments are not configured yet. Please try again later.");
-      return;
-    }
-    setPaying(true);
-    try {
-      const Paystack = await loadPaystack();
-      const reference = `EE-${state.listingId.slice(0, 8)}-${Date.now().toString(36)}`;
-      const handler = Paystack.setup({
-        key,
-        email: userEmail,
-        amount: Math.round((state.feeAmount ?? listingFee) * 100),
-        currency,
-        ref: reference,
-        channels,
-        metadata: { listingId: state.listingId },
-        callback: (response) => {
-          void verifyPayment(response.reference);
-        },
-        onClose: () => setPaying(false),
-      });
-      handler.openIframe();
-    } catch {
-      toast.error("Could not open the payment window. Please try again.");
-      setPaying(false);
-    }
-  }
-
   if (state.status === "payment_required") {
     return (
       <div className="rounded-xl border border-gold/30 bg-gold/5 p-8 text-center">
@@ -175,21 +93,13 @@ export function ListingForm({ isFree, freeRemaining, userEmail }: Props) {
         <p className="mt-2 text-sm text-charcoal/70">{state.message}</p>
 
         <div className="mx-auto mt-6 max-w-xs space-y-3">
-          <Button
-            onClick={handlePayListing}
-            disabled={paying}
-            size="lg"
-            className="w-full bg-navy text-white hover:bg-navy-soft"
-          >
-            {paying ? (
-              <>
-                <Loader2 className="mr-2 size-4 animate-spin" />
-                Processing…
-              </>
-            ) : (
-              `Pay ${currency} ${(state.feeAmount ?? listingFee).toLocaleString()}`
-            )}
-          </Button>
+          <PayListingButton
+            listingId={state.listingId!}
+            amount={state.feeAmount ?? listingFee}
+            currency={currency}
+            email={userEmail}
+            paystackKey={paystackKey}
+          />
           <p className="text-xs text-charcoal/50">
             Pay securely by {methodsLabel}. Your listing goes live immediately after payment is confirmed.
           </p>

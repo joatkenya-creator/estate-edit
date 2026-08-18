@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ListingForm } from "@/components/listings/listing-form";
 import { getRegion } from "@/lib/region.server";
 import { regionCurrency } from "@/lib/region";
+import { paystackPublicKey } from "@/lib/paystack-key";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,12 @@ export default async function PostListingPage() {
       </p>
 
       <div className="rounded-xl border border-border bg-white p-6 shadow-sm sm:p-8">
-        <ListingForm isFree={isFree} freeRemaining={freeRemaining} userEmail={user.email ?? ""} />
+        <ListingForm
+          isFree={isFree}
+          freeRemaining={freeRemaining}
+          userEmail={user.email ?? ""}
+          paystackKey={paystackPublicKey()}
+        />
       </div>
     </main>
   );

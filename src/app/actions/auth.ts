@@ -18,9 +18,14 @@ export async function signUp(
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   const fullName = (formData.get("full_name") as string)?.trim();
+  const phone = (formData.get("phone") as string)?.trim();
 
-  if (!email || !password || !fullName) {
+  if (!email || !password || !fullName || !phone) {
     return { status: "error", message: "Please fill in all required fields." };
+  }
+  // PhoneField submits E.164 (e.g. +254712345678); reject anything else.
+  if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
+    return { status: "error", message: "Please enter a valid phone number." };
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
@@ -35,7 +40,8 @@ export async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName },
+      // Copied into user_profiles by the handle_new_user trigger.
+      data: { full_name: fullName, phone },
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://estateedit.org"}/auth/callback`,
     },
   });

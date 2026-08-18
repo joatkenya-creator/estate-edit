@@ -36,11 +36,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
-          # Missing here = Paystack's inline popup gets an undefined public
-          # key at build time (NEXT_PUBLIC_* is inlined into the client
-          # bundle, not read at runtime) — every "Pay" click in production
-          # fails silently. Must also be added as a repo secret.
-          NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY: ${{ secrets.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY }}
+          # Paystack's public key is NOT needed here — it is read at runtime
+          # from the Worker secret PAYSTACK_PUBLIC_KEY (see lib/paystack-key.ts)
+          # so a missing build secret can no longer silently break "Pay".
           NEXT_PUBLIC_GOOGLE_ADS_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_ADS_ID }}
           NEXT_PUBLIC_META_PIXEL_ID: ${{ secrets.NEXT_PUBLIC_META_PIXEL_ID }}
           # Wrangler auth for the deploy step. Runtime Worker secrets

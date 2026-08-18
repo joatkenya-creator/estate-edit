@@ -6,6 +6,7 @@ import { Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneField } from "@/components/forms/phone-field";
 import { signUp, type AuthState } from "@/app/actions/auth";
 
 const initial: AuthState = { status: "idle", message: "" };
@@ -55,6 +56,14 @@ export function SignUpForm() {
           required
           placeholder="you@example.com"
         />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="phone">Phone number</Label>
+        <PhoneField id="phone" name="phone" required />
+        <p className="text-xs text-charcoal/40">
+          Buyers use this to reach you about your listings.
+        </p>
       </div>
 
       <div className="space-y-1.5">

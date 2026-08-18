@@ -575,6 +575,9 @@ const getCachedMarketplaceListings = unstable_cache(
       if (q) query = query.ilike("title", `%${q}%`);
 
       const { data, error } = await query;
+      // Log instead of swallowing: a bad select (e.g. a missing PostgREST
+      // relationship) otherwise renders an empty marketplace silently.
+      if (error) console.error("Marketplace query failed:", error.message);
       if (error || !data) return [];
 
       return data.map((l) => ({

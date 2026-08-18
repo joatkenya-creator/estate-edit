@@ -152,17 +152,70 @@ export async function createListing(
   redirect("/account/listings");
 }
 
-export async function deleteListing(listingId: string): Promise<{ error?: string }> {
+/**
+ * Flips a listing between `active` and `sold`. Sold listings drop out of the
+ * marketplace (it filters `status = 'active'`) but stay in the seller's
+ * account, so a fallen-through sale can be relisted without reposting.
+ */
+export async function toggleListingSold(listingId: string): Promise<{ error?: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Unauthorised" };
 
-  const { error } = await supabase
+  const { data: listing } = await supabase
     .from("user_listings")
-    .delete()
+    .select("status")
     .eq("id", listingId)
     .eq("user_id", user.id)
-    .eq("status", "draft");
+    .single();
+
+  if (!listing) return { error: "Listing not found." };
+  if (listing.status !== "active" && listing.status !== "sold") {
+    return { error: "Only a published listing can be marked sold." };
+  }
+
+  const { error } = await supabase
+    .from("user_listings")
+    .update({ status: listing.status === "sold" ? "active" : "sold" })
+    .eq("id", listingId)
+    .eq("user_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/account/listings");
+  return {};
+}
+
+export async function removeListing(listingId: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorised" };
+
+  const { data: listing } = await supabase
+    .from("user_listings")
+    .select("status")
+    .eq("id", listingId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!listing) return { error: "Listing not found." };
+
+  // A draft was never public and has no payment attached, so delete it outright
+  // (RLS only permits DELETE on drafts anyway). Anything that has been live is
+  // withdrawn instead: it leaves the marketplace immediately, but its
+  // listing_payments row survives — that table cascades on delete.
+  const { error } =
+    listing.status === "draft"
+      ? await supabase
+          .from("user_listings")
+          .delete()
+          .eq("id", listingId)
+          .eq("user_id", user.id)
+      : await supabase
+          .from("user_listings")
+          .update({ status: "withdrawn" })
+          .eq("id", listingId)
+          .eq("user_id", user.id);
 
   if (error) return { error: error.message };
 

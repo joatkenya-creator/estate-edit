@@ -29,6 +29,15 @@ import { createClient } from "@/lib/supabase/client";
 import { signOut } from "@/app/actions/auth";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
+/** Signed-in account destinations — shared by the desktop dropdown and the
+ *  mobile sheet so the two can't drift apart again. */
+const accountLinks = [
+  { href: "/account", label: "My Account" },
+  { href: "/account/listings", label: "My Listings" },
+  { href: "/account/orders", label: "My Orders" },
+  { href: "/sell/post", label: "Post a Listing" },
+];
+
 function Wordmark({ inverted }: { inverted: boolean }) {
   const { region } = useRegion();
   return (
@@ -207,18 +216,11 @@ export function SiteHeader() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-44">
-                  <DropdownMenuItem asChild>
-                    <Link href="/account">My Account</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/account/listings">My Listings</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/account/orders">My Orders</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/sell/post">Post a Listing</Link>
-                  </DropdownMenuItem>
+                  {accountLinks.map((link) => (
+                    <DropdownMenuItem asChild key={link.href}>
+                      <Link href={link.href}>{link.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <form action={signOut}>
@@ -296,6 +298,26 @@ export function SiteHeader() {
                       <Tag className="size-4" /> Sell
                     </Link>
                   </SheetClose>
+
+                  {/* Account section — mirrors the desktop dropdown, which is
+                      hidden below xl and left mobile users with no way in. */}
+                  {user && (
+                    <div className="border-b border-white/10 py-3">
+                      <p className="mb-1 flex items-center gap-1.5 text-xs uppercase tracking-[0.2em] text-gold-soft">
+                        <User className="size-3.5" /> My Account
+                      </p>
+                      {accountLinks.map((link) => (
+                        <SheetClose asChild key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="block py-2.5 text-lg text-white/85 transition-colors hover:text-gold"
+                          >
+                            {link.label}
+                          </Link>
+                        </SheetClose>
+                      ))}
+                    </div>
+                  )}
                 </nav>
                 <div className="mt-auto flex flex-col gap-3 p-6">
                   <div className="flex items-center justify-between text-xs text-white/60">
@@ -310,14 +332,14 @@ export function SiteHeader() {
                     </Button>
                   </SheetClose>
                   {user ? (
-                    <SheetClose asChild>
-                      <Link
-                        href="/account"
-                        className="text-center text-sm font-medium text-white/80 hover:text-gold"
+                    <form action={signOut}>
+                      <button
+                        type="submit"
+                        className="w-full text-center text-sm font-medium text-red-300 transition-colors hover:text-red-200"
                       >
-                        My Account
-                      </Link>
-                    </SheetClose>
+                        Sign out
+                      </button>
+                    </form>
                   ) : (
                     <SheetClose asChild>
                       <Link
