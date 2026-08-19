@@ -18,6 +18,7 @@ export async function sendEmail(opts: {
   subject: string;
   html: string;
   replyTo?: string;
+  from?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   const key = process.env.RESEND_API_KEY;
   if (!key) return { ok: false, error: "RESEND_API_KEY not set" };
@@ -26,7 +27,7 @@ export async function sendEmail(opts: {
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: fromAddress(),
+      from: opts.from ?? fromAddress(),
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
