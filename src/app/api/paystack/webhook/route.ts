@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { timingSafeEqual } from "@/lib/timing-safe";
+import type { Json } from "@/lib/supabase/database.types";
 
 /**
  * Paystack webhook — server-to-server "payment succeeded" notification. This is
@@ -57,23 +58,44 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  const listingId = data.metadata?.listingId;
-  if (!listingId) return NextResponse.json({ received: true });
-
   const admin = createAdminClient();
+
+  // A successful charge we can't apply is money taken with nothing delivered.
+  // Record it instead of dropping it, so it shows up in a query rather than
+  // only in the Paystack dashboard. Upsert: webhook retries update one row.
+  async function flagUnmatched(reason: string) {
+    await admin.from("unmatched_payments").upsert(
+      {
+        reference: data!.reference ?? "unknown",
+        amount: (data!.amount ?? 0) / 100,
+        currency: data!.currency ?? null,
+        listing_id: data!.metadata?.listingId ?? null,
+        reason,
+        payload: data as unknown as Json,
+      },
+      { onConflict: "reference" },
+    );
+    return NextResponse.json({ received: true });
+  }
+
+  const listingId = data.metadata?.listingId;
+  if (!listingId) return flagUnmatched("no_listing_id");
+
   const { data: listing } = await admin
     .from("user_listings")
     .select("id, user_id, listing_fee_amount, currency, listing_fee_paid")
     .eq("id", listingId)
     .single();
 
-  // Missing, or already activated (e.g. the browser callback beat us here).
-  if (!listing || listing.listing_fee_paid) return NextResponse.json({ received: true });
+  if (!listing) return flagUnmatched("listing_not_found");
+  // Already activated (e.g. the browser callback beat us here) — not a drop.
+  if (listing.listing_fee_paid) return NextResponse.json({ received: true });
 
   const expectedMinor = Math.round(Number(listing.listing_fee_amount ?? 0) * 100);
   const amountOk = (data.amount ?? 0) >= expectedMinor;
   const currencyOk = (data.currency ?? "").toUpperCase() === (listing.currency ?? "").toUpperCase();
-  if (!amountOk || !currencyOk) return NextResponse.json({ received: true });
+  if (!amountOk) return flagUnmatched("amount_short");
+  if (!currencyOk) return flagUnmatched("currency_mismatch");
 
   await admin.from("listing_payments").insert({
     listing_id: listing.id,

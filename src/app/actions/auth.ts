@@ -2,33 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { sendEmail } from "@/lib/resend";
-
-const SELLER_WELCOME_FROM = "The Estate Edit <info@estateedit.org>";
-
-function sellerWelcomeHtml(fullName: string): string {
-  const firstName = fullName.split(" ")[0] || fullName;
-  return `
-    <div style="font-family:Georgia,serif;max-width:520px;margin:0 auto;color:#1a1a1a">
-      <h1 style="color:#002349;font-size:22px;margin:0 0 16px">Welcome to The Estate Edit, ${firstName}</h1>
-      <p style="font-size:15px;line-height:1.6">Your account is set up. You can now list items on the marketplace — your first two listings are free.</p>
-      <p style="margin:28px 0">
-        <a href="https://estateedit.org/sell/post" style="background:#002349;color:#fff;padding:12px 22px;text-decoration:none;border-radius:6px;font-size:14px">Post your first listing</a>
-      </p>
-      <p style="font-size:13px;color:#666;line-height:1.6">Questions? Just reply to this email.</p>
-    </div>
-  `;
-}
-
-/** Fire-and-forget: a failed welcome email must never block account creation. */
-function sendSellerWelcomeEmail(to: string, fullName: string): void {
-  sendEmail({
-    to,
-    from: SELLER_WELCOME_FROM,
-    subject: "Welcome to The Estate Edit",
-    html: sellerWelcomeHtml(fullName),
-  }).catch((err) => console.error("Seller welcome email failed:", err));
-}
+import { sendWelcomeEmail } from "@/lib/email/welcome";
 
 export type AuthState = {
   status: "idle" | "success" | "error";
@@ -83,7 +57,8 @@ export async function signUp(
     return { status: "error", message: error.message ?? "Sign-up failed. Please try again." };
   }
 
-  sendSellerWelcomeEmail(email, fullName);
+  // Fire-and-forget: a failed welcome email must never block account creation.
+  void sendWelcomeEmail({ name: fullName, email, role: "Seller", createdAt: new Date(), phone });
 
   return {
     status: "success",

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyTransaction } from "@/lib/paystack";
+import type { Json } from "@/lib/supabase/database.types";
 
 /**
  * Verifies a Paystack listing-fee payment and activates the listing. The client
@@ -43,12 +44,27 @@ export async function POST(request: NextRequest) {
   const currencyOk =
     (tx?.currency ?? "").toUpperCase() === (listing.currency ?? "").toUpperCase();
 
-  if (!tx || tx.status !== "success" || tx.amount < expectedMinor || !currencyOk) {
-    return NextResponse.json({ error: "Payment could not be verified" }, { status: 402 });
-  }
-
   // Privileged writes: listing_payments has no client-write RLS policy.
   const admin = createAdminClient();
+
+  if (!tx || tx.status !== "success" || tx.amount < expectedMinor || !currencyOk) {
+    // Charged but unusable (short amount / wrong currency) = money taken with
+    // nothing delivered. Record it; a failed or missing tx took no money.
+    if (tx?.status === "success") {
+      await admin.from("unmatched_payments").upsert(
+        {
+          reference: tx.reference,
+          amount: tx.amount / 100,
+          currency: tx.currency,
+          listing_id: listing.id,
+          reason: tx.amount < expectedMinor ? "amount_short" : "currency_mismatch",
+          payload: tx as unknown as Json,
+        },
+        { onConflict: "reference" },
+      );
+    }
+    return NextResponse.json({ error: "Payment could not be verified" }, { status: 402 });
+  }
 
   await admin.from("listing_payments").insert({
     listing_id: listing.id,

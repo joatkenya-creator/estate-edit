@@ -1799,6 +1799,45 @@ export type Database = {
         }
         Relationships: []
       }
+      unmatched_payments: {
+        Row: {
+          id: string
+          created_at: string
+          provider: string
+          reference: string
+          amount: number | null
+          currency: string | null
+          listing_id: string | null
+          reason: string
+          resolved_at: string | null
+          payload: Json
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          provider?: string
+          reference: string
+          amount?: number | null
+          currency?: string | null
+          listing_id?: string | null
+          reason: string
+          resolved_at?: string | null
+          payload?: Json
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          provider?: string
+          reference?: string
+          amount?: number | null
+          currency?: string | null
+          listing_id?: string | null
+          reason?: string
+          resolved_at?: string | null
+          payload?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
