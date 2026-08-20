@@ -1,0 +1,142 @@
+<!--
+  Supabase Dashboard > Authentication > Email Templates > "Confirm signup".
+  Paste this whole file into the template body. Uses Supabase's own Go-template
+  variable {{ .ConfirmationURL }} — that's the only one this template needs.
+  Kept in this repo for version control only; Supabase does not read this file.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm your email</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f6f4f1;
+      padding: 40px 16px;
+      color: #2d2d2d;
+    }
+    .wrapper {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,35,73,0.10);
+    }
+    .header {
+      background: linear-gradient(135deg, #001a36 0%, #002349 100%);
+      background-color: #002349;
+      padding: 52px 40px 40px;
+      text-align: center;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      color: #ccab79;
+      font-size: 32px;
+      font-weight: normal;
+      letter-spacing: 3px;
+    }
+    .header .subtitle {
+      color: #8fa4bd;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .header .rule {
+      width: 60px;
+      height: 2px;
+      background: #b68a4e;
+      margin: 22px auto 0;
+      font-size: 0;
+      line-height: 0;
+    }
+    .body { padding: 44px 40px; text-align: center; }
+    .body h2 {
+      font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      color: #002349;
+      font-size: 26px;
+      font-weight: normal;
+      margin-bottom: 18px;
+    }
+    .body p {
+      color: #4a4a4a;
+      line-height: 1.8;
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+    .cta {
+      display: inline-block;
+      background: #002349;
+      color: #ccab79 !important;
+      text-decoration: none;
+      padding: 14px 34px;
+      border-radius: 2px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .fallback {
+      margin-top: 28px;
+      font-size: 12px;
+      color: #9a9389;
+      word-break: break-all;
+    }
+    .fallback a { color: #8a8378; }
+    .divider { width: 100%; height: 1px; background: #ece7e0; margin: 28px 0; }
+    .footer {
+      background: #f6f4f1;
+      border-top: 1px solid #e4ded6;
+      padding: 28px 40px;
+      text-align: center;
+    }
+    .footer p { color: #9a9389; font-size: 12px; line-height: 1.7; }
+    .footer .brand {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: #002349;
+      font-size: 16px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>The Estate Edit</h1>
+      <p class="subtitle">Estate Sales &amp; Liquidation &middot; Nairobi</p>
+      <div class="rule">&nbsp;</div>
+    </div>
+
+    <div class="body">
+      <h2>Confirm your email address</h2>
+      <p>
+        You're almost set. Follow the link below to confirm this email address
+        and finish creating your account.
+      </p>
+
+      <p style="margin: 32px 0;">
+        <a class="cta" href="{{ .ConfirmationURL }}">Confirm email address</a>
+      </p>
+
+      <div class="divider"></div>
+
+      <p style="font-size: 13px;">
+        If the button above doesn't work, copy and paste this link into your browser:
+      </p>
+      <p class="fallback"><a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a></p>
+    </div>
+
+    <div class="footer">
+      <p class="brand">THE ESTATE EDIT</p>
+      <p>
+        Nairobi, Kenya &middot; estateedit.org<br>
+        If you did not create this account, you can safely ignore this email.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

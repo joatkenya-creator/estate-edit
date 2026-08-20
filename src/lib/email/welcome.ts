@@ -237,6 +237,7 @@ export async function sendWelcomeEmail(user: WelcomeUser): Promise<void> {
       html: welcomeEmailHtml(user),
     });
     if (error) console.error("Welcome email failed:", error);
+    else console.log("Welcome email sent:", user.email);
   } catch (err) {
     console.error("Welcome email failed:", err);
   }

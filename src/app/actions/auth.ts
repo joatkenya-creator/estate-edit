@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createClient } from "@/lib/supabase/server";
 import { sendWelcomeEmail } from "@/lib/email/welcome";
 
@@ -57,8 +58,12 @@ export async function signUp(
     return { status: "error", message: error.message ?? "Sign-up failed. Please try again." };
   }
 
-  // Fire-and-forget: a failed welcome email must never block account creation.
-  void sendWelcomeEmail({ name: fullName, email, role: "Seller", createdAt: new Date(), phone });
+  // Fire-and-forget, but registered with waitUntil: without it, Cloudflare
+  // can tear down the Worker's execution context as soon as this action
+  // returns, killing the un-awaited Resend fetch mid-flight with no error
+  // (this bit us — the email silently never sent).
+  const { ctx } = getCloudflareContext();
+  ctx.waitUntil(sendWelcomeEmail({ name: fullName, email, role: "Seller", createdAt: new Date(), phone }));
 
   return {
     status: "success",
