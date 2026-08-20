@@ -106,7 +106,7 @@ export default async function ListingDetailPage({
   const condition = listing.condition?.replace(/_/g, " ") ?? "";
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <main className="mx-auto max-w-5xl px-4 pb-10 pt-24 sm:px-6 sm:pt-28">
       <JsonLd
         data={listingJsonLd({
           slug: listing.slug,

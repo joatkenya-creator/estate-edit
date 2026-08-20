@@ -19,7 +19,7 @@ export default async function AccountLayout({
 
   return (
     <div className="min-h-screen bg-stone">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pt-28 lg:px-8">
         <div className="lg:grid lg:grid-cols-[240px_1fr] lg:gap-8">
           {/* Sidebar */}
           <aside className="hidden lg:block">

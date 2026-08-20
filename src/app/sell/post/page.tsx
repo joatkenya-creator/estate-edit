@@ -36,7 +36,7 @@ export default async function PostListingPage() {
   const freeRemaining = Math.max(0, 2 - freeUsed);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-16">
+    <main className="mx-auto max-w-2xl px-4 pb-16 pt-24 sm:pt-28">
       <Link
         href="/sell"
         className="mb-6 inline-flex items-center gap-2 text-sm text-charcoal/60 hover:text-navy"
