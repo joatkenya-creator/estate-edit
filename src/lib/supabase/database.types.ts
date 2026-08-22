@@ -1843,7 +1843,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      /**
+       * Atomic view-count bump for a marketplace listing. Hand-added ahead of
+       * the next `supabase gen types` run; see supabase/listing-views.sql.
+       */
+      increment_listing_views: {
+        Args: { p_listing_id: string; p_increment?: number }
+        Returns: number
+      }
     }
     Enums: {
       asset_category:

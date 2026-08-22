@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_PREFIXES = ["/account", "/sell/post"];
+const PROTECTED_PREFIXES = ["/account", "/sell/post", "/sell/edit"];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -54,7 +54,12 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|logo-mark.svg|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  // Only the routes that actually need a server-side session: the protected
+  // areas and the auth pages. It used to match every request, which put a
+  // Supabase `auth.getUser()` network round-trip in front of EVERY public page
+  // render — homepage, collection, marketplace, and every listing — inflating
+  // TTFB for real visitors and for Googlebot on pages that never read the
+  // session. Browsing the public site no longer pays for auth it doesn't use;
+  // the browser Supabase client keeps the token refreshed for signed-in users.
+  matcher: ["/account/:path*", "/sell/post/:path*", "/sell/edit/:path*", "/auth/:path*"],
 };

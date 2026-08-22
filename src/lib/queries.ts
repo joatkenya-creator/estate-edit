@@ -198,40 +198,49 @@ export async function getAllAssetSlugsWithMarket(): Promise<{ slug: string; mark
   }
 }
 
-/**
- * All active marketplace listing slugs, across both markets, for the
- * sitemap. Region-agnostic, so it is safe to call at build time.
- */
-export async function getAllListingSlugs(): Promise<string[]> {
-  try {
-    const supabase = createPublicClient();
-    const { data, error } = await supabase
-      .from("user_listings")
-      .select("slug")
-      .eq("status", "active");
-    if (error || !data?.length) return [];
-    return data.map((l) => l.slug).filter((s): s is string => Boolean(s));
-  } catch {
-    return [];
-  }
-}
+export type ListingSeoRow = {
+  slug: string;
+  category: string;
+  location: string | null;
+  currency: string;
+  updated_at: string;
+};
 
-/** Active listing slugs WITH currency, for the sitemap (currency signals market — see [[getAllAssetSlugsWithMarket]]). */
-export async function getAllListingSlugsWithMarket(): Promise<{ slug: string; market: string }[]> {
-  try {
-    const supabase = createPublicClient();
-    const { data, error } = await supabase
-      .from("user_listings")
-      .select("slug, currency")
-      .eq("status", "active");
-    if (error || !data?.length) return [];
-    return data
-      .filter((l) => Boolean(l.slug))
-      .map((l) => ({ slug: l.slug as string, market: l.currency === "USD" ? "virginia" : "kenya" }));
-  } catch {
-    return [];
-  }
-}
+/**
+ * Everything the sitemap needs about every active listing in one read: the
+ * slug, the market its currency puts it in, its real `updated_at` (a truthful
+ * <lastmod>, not "now" for every URL), and the category + location that decide
+ * which browse pages are worth submitting. Region-agnostic and cached, so the
+ * sitemap route and the marketplace index can both call it cheaply.
+ *
+ * Replaced the older slug-only helpers — the sitemap was the only caller and
+ * it now needs all of these fields.
+ */
+export const getListingSeoIndex = unstable_cache(
+  async (): Promise<ListingSeoRow[]> => {
+    try {
+      const supabase = createPublicClient();
+      const { data, error } = await supabase
+        .from("user_listings")
+        .select("slug, category, location, currency, updated_at")
+        .eq("status", "active");
+      if (error || !data?.length) return [];
+      return data
+        .filter((l) => Boolean(l.slug))
+        .map((l) => ({
+          slug: l.slug as string,
+          category: l.category ?? "other",
+          location: l.location ?? null,
+          currency: l.currency ?? "KES",
+          updated_at: l.updated_at ?? new Date().toISOString(),
+        }));
+    } catch {
+      return [];
+    }
+  },
+  ["listing-seo-index"],
+  { revalidate: 300, tags: ["listings"] },
+);
 
 const getCachedCatalogueAssets = unstable_cache(
   async (region: Region): Promise<CatalogueItem[]> => {
@@ -535,6 +544,68 @@ export async function getFeaturedAssets(
   return getCachedFeaturedAssets(region, opts.limit ?? "none", opts.latest ?? false);
 }
 
+export type ListingDetail = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  category: string;
+  condition: string | null;
+  location: string | null;
+  primary_image_url: string | null;
+  views: number;
+  created_at: string;
+  user_id: string;
+  user_profiles: {
+    full_name: string | null;
+    phone: string | null;
+    location: string | null;
+    avatar_url: string | null;
+  } | null;
+};
+
+/**
+ * A single active listing, read with the ANON client and cached.
+ *
+ * Deliberately not the cookie-bound SSR client: an anonymous visitor (and
+ * Googlebot) would otherwise force an uncacheable Supabase round trip on every
+ * single hit of every listing page, which is exactly the kind of per-request
+ * latency that shows up as a poor TTFB in a site audit. RLS already limits
+ * anon reads to `status = 'active'`, which is the same filter the page wants.
+ * Ownership (the "this is your listing" banner) is resolved separately from
+ * the session — it is the only part that varies per visitor.
+ */
+export const getListingBySlug = unstable_cache(
+  async (slug: string): Promise<ListingDetail | null> => {
+    try {
+      const supabase = createPublicClient();
+      const { data, error } = await supabase
+        .from("user_listings")
+        .select(
+          `id, slug, title, description, price, category, condition, location,
+           primary_image_url, views, created_at, currency, user_id,
+           user_profiles ( full_name, phone, location, avatar_url )`,
+        )
+        .eq("slug", slug)
+        .eq("status", "active")
+        .maybeSingle();
+      if (error || !data) return null;
+      const profile = Array.isArray(data.user_profiles)
+        ? data.user_profiles[0] ?? null
+        : data.user_profiles;
+      return { ...data, user_profiles: profile } as ListingDetail;
+    } catch {
+      return null;
+    }
+  },
+  ["listing-by-slug"],
+  // Tagged so a seller's edit shows up at once instead of waiting out the 60s
+  // window (see revalidateListings in app/actions/listings.ts).
+  { revalidate: 60, tags: ["listings"] },
+);
+
 export type MarketplaceListing = {
   slug: string;
   title: string;
@@ -589,7 +660,7 @@ const getCachedMarketplaceListings = unstable_cache(
     }
   },
   ["marketplace-listings"],
-  { revalidate: 60 },
+  { revalidate: 60, tags: ["listings"] },
 );
 
 export async function getMarketplaceListings(

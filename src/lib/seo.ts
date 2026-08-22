@@ -8,6 +8,13 @@
 import type { Metadata } from "next";
 import { siteConfig, type AssetDetail } from "./site";
 import { type Region } from "./region";
+import {
+  categoryByValue,
+  listingCountry,
+  listingMetaDescription,
+  resolvePlace,
+  type SeoListing,
+} from "./marketplace";
 
 /** Canonical production origin (Kenya / primary market). */
 export const SITE_URL = "https://estateedit.org";
@@ -205,39 +212,153 @@ export function assetJsonLd(asset: AssetDetail) {
   };
 }
 
-/** Product schema for a user-posted marketplace listing (always priced). */
-export function listingJsonLd(listing: {
-  slug: string;
-  title: string;
-  description?: string | null;
-  price: number | string;
-  currency?: string | null;
-  primary_image_url?: string | null;
-  condition?: string | null;
-}) {
-  const listingOrigin = listing.currency === "USD" ? US_SITE_URL : SITE_URL;
-  const url = `${listingOrigin}/marketplace/${listing.slug}`;
-  const itemCondition = listing.condition?.includes("new")
-    ? "https://schema.org/NewCondition"
-    : "https://schema.org/UsedCondition";
+/* -------------------------------------------------------------------------- */
+/* Marketplace structured data                                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * BreadcrumbList for any page with a visible breadcrumb trail. Pass the SAME
+ * trail the page renders (Google requires the markup to match what a user
+ * sees). The final crumb is the current page and needs no href.
+ */
+export function breadcrumbJsonLd(
+  crumbs: { name: string; path?: string }[],
+  origin: string = SITE_URL,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      ...(c.path ? { item: `${origin}${c.path}` } : {}),
+    })),
+  };
+}
+
+/**
+ * ItemList for a browse page (marketplace index, category, category+location).
+ * Gives Google an explicit, ordered set of the listing URLs on the page —
+ * a crawl path that doesn't depend on parsing the grid markup.
+ */
+export function itemListJsonLd(
+  name: string,
+  paths: string[],
+  origin: string = SITE_URL,
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    numberOfItems: paths.length,
+    itemListElement: paths.map((path, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${origin}${path}`,
+    })),
+  };
+}
+
+const LISTING_CONDITION: Record<string, string> = {
+  new: "https://schema.org/NewCondition",
+  excellent: "https://schema.org/UsedCondition",
+  very_good: "https://schema.org/UsedCondition",
+  good: "https://schema.org/UsedCondition",
+  fair: "https://schema.org/UsedCondition",
+};
+
+/**
+ * Product schema for a user-posted marketplace listing.
+ *
+ * Only facts the row actually carries are emitted:
+ *   - `availability` is InStock because the page is only reachable while
+ *     `status = 'active'` (sold/withdrawn rows 404) — that IS what the
+ *     application knows.
+ *   - `seller` is the real seller (a Person when they gave a name), not the
+ *     platform: Estate Edit is the marketplace, the seller owns the item.
+ *   - no rating/review block: there are no genuine reviews to represent.
+ *   - `areaServed` / `availableAtOrFrom` carry the item's real location so
+ *     Google can place the offer in Kenya.
+ */
+export function listingJsonLd(
+  listing: SeoListing & { seller?: string | null; created_at?: string | null },
+) {
+  const origin = listing.currency === "USD" ? US_SITE_URL : SITE_URL;
+  const url = `${origin}/marketplace/${listing.slug}`;
+  const place = resolvePlace(listing.location);
+  const country = listingCountry(listing.currency);
+  const category = categoryByValue(listing.category);
 
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: listing.title,
-    description:
-      listing.description ??
-      `${listing.title} — available on The Estate Edit Marketplace. Enquire directly with the seller.`,
-    image: [listing.primary_image_url ?? OG_IMAGE],
-    itemCondition,
+    "@id": `${url}#product`,
+    // The product's NAME, not the page's title: Google's merchant-listing spec
+    // wants the thing itself here. The location it is offered in belongs in
+    // `availableAtOrFrom` below, and the buyer-intent phrasing belongs in the
+    // <title>, which is a different job.
+    name: listing.title.replace(/\s+/g, " ").trim(),
+    // The seller's own words when they wrote any; otherwise the derived
+    // description, so the field is never empty.
+    description: listing.description?.trim() || listingMetaDescription(listing),
+    url,
+    ...(listing.primary_image_url ? { image: [listing.primary_image_url] } : {}),
+    ...(category ? { category: category.label } : {}),
+    ...(listing.condition && LISTING_CONDITION[listing.condition]
+      ? { itemCondition: LISTING_CONDITION[listing.condition] }
+      : {}),
     offers: {
       "@type": "Offer",
       url,
-      price: listing.price,
+      price: Number(listing.price),
       priceCurrency: listing.currency || "KES",
-      availability: "https://schema.org/InStock",
       priceValidUntil: oneYearFromNow(),
-      seller: { "@type": "Organization", name: siteConfig.name },
+      // The listing page 404s unless status = 'active', so a rendered page
+      // genuinely means "still offered".
+      availability: "https://schema.org/InStock",
+      ...(place
+        ? {
+            availableAtOrFrom: {
+              "@type": "Place",
+              name: place.label,
+              address: {
+                "@type": "PostalAddress",
+                ...(place.slug ? { addressLocality: place.city } : {}),
+                addressCountry: country.code,
+              },
+            },
+          }
+        : {}),
+      areaServed: { "@type": "Country", name: country.name },
+      seller: listing.seller
+        ? { "@type": "Person", name: listing.seller }
+        : { "@type": "Organization", "@id": `${origin}/#organization`, name: siteConfig.name },
+    },
+    // The marketplace the offer is published on — distinct from the seller.
+    isRelatedTo: { "@type": "WebSite", "@id": `${origin}/#website`, name: siteConfig.name },
+  };
+}
+
+/**
+ * WebSite entity with a SearchAction pointing at the marketplace search box.
+ * Rendered once in the root layout alongside the Organization block.
+ */
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    url: SITE_URL,
+    name: siteConfig.name,
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/marketplace?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
     },
   };
 }

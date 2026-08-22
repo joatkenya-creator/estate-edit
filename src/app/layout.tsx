@@ -13,7 +13,7 @@ import { Clarity } from "@/components/seo/clarity";
 import { MetaPixel } from "@/components/seo/meta-pixel";
 import { GoogleAds } from "@/components/seo/google-ads";
 import { UtmTracker } from "@/components/marketing/utm-tracker";
-import { OG_IMAGE, buildOpenGraph, organizationJsonLd } from "@/lib/seo";
+import { OG_IMAGE, buildOpenGraph, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { getRegion } from "@/lib/region.server";
 import "./globals.css";
 
@@ -118,6 +118,7 @@ export default async function RootLayout({
         <GoogleAds />
         <UtmTracker />
         <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
         <RegionProvider initialRegion={region}>
           <CartProvider>
             <SiteHeader />

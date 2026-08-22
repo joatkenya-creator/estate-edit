@@ -19,12 +19,34 @@ const SERVICES = {
   ],
 };
 
+/**
+ * The Marketplace had no footer presence at all, so every listing depended on
+ * the header nav for internal links. These are sitewide links straight into
+ * the category landing pages that listings live under.
+ */
+const MARKETPLACE = {
+  title: "Marketplace",
+  links: [
+    { label: "All Listings", href: "/marketplace" },
+    { label: "Furniture for Sale", href: "/marketplace/furniture" },
+    { label: "Fine Art for Sale", href: "/marketplace/fine-art" },
+    { label: "Jewellery for Sale", href: "/marketplace/jewellery" },
+    { label: "Vehicles for Sale", href: "/marketplace/vehicles" },
+    { label: "Antiques for Sale", href: "/marketplace/antiques" },
+    { label: "Sell an Item", href: "/sell" },
+  ],
+};
+
 const COMPANY = {
   title: "Company",
   links: [
     { label: "About Us", href: "/about" },
     { label: "Our Process", href: "/#process" },
     { label: "Delivery & Returns", href: "/delivery" },
+    {
+      label: "Furniture Buying Guide",
+      href: "/guides/buying-wooden-furniture-in-nairobi",
+    },
     { label: "Contact", href: "/contact" },
   ],
 };
@@ -36,6 +58,7 @@ export function SiteFooter() {
   // "Areas Served" is region-localised (Kenya neighbourhoods vs affluent Virginia areas).
   const columns = [
     SERVICES,
+    MARKETPLACE,
     {
       title: "Areas Served",
       links: content.areasServed.map((area) => ({ label: area, href: `/areas/${areaSlug(area)}` })),
@@ -46,7 +69,7 @@ export function SiteFooter() {
   return (
     <footer className="gradient-navy text-white">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-12">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] lg:gap-10">
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             {/* Full logo lockup, rendered for the dark footer: gold monogram +
                 white wordmark + the brand tagline. */}

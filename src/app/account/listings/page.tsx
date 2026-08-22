@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Tag, Plus, Eye, Edit } from "lucide-react";
+import { Tag, Plus, Eye, Edit, MapPin, Calendar } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
@@ -10,6 +10,7 @@ import { paystackPublicKey } from "@/lib/paystack-key";
 import { PayListingButton } from "@/components/listings/pay-listing-button";
 import { RemoveListingButton } from "@/components/listings/remove-listing-button";
 import { MarkSoldButton } from "@/components/listings/mark-sold-button";
+import { categoryByValue, categoryLabel, resolvePlace } from "@/lib/marketplace";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,7 @@ export default async function ListingsPage() {
     supabase
       .from("user_listings")
       .select(
-        "id, slug, title, status, price, currency, views, is_free_listing, listing_fee_paid, listing_fee_amount, primary_image_url, created_at",
+        "id, slug, title, status, price, currency, views, category, location, is_free_listing, listing_fee_paid, listing_fee_amount, primary_image_url, created_at",
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
@@ -128,12 +129,46 @@ export default async function ListingsPage() {
                   {listing.currency || "KES"} {Number(listing.price).toLocaleString()}
                 </p>
 
-                <div className="mt-2 flex items-center gap-3 text-xs text-charcoal/50">
-                  <span className="flex items-center gap-1">
+                {/* Everything the app genuinely knows about how this listing
+                    is performing and where it sits in the marketplace. Views
+                    are the real counter from the listing page; nothing here is
+                    estimated. */}
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-charcoal/50">
+                  <span className="flex items-center gap-1 font-medium text-charcoal/70">
                     <Eye className="size-3" /> {listing.views} views
                   </span>
                   <span>·</span>
                   <span>{listing.is_free_listing ? "Free listing" : "Paid listing"}</span>
+                  {listing.category && (
+                    <>
+                      <span>·</span>
+                      <Link
+                        href={`/marketplace/${categoryByValue(listing.category)?.slug ?? ""}`}
+                        className="hover:text-navy hover:underline"
+                      >
+                        {categoryLabel(listing.category)}
+                      </Link>
+                    </>
+                  )}
+                  {resolvePlace(listing.location) && (
+                    <>
+                      <span>·</span>
+                      <span className="flex items-center gap-1">
+                        <MapPin className="size-3" />
+                        {resolvePlace(listing.location)?.label}
+                      </span>
+                    </>
+                  )}
+                  <span>·</span>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="size-3" />
+                    Listed{" "}
+                    {new Date(listing.created_at).toLocaleDateString("en-KE", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
                 </div>
 
                 {listing.status === "draft" && !listing.listing_fee_paid && (
@@ -162,7 +197,10 @@ export default async function ListingsPage() {
                       <Eye className="size-3" /> View
                     </Link>
                   )}
-                  {(listing.status === "draft" || listing.status === "active") && (
+                  {/* Every status the edit action accepts. "rejected" matters
+                      most: fixing a rejection is the main reason to edit, and
+                      it was the one case with no way back in. */}
+                  {["draft", "pending_review", "active", "rejected"].includes(listing.status) && (
                     <Link
                       href={`/sell/edit/${listing.id}`}
                       className="flex items-center gap-1 text-xs text-charcoal/60 hover:text-navy"

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createListing, type ListingState } from "@/app/actions/listings";
+import { createListing, updateListing, type ListingState } from "@/app/actions/listings";
 import { useRegion } from "@/components/region/region-context";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -36,20 +36,40 @@ const CONDITIONS = [
   { value: "fair", label: "Fair — functional but worn" },
 ];
 
+/** The subset of a listing row this form edits. */
+export type EditableListing = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: number;
+  category: string;
+  condition: string | null;
+  location: string | null;
+  primary_image_url: string | null;
+  status: string;
+};
+
 type Props = {
   isFree: boolean;
   freeRemaining: number;
   userEmail: string;
   /** Paystack public key, read on the server at request time. */
   paystackKey: string;
+  /**
+   * Present = edit an existing listing instead of creating one. Same fields,
+   * same validation, same photo upload — only the action and the wording
+   * change, so the two flows cannot drift apart.
+   */
+  listing?: EditableListing;
 };
 
 const initial: ListingState = { status: "idle", message: "" };
 
-export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: Props) {
-  const [state, action, pending] = useActionState(createListing, initial);
+export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey, listing }: Props) {
+  const editing = Boolean(listing);
+  const [state, action, pending] = useActionState(editing ? updateListing : createListing, initial);
   const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(listing?.primary_image_url ?? "");
   const { currency } = useRegion();
   const isKes = currency === "KES";
   const listingFee = isKes ? 500 : 8;
@@ -110,7 +130,18 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
 
   return (
     <form action={action} className="space-y-8">
-      {/* Free tier banner */}
+      {listing && <input type="hidden" name="id" value={listing.id} />}
+
+      {editing ? (
+        <div className="rounded-lg border border-border bg-stone p-4 text-sm text-charcoal/70">
+          Editing a live listing. Its web address stays the same, so any link you have already
+          shared keeps working.
+          {listing?.status === "rejected" && (
+            <> This listing was rejected — saving your changes sends it back for review.</>
+          )}
+        </div>
+      ) : (
+      /* Free tier banner */
       <div className={`rounded-lg border p-4 text-sm ${
         isFree
           ? "border-green-200 bg-green-50 text-green-800"
@@ -129,6 +160,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
           </>
         )}
       </div>
+      )}
 
       {state.status === "error" && (
         <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -145,6 +177,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
           <Input
             id="title"
             name="title"
+            defaultValue={listing?.title}
             required
             placeholder="e.g. Victorian mahogany dining table"
             maxLength={100}
@@ -158,6 +191,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
             <select
               id="category"
               name="category"
+              defaultValue={listing?.category ?? ""}
               required
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
@@ -173,6 +207,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
             <select
               id="condition"
               name="condition"
+              defaultValue={listing?.condition ?? ""}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="">Select condition</option>
@@ -188,6 +223,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
           <Textarea
             id="description"
             name="description"
+            defaultValue={listing?.description ?? ""}
             rows={4}
             placeholder="Describe your item — dimensions, materials, age, any defects…"
             maxLength={2000}
@@ -201,6 +237,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
               id="price"
               name="price"
               type="number"
+              defaultValue={listing?.price}
               required
               min={1}
               step="0.01"
@@ -213,6 +250,7 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
             <Input
               id="location"
               name="location"
+              defaultValue={listing?.location ?? ""}
               placeholder={isKes ? "Karen, Nairobi" : "McLean, VA"}
             />
           </div>
@@ -265,8 +303,10 @@ export function ListingForm({ isFree, freeRemaining, userEmail, paystackKey }: P
         {pending ? (
           <>
             <Loader2 className="mr-2 size-4 animate-spin" />
-            Submitting…
+            {editing ? "Saving…" : "Submitting…"}
           </>
+        ) : editing ? (
+          "Save changes"
         ) : isFree ? (
           "Submit free listing"
         ) : (

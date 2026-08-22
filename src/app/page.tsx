@@ -3,6 +3,7 @@ import { Hero } from "@/components/sections/hero";
 import { Pillars } from "@/components/sections/pillars";
 import { Stats } from "@/components/sections/stats";
 import { FeaturedAssets } from "@/components/sections/featured-assets";
+import { MarketplaceTeaser } from "@/components/sections/marketplace-teaser";
 import { Process } from "@/components/sections/process";
 import { Clients } from "@/components/sections/clients";
 import { Testimonials } from "@/components/sections/testimonials";
@@ -27,6 +28,7 @@ export default function Home() {
       <Pillars />
       <Stats />
       <FeaturedAssets latest limit={3} />
+      <MarketplaceTeaser limit={4} />
       <Process />
       <Clients />
       <Testimonials />
