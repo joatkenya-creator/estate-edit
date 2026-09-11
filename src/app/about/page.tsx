@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { ShieldCheck, Sparkles, Medal, Globe2, Banknote, Handshake } from "lucide-react";
 import { PageHero } from "@/components/site/page-hero";
 import { CategoryGrid } from "@/components/sections/category-grid";
@@ -102,6 +103,24 @@ export default async function AboutPage() {
                   owners, and expatriate families, each guided by a discreet, senior team that treats
                   every estate as a portfolio of fine-art lots, not a database of listings.
                 </p>
+              </div>
+
+              {/* SDVOSB/CVE credential — sits with the story so the veteran-owned
+                  claim below is backed by the seal itself. */}
+              <div className="mt-8 flex items-center gap-5 border-t border-border pt-6">
+                <Image
+                  src="/sdvosb-cve.jpg"
+                  alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) certification logo"
+                  width={400}
+                  height={410}
+                  className="h-20 w-auto shrink-0"
+                />
+                <div>
+                  <p className="text-sm font-medium text-navy">
+                    Service-Disabled Veteran-Owned Small Business
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">SDVOSB · CVE Verified</p>
+                </div>
               </div>
             </div>
           </Reveal>

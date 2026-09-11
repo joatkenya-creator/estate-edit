@@ -130,21 +130,28 @@ export function SiteFooter() {
           ))}
         </div>
 
-        {/* SDVOSB/CVE seal — reserved pending actual VA verification (SAM.gov/VetCert).
-            Do not enable until certification is confirmed; uncomment and drop the
-            verified seal asset in /public to activate. */}
-
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row">
-        <div className="flex items-center gap-3">
-          {/*<Image
-            src="/sdvosb-seal.svg"
-            alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) — VA Verified"
-            width={40}
-            height={40}
-            unoptimized
-          /> */}
-          <p>© {new Date().getFullYear()} The Estate Edit. All rights reserved.</p>
+        {/* Certifications & Credentials — SDVOSB/CVE seal. This is the one place
+            phone visitors see it (the header hides it below `sm`). */}
+        <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-10 sm:flex-row sm:items-center sm:gap-6">
+          <Image
+            src="/sdvosb-cve.jpg"
+            alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) certification logo"
+            width={400}
+            height={410}
+            className="h-24 w-auto shrink-0 self-start rounded-lg bg-white p-1"
+          />
+          <div>
+            <h4 className="font-display text-sm uppercase tracking-[0.2em] text-gold">
+              Certifications &amp; Credentials
+            </h4>
+            <p className="mt-2 text-sm text-white/65">
+              Service-Disabled Veteran-Owned Small Business (SDVOSB) · CVE Verified
+            </p>
+          </div>
         </div>
+
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/45 sm:flex-row">
+          <p>© {new Date().getFullYear()} The Estate Edit. All rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/privacy" className="transition-colors hover:text-white">
               Privacy Policy
