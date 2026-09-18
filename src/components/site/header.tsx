@@ -190,16 +190,16 @@ export function SiteHeader() {
           />
 
           <div className="flex shrink-0 items-center gap-3">
-            {/* SDVOSB/CVE credential seal — a trust indicator, not a brand mark.
+            {/* Veteran-owned credential badge — a trust indicator, not a brand mark.
                 The white tile keeps it legible over both the transparent hero and
                 the scrolled white bar. Hidden on phones to keep the nav usable;
                 the footer credentials block carries it there. */}
             <Image
-              src="/sdvosb-cve.jpg"
-              alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) certification logo"
-              title="Service-Disabled Veteran-Owned Small Business — CVE Verified"
-              width={400}
-              height={410}
+              src="/veteran-owned-badge.jpg"
+              alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) badge"
+              title="Service-Disabled Veteran-Owned Small Business (SDVOSB) — CVE Verified"
+              width={500}
+              height={375}
               priority
               className="hidden h-12 w-auto rounded-md bg-white p-0.5 ring-1 ring-black/10 sm:block lg:h-14"
             />

@@ -105,14 +105,14 @@ export default async function AboutPage() {
                 </p>
               </div>
 
-              {/* SDVOSB/CVE credential — sits with the story so the veteran-owned
+              {/* Veteran-owned credential — sits with the story so the veteran-owned
                   claim below is backed by the seal itself. */}
               <div className="mt-8 flex items-center gap-5 border-t border-border pt-6">
                 <Image
-                  src="/sdvosb-cve.jpg"
-                  alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) certification logo"
-                  width={400}
-                  height={410}
+                  src="/veteran-owned-badge.jpg"
+                  alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) badge"
+                  width={500}
+                  height={375}
                   className="h-20 w-auto shrink-0"
                 />
                 <div>

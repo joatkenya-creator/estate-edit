@@ -130,14 +130,14 @@ export function SiteFooter() {
           ))}
         </div>
 
-        {/* Certifications & Credentials — SDVOSB/CVE seal. This is the one place
+        {/* Certifications & Credentials — veteran-owned badge. This is the one place
             phone visitors see it (the header hides it below `sm`). */}
         <div className="mt-14 flex flex-col gap-5 border-t border-white/10 pt-10 sm:flex-row sm:items-center sm:gap-6">
           <Image
-            src="/sdvosb-cve.jpg"
-            alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) certification logo"
-            width={400}
-            height={410}
+            src="/veteran-owned-badge.jpg"
+            alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) badge"
+            width={500}
+            height={375}
             className="h-24 w-auto shrink-0 self-start rounded-lg bg-white p-1"
           />
           <div>
