@@ -28,7 +28,7 @@ import {
  */
 export async function MarketplaceTeaser({ limit = 4 }: { limit?: number }) {
   const region = await getRegion();
-  const listings = (await getMarketplaceListings(region, "", "")).slice(0, limit);
+  const listings = await getMarketplaceListings(region, "", "", limit);
   if (listings.length === 0) return null;
 
   const place = regionContent[region].place;

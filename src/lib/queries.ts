@@ -626,7 +626,7 @@ export type MarketplaceListing = {
 // Uses the anon client (not the cookie-bound SSR client) so the result is
 // cacheable across visitors; RLS already restricts reads to active listings.
 const getCachedMarketplaceListings = unstable_cache(
-  async (region: Region, category: string, q: string): Promise<MarketplaceListing[]> => {
+  async (region: Region, category: string, q: string, limit: number): Promise<MarketplaceListing[]> => {
     try {
       const supabase = createPublicClient();
       let query = supabase
@@ -637,7 +637,7 @@ const getCachedMarketplaceListings = unstable_cache(
         .eq("status", "active")
         .eq("currency", regionCurrency[region])
         .order("created_at", { ascending: false })
-        .limit(200);
+        .limit(limit);
 
       if (category) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -667,6 +667,9 @@ export async function getMarketplaceListings(
   region: Region,
   category: string,
   q: string,
+  // Callers that only show a few rows (e.g. the homepage teaser) pass a small
+  // limit so the Worker doesn't fetch and parse 200 listings to render 4.
+  limit = 200,
 ): Promise<MarketplaceListing[]> {
-  return getCachedMarketplaceListings(region, category, q);
+  return getCachedMarketplaceListings(region, category, q, limit);
 }
