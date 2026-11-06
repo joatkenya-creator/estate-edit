@@ -6,7 +6,7 @@ import { getRegion } from "@/lib/region.server";
 
 const title = "Terms of Service";
 const description =
-  "The terms governing your use of The Estate Edit's website and services.";
+  "The terms governing your use of The Estate Edit's website and services: engagements and fees, valuations and estimates, client responsibilities and liability.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();

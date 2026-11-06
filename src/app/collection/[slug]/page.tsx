@@ -32,13 +32,12 @@ export async function generateMetadata({
   const asset = await getAssetBySlug(slug);
   if (!asset) return { title: "Asset not found" };
   const ogImage = asset.images[0]?.url ?? asset.imageUrl;
-  // Short editor-written descriptions read as thin content to search engines
-  // — fall back to the fuller templated description below ~70 characters,
-  // then clamp the long end so neither too-short nor too-long trips Ahrefs.
+  // Short editor-written descriptions read as thin content (Ahrefs flags
+  // under ~100 chars) — keep the editor's words but follow them with the
+  // templated description, then clamp the long end.
+  const own = asset.description?.trim().replace(/.?$/, ".") ?? "";
   const rawDescription =
-    asset.description && asset.description.length >= 70
-      ? asset.description
-      : assetFallbackDescription(asset);
+    own.length >= 110 ? own : `${own} ${assetFallbackDescription(asset)}`.trim();
   const description = clampDescription(rawDescription);
   const title = clampTitle(asset.title);
   // Each asset belongs to a single market — canonicalize to ITS home domain

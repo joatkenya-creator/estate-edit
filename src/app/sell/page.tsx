@@ -12,7 +12,7 @@ import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 const sellTitle = "Sell on The Estate Edit";
-const sellDescription = "Post your luxury and estate items for sale. Your first two listings are free.";
+const sellDescription = "Post your luxury and estate items for sale on The Estate Edit Marketplace. Your first two listings are free, and most go live within 24 hours of review.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();

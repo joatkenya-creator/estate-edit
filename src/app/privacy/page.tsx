@@ -6,7 +6,7 @@ import { getRegion } from "@/lib/region.server";
 
 const title = "Privacy Policy";
 const description =
-  "How The Estate Edit collects, uses, and protects your personal information.";
+  "How The Estate Edit collects, uses, shares and protects the personal information you give us in enquiries and consultations, and your rights over it.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();

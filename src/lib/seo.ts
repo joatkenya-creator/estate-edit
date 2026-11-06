@@ -108,8 +108,9 @@ export function clampTitle(text: string, max = 48): string {
 }
 
 /** Fallback description for a catalogue asset with no editor-written copy. */
-export function assetFallbackDescription(asset: Pick<AssetDetail, "title" | "category">): string {
-  return `${asset.title} — ${asset.category} available through ${siteConfig.name}, Nairobi. Viewing by appointment; enquire in confidence.`;
+export function assetFallbackDescription(asset: Pick<AssetDetail, "title" | "category" | "currency">): string {
+  const place = asset.currency === "USD" ? "Virginia" : "Nairobi";
+  return `${asset.title} — ${asset.category} available through ${siteConfig.name}, ${place}. Viewing by appointment; enquire in confidence.`;
 }
 
 /** Phone in E.164 (digits + leading +), required by schema.org. */

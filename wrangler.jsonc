@@ -49,11 +49,11 @@
   ]
 
   // --- Optional: persistent ISR / Next cache via R2 ------------------------
-  // Your pages use `revalidate = 600`. Without a cache binding, revalidation
-  // still works but isn't shared across Worker instances. To enable it:
-  //   1) wrangler r2 bucket create estate-edit-cache
+  // open-next.config.ts currently caches in the per-colo Cache API only (R2 is
+  // not enabled on this account). For a shared cross-colo cache:
+  //   1) enable R2 in the dashboard; wrangler r2 bucket create estate-edit-cache
   //   2) uncomment the block below
-  //   3) in open-next.config.ts, set incrementalCache: r2IncrementalCache
+  //   3) in open-next.config.ts, swap `noStore` for r2IncrementalCache
   // "r2_buckets": [
   //   { "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "estate-edit-cache" }
   // ]
