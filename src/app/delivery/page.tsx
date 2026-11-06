@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 const deliveryTitle = "Delivery & Returns";
 const deliveryDescription =
-  "How The Estate Edit delivers: delivery fees, timelines, payment on delivery, and returns.";
+  "How The Estate Edit delivers: fees by distance and item size shown at checkout, timing confirmed by phone, payment on delivery, and help with damaged items.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();

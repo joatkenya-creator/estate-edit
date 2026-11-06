@@ -8,7 +8,7 @@ import { CtaBand } from "@/components/sections/cta-band";
 import { getRegion } from "@/lib/region.server";
 import { areaSlug } from "@/lib/region";
 import { regionContent } from "@/lib/site";
-import { buildOpenGraph, breadcrumbJsonLd, regionAlternates, siteUrlForRegion } from "@/lib/seo";
+import { buildOpenGraph, breadcrumbJsonLd, siteUrlForRegion } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ListingCard } from "@/components/listings/listing-card";
 import { getMarketplaceListings } from "@/lib/queries";
@@ -42,7 +42,10 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: regionAlternates(`/areas/${slug}`, region),
+    // Canonical only, no hreflang: each locality exists in ONE market (Karen
+    // only on estateedit.org, McLean only on us.), so a cross-market alternate
+    // points at a 404 — which is exactly what Ahrefs flagged (12 URLs).
+    alternates: { canonical: `${siteUrlForRegion(region)}/areas/${slug}` },
     openGraph: buildOpenGraph({ title, description, path: `/areas/${slug}`, region }),
   };
 }

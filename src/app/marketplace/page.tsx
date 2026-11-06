@@ -30,10 +30,10 @@ export async function generateMetadata({
   const params = await searchParams;
   const region = await getRegion();
   const place = regionContent[region].place;
-  const title = `Marketplace | Furniture & Curated Items for Sale in ${place} | Estate Edit`;
-  const description = `Browse furniture, fine art, jewellery, vehicles and collectables listed for sale by owners across ${place}. Prices in ${
+  const title = `Marketplace: Furniture & Items for Sale in ${place} | Estate Edit`;
+  const description = `Furniture, fine art, jewellery, vehicles and collectables for sale by owners across ${place}. Prices in ${
     region === "virginia" ? "USD" : "KES"
-  } — contact the seller directly on The Estate Edit Marketplace.`;
+  }; contact sellers directly.`;
 
   return {
     title: { absolute: title },

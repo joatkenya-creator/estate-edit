@@ -16,10 +16,12 @@ export const revalidate = 3600;
 const PATH = "/guides/buying-wooden-furniture-in-nairobi";
 const TITLE = "Buying Wooden Furniture in Nairobi: What to Check Before You Pay";
 const DESCRIPTION =
-  "A practical checklist for buying wooden beds, dining tables and cabinets in Nairobi — how to read timber and joinery, what treated wood actually means, standard Kenyan bed sizes, and how to inspect a piece before you pay.";
+  "A checklist for buying wooden beds, dining tables and cabinets in Nairobi: timber and joinery, treated wood, Kenyan bed sizes, and inspecting before you pay.";
 
 export const metadata: Metadata = {
-  title: { absolute: `${TITLE} | Estate Edit` },
+  // H1 and og:title keep the full question; the <title> drops the subtitle
+  // to stay under ~60 chars so the SERP doesn't truncate it.
+  title: { absolute: "Buying Wooden Furniture in Nairobi: A Checklist | Estate Edit" },
   description: DESCRIPTION,
   alternates: { canonical: `${SITE_URL}${PATH}` },
   openGraph: buildOpenGraph({
