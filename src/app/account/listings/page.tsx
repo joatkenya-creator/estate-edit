@@ -11,6 +11,8 @@ import { PayListingButton } from "@/components/listings/pay-listing-button";
 import { RemoveListingButton } from "@/components/listings/remove-listing-button";
 import { MarkSoldButton } from "@/components/listings/mark-sold-button";
 import { categoryByValue, categoryLabel, resolvePlace } from "@/lib/marketplace";
+import { ListingSubmitted } from "@/components/listings/listing-submitted";
+import { EmptyState } from "@/components/states/states";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +27,12 @@ const STATUS_STYLES: Record<string, string> = {
   rejected: "bg-red-50 text-red-700",
 };
 
-export default async function ListingsPage() {
+export default async function ListingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ posted?: string; updated?: string }>;
+}) {
+  const { posted, updated } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -58,6 +65,9 @@ export default async function ListingsPage() {
 
   return (
     <div className="space-y-4">
+      {posted && <ListingSubmitted kind="posted" />}
+      {updated && <ListingSubmitted kind="updated" listingId={updated} />}
+
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border bg-white p-6 shadow-sm">
         <div>
@@ -79,7 +89,7 @@ export default async function ListingsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
           <span className="font-medium text-gold-dark">
             {isPaidTier
-              ? `You are on the paid tier — ${currency} ${listingFee} per listing`
+              ? `You are on the paid tier: ${currency} ${listingFee} per listing`
               : `Free tier: ${freeUsed}/2 slots used · ${2 - freeUsed} remaining`}
           </span>
         </div>
@@ -87,16 +97,12 @@ export default async function ListingsPage() {
 
       {/* Listings */}
       {listings.length === 0 ? (
-        <div className="rounded-xl border border-border bg-white p-12 text-center shadow-sm">
-          <Tag className="mx-auto mb-4 size-10 text-charcoal/30" />
-          <p className="font-medium text-navy">No listings yet</p>
-          <p className="mt-1 text-sm text-charcoal/60">
-            Your first two listings are completely free.
-          </p>
-          <Button asChild className="mt-4 bg-navy text-white hover:bg-navy-soft">
-            <Link href="/sell/post">Post your first listing</Link>
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Tag />}
+          title="You haven't listed anything yet."
+          body={canPostFree ? "Your first two listings are completely free." : undefined}
+          action={{ label: "Post your first listing", href: "/sell/post" }}
+        />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {listings.map((listing) => (
@@ -174,7 +180,7 @@ export default async function ListingsPage() {
                 {listing.status === "draft" && !listing.listing_fee_paid && (
                   <div className="mt-3 space-y-1.5 rounded-lg border border-gold/30 bg-gold/5 p-3">
                     <p className="text-xs text-gold-dark">
-                      Not published yet — pay the listing fee to send it for review.
+                      Not published yet. Pay the listing fee to send it for review.
                     </p>
                     <PayListingButton
                       listingId={listing.id}

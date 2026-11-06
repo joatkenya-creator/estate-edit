@@ -37,7 +37,7 @@ export async function generateMetadata({
   const { region, area } = resolved;
   const place = region === "virginia" ? "Virginia" : "Nairobi";
   const title = `${area} Estate Sales & Liquidation`;
-  const description = `Luxury estate sales, liquidation, and concierge transitions for families and businesses in ${area}, ${place} — discreet valuation, marketing, and sale.`;
+  const description = `Luxury estate sales, liquidation, and concierge transitions for families and businesses in ${area}, ${place}: discreet valuation, marketing, and sale.`;
 
   return {
     title,

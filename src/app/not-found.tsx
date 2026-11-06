@@ -37,13 +37,13 @@ export default function NotFound() {
           seller. Everything currently available is one click away.
         </p>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Button asChild className="bg-navy text-white hover:bg-navy-soft">
+        <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+          <Button asChild className="h-11 bg-navy px-6 text-white hover:bg-navy-soft">
             <Link href="/marketplace">Browse the Marketplace</Link>
           </Button>
-          <Button asChild variant="outline" className="border-navy text-navy hover:bg-navy/5">
-            <Link href="/">Back to homepage</Link>
-          </Button>
+          <Link href="/" className="self-center text-sm text-navy underline-offset-4 hover:underline">
+            Back to homepage
+          </Link>
         </div>
 
         <div className="mt-14 grid gap-8 text-left sm:grid-cols-2">

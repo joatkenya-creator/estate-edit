@@ -4,10 +4,12 @@ import { redirect } from "next/navigation";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createClient } from "@/lib/supabase/server";
 import { sendWelcomeEmail } from "@/lib/email/welcome";
+import { hasErrors, validateSignIn, type FieldErrors } from "@/lib/validation";
 
 export type AuthState = {
   status: "idle" | "success" | "error";
   message: string;
+  fieldErrors?: FieldErrors;
 };
 
 // ---------------------------------------------------------------------------
@@ -67,7 +69,7 @@ export async function signUp(
 
   return {
     status: "success",
-    message: "Account created! Check your email and click the confirmation link to activate your account.",
+    message: "Account created. Check your email and click the confirmation link to activate your account.",
   };
 }
 
@@ -81,8 +83,9 @@ export async function signIn(
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
 
-  if (!email || !password) {
-    return { status: "error", message: "Please enter your email and password." };
+  const fieldErrors = validateSignIn({ email, password });
+  if (hasErrors(fieldErrors)) {
+    return { status: "error", message: "Some fields need your attention.", fieldErrors };
   }
 
   const supabase = await createClient();
@@ -96,11 +99,16 @@ export async function signIn(
     if (error.message?.includes("Email not confirmed")) {
       return { status: "error", message: "Please confirm your email before signing in. Check your inbox for the confirmation link." };
     }
-    return { status: "error", message: "Invalid email or password. Please try again." };
+    // Deliberately the same for an unknown email and a wrong password.
+    return {
+      status: "error",
+      message: "That email and password don't match an account. Check both and try again, or reset your password.",
+    };
   }
 
   const next = formData.get("next") as string | null;
-  redirect(next && next.startsWith("/") ? next : "/account");
+  // "//host" is protocol-relative: only same-site paths are allowed.
+  redirect(next && next.startsWith("/") && !next.startsWith("//") ? next : "/account");
 }
 
 // ---------------------------------------------------------------------------

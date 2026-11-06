@@ -17,8 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ? "Luxury Assets for Sale in Virginia"
     : "Luxury Assets for Sale in Kenya";
   const description = isVa
-    ? "A curated catalogue of luxury estate and commercial assets for sale across Virginia — furniture, vehicles, fine art, jewellery, and equipment."
-    : "A curated catalogue of luxury estate and commercial assets for sale across Kenya and internationally — furniture, vehicles, fine art, and jewellery.";
+    ? "A curated catalogue of luxury estate and commercial assets for sale across Virginia, including furniture, vehicles, fine art, jewellery and equipment."
+    : "A curated catalogue of luxury estate and commercial assets for sale across Kenya and internationally, including furniture, vehicles, fine art and jewellery.";
   return {
     title,
     description,

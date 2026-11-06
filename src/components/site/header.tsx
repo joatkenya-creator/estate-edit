@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Menu, User, Tag, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { navLinks, serviceLinks, siteConfig } from "@/lib/site";
-import { regionFlag, regionShort, regionTagline } from "@/lib/region";
+import { regionShort, regionTagline } from "@/lib/region";
 import { useRegion } from "@/components/region/region-context";
 import { CartButton } from "@/components/cart/cart-button";
 import { createClient } from "@/lib/supabase/client";
@@ -67,7 +68,7 @@ function Wordmark({ inverted }: { inverted: boolean }) {
               inverted ? "text-gold-soft" : "text-gold",
             )}
           >
-            {regionFlag[region]} {regionShort[region]}
+            {regionShort[region]}
           </sup>
         </span>
         <span
@@ -136,6 +137,9 @@ export function SiteHeader() {
   }, []);
 
   const inverted = !scrolled;
+  const pathname = usePathname();
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const links = navLinks.filter((link) => !("kenyaOnly" in link) || region === "kenya");
 
   return (
     <header
@@ -152,19 +156,30 @@ export function SiteHeader() {
         <div className="flex items-center gap-5 sm:gap-6">
           <nav className="hidden items-center gap-5 xl:flex">
             <ServicesMenu inverted={inverted} />
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={cn(
-                  "group relative text-sm font-medium tracking-wide transition-colors",
-                  inverted ? "text-white/85 hover:text-white" : "text-charcoal/75 hover:text-navy",
-                )}
-              >
-                {link.label}
-                <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-gold transition-all duration-300 group-hover:w-full" />
-              </Link>
-            ))}
+            {links.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "group relative text-sm font-medium tracking-wide transition-colors",
+                    inverted
+                      ? cn("hover:text-white", active ? "text-white" : "text-white/85")
+                      : cn("hover:text-navy", active ? "text-navy" : "text-charcoal/75"),
+                  )}
+                >
+                  {link.label}
+                  <span
+                    className={cn(
+                      "absolute -bottom-1.5 left-0 h-px bg-gold transition-all duration-300 group-hover:w-full",
+                      active ? "w-full" : "w-0",
+                    )}
+                  />
+                </Link>
+              );
+            })}
 
             {/* Sell link */}
             <Link
@@ -197,7 +212,7 @@ export function SiteHeader() {
             <Image
               src="/veteran-owned-badge.jpg"
               alt="Service-Disabled Veteran-Owned Small Business (SDVOSB) badge"
-              title="Service-Disabled Veteran-Owned Small Business (SDVOSB) — CVE Verified"
+              title="Service-Disabled Veteran-Owned Small Business (SDVOSB), CVE Verified"
               width={500}
               height={375}
               priority
@@ -294,11 +309,15 @@ export function SiteHeader() {
                       </SheetClose>
                     ))}
                   </div>
-                  {navLinks.map((link) => (
+                  {links.map((link) => (
                     <SheetClose asChild key={link.label}>
                       <Link
                         href={link.href}
-                        className="border-b border-white/10 py-4 text-lg text-white/85 transition-colors hover:text-gold"
+                        aria-current={isActive(link.href) ? "page" : undefined}
+                        className={cn(
+                          "border-b border-white/10 py-4 text-lg transition-colors hover:text-gold",
+                          isActive(link.href) ? "text-gold" : "text-white/85",
+                        )}
                       >
                         {link.label}
                       </Link>
@@ -337,7 +356,7 @@ export function SiteHeader() {
                   <div className="flex items-center justify-between text-xs text-white/60">
                     <span className="uppercase tracking-[0.2em]">Store region</span>
                     <span className="font-semibold text-gold">
-                      {regionFlag[region]} {regionTagline[region]}
+                      {regionTagline[region]}
                     </span>
                   </div>
                   <SheetClose asChild>

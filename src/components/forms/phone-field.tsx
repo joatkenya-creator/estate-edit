@@ -17,12 +17,15 @@ export function PhoneField({
   name = "phone",
   placeholder = "712 345678",
   required = false,
+  invalid = false,
   onValueChange,
 }: {
   id?: string;
   name?: string;
   placeholder?: string;
   required?: boolean;
+  /** Marks the number box invalid and points it at `${id}-error`. */
+  invalid?: boolean;
   onValueChange?: (value: string) => void;
 }) {
   const [value, setValue] = useState<Value | undefined>();
@@ -68,6 +71,8 @@ export function PhoneField({
           inputComponent={Input}
           placeholder={placeholder}
           required={required}
+          aria-invalid={invalid || undefined}
+          aria-describedby={invalid ? `${id}-error` : undefined}
         />
       ) : (
         // Skeleton while we detect the country (keeps layout stable).

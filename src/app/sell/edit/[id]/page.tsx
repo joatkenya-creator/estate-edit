@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { ListingForm, type EditableListing } from "@/components/listings/listing-form";
 import { paystackPublicKey } from "@/lib/paystack-key";
+import { StatePanel } from "@/components/states/states";
 
 export const dynamic = "force-dynamic";
 
@@ -35,8 +36,8 @@ export default async function EditListingPage({
   } = await supabase.auth.getUser();
   if (!user) redirect(`/auth/login?next=/sell/edit/${id}`);
 
-  // Scoped to the signed-in user, so someone else's listing id is simply "not
-  // found" rather than a forbidden page that confirms it exists.
+  // Scoped to the signed-in user, so someone else's listing id gets the same
+  // answer as a missing one: the page never confirms another seller's listing exists.
   const { data: listing } = await supabase
     .from("user_listings")
     .select("id, slug, title, description, price, category, condition, location, primary_image_url, status")
@@ -44,7 +45,27 @@ export default async function EditListingPage({
     .eq("user_id", user.id)
     .maybeSingle();
 
-  if (!listing) notFound();
+  if (!listing) {
+    return (
+      <main className="flex-1 bg-stone px-5 pb-24 pt-36 sm:pt-44">
+        <StatePanel
+          eyebrow="Not in your account"
+          title="This listing belongs to another account, or has been removed."
+          primary={{ label: "Go to My Listings", href: "/account/listings" }}
+        >
+          <p>
+            You can only edit listings posted from the account you are signed in with
+            {user.email ? ` (${user.email})` : ""}.
+          </p>
+        </StatePanel>
+      </main>
+    );
+  }
+  const { data: gallery } = await supabase
+    .from("user_listing_images")
+    .select("url")
+    .eq("listing_id", listing.id)
+    .order("sort_order");
 
   return (
     <main className="mx-auto max-w-2xl px-4 pb-16 pt-24 sm:pt-28">
@@ -79,7 +100,7 @@ export default async function EditListingPage({
             freeRemaining={0}
             userEmail={user.email ?? ""}
             paystackKey={paystackPublicKey()}
-            listing={listing as EditableListing}
+            listing={{ ...listing, images: gallery?.map((g) => g.url) } as EditableListing}
           />
         </div>
       ) : (

@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const title = "Sell With Us: Consign Your Assets";
 const description =
-  "Consign luxury, estate, and commercial assets with The Estate Edit — professional valuation, editorial marketing, and a private buyer network.";
+  "Consign luxury, estate, and commercial assets with The Estate Edit: professional valuation, editorial marketing, and a private buyer network.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const region = await getRegion();
@@ -42,7 +42,7 @@ export default async function SellWithUsPage() {
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
             Downsizing, relocating, settling an estate, or liquidating a business in {place}? We
-            value, market, and sell your assets to qualified buyers — discreetly and end to end.
+            value, market, and sell your assets to qualified buyers, discreetly and end to end.
           </p>
         </div>
       </section>
@@ -67,7 +67,7 @@ export default async function SellWithUsPage() {
           <div className="rounded-2xl border border-border bg-white p-6 shadow-[0_30px_80px_-50px_rgba(0,35,73,0.4)] sm:p-8">
             <h2 className="font-display text-2xl text-navy">Request a free valuation</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Tell us what you have — we&apos;ll respond within one business day.
+              Tell us what you have. We&apos;ll respond within one business day.
             </p>
             <div className="mt-6">
               <ConsignForm />

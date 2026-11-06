@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, MapPin } from "lucide-react";
+import { Eye, ImageOff, MapPin } from "lucide-react";
 import {
   categoryLabel,
   formatListingPrice,
@@ -57,8 +57,9 @@ export function ListingCard({
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-charcoal/20">
-            <span className="text-4xl">📦</span>
+          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-charcoal/30">
+            <ImageOff className="size-8" strokeWidth={1.4} aria-hidden />
+            <span className="text-xs">No photo yet</span>
           </div>
         )}
       </div>

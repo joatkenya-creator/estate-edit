@@ -47,7 +47,7 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
             .join("\n")
         : "";
       return {
-        subject: `Order ${orderNumber} received — The Estate Edit`,
+        subject: `The Estate Edit: Order ${orderNumber} received`,
         text: [
           `Hi ${name},`,
           ``,
@@ -64,7 +64,7 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `Thank you for choosing The Estate Edit.`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ]
           .filter((l) => l !== null)
           .join("\n"),
@@ -73,7 +73,7 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
 
     case "confirmed":
       return {
-        subject: `Order ${orderNumber} confirmed — The Estate Edit`,
+        subject: `The Estate Edit: Order ${orderNumber} confirmed`,
         text: [
           `Hi ${name},`,
           ``,
@@ -81,13 +81,13 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `We are preparing your items for delivery and will be in touch to arrange a convenient time.`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
     case "dispatched":
       return {
-        subject: `Your order ${orderNumber} is on its way — The Estate Edit`,
+        subject: `The Estate Edit: Your order ${orderNumber} is on its way`,
         text: [
           `Hi ${name},`,
           ``,
@@ -95,13 +95,13 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `Our delivery team will call you before arriving. Please ensure someone is available to receive the items and make payment (${totalStr}).`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
     case "delivered":
       return {
-        subject: `Order ${orderNumber} delivered — The Estate Edit`,
+        subject: `The Estate Edit: Order ${orderNumber} delivered`,
         text: [
           `Hi ${name},`,
           ``,
@@ -109,25 +109,25 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `Thank you for shopping with The Estate Edit.`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
     case "payment_received":
       return {
-        subject: `Payment received for order ${orderNumber} — The Estate Edit`,
+        subject: `The Estate Edit: Payment received for order ${orderNumber}`,
         text: [
           `Hi ${name},`,
           ``,
           `We have received your payment${amountPaid ? ` of ${formatMoney(amountPaid, currency)}` : ""} for order ${orderNumber}. Thank you!`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
     case "returned":
       return {
-        subject: `Return confirmed for order ${orderNumber} — The Estate Edit`,
+        subject: `The Estate Edit: Return confirmed for order ${orderNumber}`,
         text: [
           `Hi ${name},`,
           ``,
@@ -135,13 +135,13 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `Our team will be in touch shortly to arrange collection and process your return.`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
     case "cancelled":
       return {
-        subject: `Order ${orderNumber} cancelled — The Estate Edit`,
+        subject: `The Estate Edit: Order ${orderNumber} cancelled`,
         text: [
           `Hi ${name},`,
           ``,
@@ -149,7 +149,7 @@ function buildEmailContent(data: OrderNotificationData): EmailContent | null {
           ``,
           `If you have any questions or would like to place a new order, please don't hesitate to contact us.`,
           ``,
-          `— The Estate Edit`,
+          `The Estate Edit`,
         ].join("\n"),
       };
 
@@ -224,7 +224,7 @@ const STAFF_ALERT_RECIPIENT = "joatkenya120@gmail.com";
 
 function buildStaffAlertBody(o: StaffOrderAlertData): string {
   const lines = o.items
-    .map((it) => `  • ${it.quantity} × ${it.title} — ${formatMoney(it.price * it.quantity, o.currency)}`)
+    .map((it) => `  • ${it.quantity} × ${it.title}: ${formatMoney(it.price * it.quantity, o.currency)}`)
     .join("\n");
   return [
     `New order ${o.orderNumber}`,
@@ -267,7 +267,7 @@ export async function sendStaffOrderAlert(o: StaffOrderAlertData): Promise<void>
     // cloudflare:email is a Workers-runtime module; keep it out of the bundle.
     const { EmailMessage } = await import(/* webpackIgnore: true */ "cloudflare:email");
 
-    const subject = `New order ${o.orderNumber} — ${formatMoney(o.total, o.currency)} (${o.county || o.state || "—"})`;
+    const subject = `New order ${o.orderNumber}: ${formatMoney(o.total, o.currency)} (${o.county || o.state || "location not given"})`;
     const raw = [
       `From: The Estate Edit Orders <${STAFF_ALERT_SENDER}>`,
       `To: ${STAFF_ALERT_RECIPIENT}`,

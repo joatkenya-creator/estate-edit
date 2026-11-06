@@ -606,6 +606,24 @@ export const getListingBySlug = unstable_cache(
   { revalidate: 60, tags: ["listings"] },
 );
 
+/** A listing's gallery photo URLs in order (the first is also `primary_image_url`). */
+export const getListingImages = unstable_cache(
+  async (listingId: string): Promise<string[]> => {
+    try {
+      const { data } = await createPublicClient()
+        .from("user_listing_images")
+        .select("url")
+        .eq("listing_id", listingId)
+        .order("sort_order");
+      return (data ?? []).map((r) => r.url);
+    } catch {
+      return [];
+    }
+  },
+  ["listing-images"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
 export type MarketplaceListing = {
   slug: string;
   title: string;

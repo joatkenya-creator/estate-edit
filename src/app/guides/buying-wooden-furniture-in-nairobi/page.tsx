@@ -73,7 +73,7 @@ export default async function BuyingWoodenFurnitureGuide() {
       <PageHero
         eyebrow="Buying Guide"
         title="Buying wooden furniture in Nairobi"
-        subtitle="What to look at, what to ask, and what to measure before you hand over money — whether you are buying from a workshop on Ngong Road or a family clearing a house in Karen."
+        subtitle="What to look at, what to ask, and what to measure before you hand over money, whether you are buying from a workshop on Ngong Road or a family clearing a house in Karen."
         crumbs={[{ label: "Guides" }, { label: "Wooden Furniture" }]}
       />
 
@@ -91,7 +91,7 @@ export default async function BuyingWoodenFurnitureGuide() {
             </p>
             <p className="mt-3">
               Cypress (often written &ldquo;cyprus&rdquo; locally) is one of the most common
-              furniture softwoods in Kenya — light, stable, straight-grained and considerably
+              furniture softwoods in Kenya: light, stable, straight-grained and considerably
               cheaper than mahogany or mvule. Treated well and finished properly, it makes solid
               beds and tables. It also dents more easily than a hardwood, so check the top surfaces
               of a table rather than only the frame.
@@ -102,10 +102,10 @@ export default async function BuyingWoodenFurnitureGuide() {
             <h2 className="font-display text-2xl text-navy">Kenyan bed sizes, decoded</h2>
             <p className="mt-3">
               Beds are sold here in feet, not centimetres. &ldquo;4/6&rdquo; means 4ft by 6ft;
-              &ldquo;5/6&rdquo; means 5ft by 6ft — roughly 152cm by 183cm of mattress. A
+              &ldquo;5/6&rdquo; means 5ft by 6ft (roughly 152cm by 183cm of mattress). A
               6/6 is the local equivalent of a king. The frame will always be a little larger than
               the mattress it takes, so when a seller quotes a measurement, confirm whether it is
-              the mattress size or the outside frame — that difference is what decides whether the
+              the mattress size or the outside frame. That difference is what decides whether the
               bed clears your bedroom door.
             </p>
           </section>
@@ -116,7 +116,7 @@ export default async function BuyingWoodenFurnitureGuide() {
               <li>
                 <strong className="text-navy">Joints.</strong> Look underneath. Mortise-and-tenon or
                 dowelled joints last; joints held together with nails and filler do not. Rock the
-                piece gently — a frame that flexes at the corners will loosen further after a move.
+                piece gently. A frame that flexes at the corners will loosen further after a move.
               </li>
               <li>
                 <strong className="text-navy">Moisture.</strong> Furniture built from wood that was
@@ -131,7 +131,7 @@ export default async function BuyingWoodenFurnitureGuide() {
               <li>
                 <strong className="text-navy">Finish.</strong> A natural clear finish shows the
                 grain and is easy to touch up. A heavy opaque finish can be hiding filler. Run a
-                hand over the edges — sharp, unsanded edges signal a rushed build.
+                hand over the edges. Sharp, unsanded edges signal a rushed build.
               </li>
               <li>
                 <strong className="text-navy">Fit.</strong> Measure your doorway, stairwell and lift
@@ -155,7 +155,7 @@ export default async function BuyingWoodenFurnitureGuide() {
               <Link href="/marketplace" className="text-navy underline underline-offset-4">
                 The Estate Edit Marketplace
               </Link>{" "}
-              you deal with the seller directly — we publish the listing and the seller&apos;s
+              you deal with the seller directly. We publish the listing and the seller&apos;s
               contact details, and the money never passes through us. That means the inspection is
               entirely yours to do, and it is worth doing properly.
             </p>
@@ -165,7 +165,7 @@ export default async function BuyingWoodenFurnitureGuide() {
             <h2 className="font-display text-2xl text-navy">New workshop piece or estate piece?</h2>
             <p className="mt-3">
               A newly built piece gets you exact dimensions and a fresh finish. A piece from an
-              estate clearance is usually better timber for the money — furniture built twenty
+              estate clearance is usually better timber for the money. Furniture built twenty
               years ago from mature hardwood is not something a workshop can reproduce at the same
               price today. If you want the second kind, look at{" "}
               <Link href="/collection" className="text-navy underline underline-offset-4">
@@ -225,7 +225,7 @@ export default async function BuyingWoodenFurnitureGuide() {
 
       <CtaBand
         title="Clearing a house, or downsizing?"
-        subtitle="We catalogue, value and sell entire estates — and list individual pieces for sellers who would rather handle the sale themselves."
+        subtitle="We catalogue, value and sell entire estates, and list individual pieces for sellers who would rather handle the sale themselves."
       />
     </main>
   );

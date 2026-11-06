@@ -44,8 +44,8 @@ export async function MarketplaceTeaser({ limit = 4 }: { limit?: number }) {
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Alongside the estates we manage, vetted sellers list their own pieces here — priced by
-            the owner, viewed in person, bought directly.
+            Alongside the estates we manage, vetted sellers list their own pieces here. Each is priced by
+            the owner, viewed in person and bought directly.
           </p>
         </Reveal>
 

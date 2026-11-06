@@ -28,7 +28,21 @@ export const serviceLinks = [
   { label: "Expatriate Services", href: "/expat-services" },
 ] as const;
 
+/**
+ * Launch switch for /residences and /developers. While false, both routes 404
+ * (see their layout.tsx) and the header, footer and sitemap drop their links.
+ * Flip to true to launch.
+ */
+export const RESIDENCES_LIVE: boolean = false;
+
+/** `kenyaOnly` links are hidden on the Virginia storefront (Nairobi-only content). */
 export const navLinks = [
+  ...(RESIDENCES_LIVE
+    ? ([
+        { label: "Residences", href: "/residences", kenyaOnly: true },
+        { label: "Developers", href: "/developers", kenyaOnly: true },
+      ] as const)
+    : []),
   { label: "Collection", href: "/collection" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "About", href: "/about" },
@@ -224,7 +238,7 @@ export function formatPriceRange(
   currency = "KES",
 ): string {
   if (priceMax != null && priceMax > price) {
-    return `${formatMoney(price, currency)} – ${priceMax.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+    return `${formatMoney(price, currency)} to ${priceMax.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
   }
   return formatMoney(price, currency);
 }

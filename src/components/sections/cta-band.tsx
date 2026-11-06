@@ -14,7 +14,9 @@ export function CtaBand({
   secondary?: { label: string; href: string } | null;
 }) {
   return (
-    <section className="bg-white py-20 sm:py-28">
+    // Always the last section before the footer: a short bottom pad, so the band
+    // and the footer read as one closing block (footer adds its own top pad).
+    <section className="bg-white pb-4 pt-20 sm:pb-6 sm:pt-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <div className="relative overflow-hidden rounded-2xl gradient-navy px-8 py-14 text-center sm:px-16 sm:py-20">

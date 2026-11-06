@@ -48,8 +48,8 @@ export default async function AccountDashboard() {
           <Star className="size-3.5 text-gold" />
           <span className="text-xs font-medium text-gold-dark">
             {isPaidTier
-              ? "Verified Seller — Paid Tier"
-              : `Free Tier — ${2 - freeUsed} free listing${2 - freeUsed === 1 ? "" : "s"} remaining`}
+              ? "Verified Seller: Paid Tier"
+              : `Free Tier: ${2 - freeUsed} free listing${2 - freeUsed === 1 ? "" : "s"} remaining`}
           </span>
         </div>
       </div>

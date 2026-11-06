@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   robots: { index: false }, // auth-gated form, no unique content to index
 };
 
-export default async function PostListingPage() {
+export default async function PostListingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { category } = await searchParams;
   const region = await getRegion();
   const currency = regionCurrency[region];
   const listingFee = region === "virginia" ? 8 : 500;
@@ -57,6 +62,7 @@ export default async function PostListingPage() {
           freeRemaining={freeRemaining}
           userEmail={user.email ?? ""}
           paystackKey={paystackPublicKey()}
+          defaultCategory={category}
         />
       </div>
     </main>

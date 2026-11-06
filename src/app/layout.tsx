@@ -13,7 +13,8 @@ import { Clarity } from "@/components/seo/clarity";
 import { MetaPixel } from "@/components/seo/meta-pixel";
 import { GoogleAds } from "@/components/seo/google-ads";
 import { UtmTracker } from "@/components/marketing/utm-tracker";
-import { OG_IMAGE, buildOpenGraph, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { NetworkBanner } from "@/components/states/network-banner";
+import { buildOpenGraph, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { getRegion } from "@/lib/region.server";
 import "./globals.css";
 
@@ -82,12 +83,10 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords,
     openGraph,
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [OG_IMAGE],
-    },
+    // Card type only. Without their own twitter:title/description, X reads each
+    // page's og:* tags, so every page shares as itself. Setting them here made
+    // every page that only set openGraph inherit the home page's values.
+    twitter: { card: "summary_large_image" },
     // Search engine ownership verification (renders <meta name=...> in <head>).
     verification: {
       other: {
@@ -122,6 +121,7 @@ export default async function RootLayout({
         <RegionProvider initialRegion={region}>
           <CartProvider>
             <SiteHeader />
+            <NetworkBanner />
             {children}
             <SiteFooter />
             <CartDrawer />

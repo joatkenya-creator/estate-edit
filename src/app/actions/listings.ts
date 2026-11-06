@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRegion } from "@/lib/region.server";
 import { regionCurrency } from "@/lib/region";
+import { hasErrors, MAX_PHOTOS, validateListing, type FieldErrors } from "@/lib/validation";
 
 export type ListingState = {
   status: "idle" | "success" | "error" | "payment_required";
@@ -12,7 +13,20 @@ export type ListingState = {
   listingId?: string;
   requiresFee?: boolean;
   feeAmount?: number;
+  /** Per-field problems, shown inline under each field. */
+  fieldErrors?: FieldErrors;
+  /** "auth": the session has gone. The form saves its draft and sends the seller to sign in. */
+  code?: "auth";
 };
+
+const SIGNED_OUT: ListingState = {
+  status: "error",
+  code: "auth",
+  message: "You were signed out. Sign in again to continue; your draft has been kept.",
+};
+
+/** Only photos uploaded to our own bucket are accepted. */
+const IMAGE_PREFIX = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listing-images/`;
 
 const LISTING_FEE_KES = 500;
 const LISTING_FEE_USD = 8;
@@ -53,28 +67,40 @@ type ListingFields = {
   condition: (typeof CONDITIONS)[number] | null;
   location: string | null;
   primaryImageUrl: string | null;
+  images: string[];
 };
 
 /** Validate and normalise the shared listing form. Identical rules for create and edit. */
 function parseListingForm(
   formData: FormData,
-): { ok: true; fields: ListingFields } | { ok: false; message: string } {
+  currency: string,
+): { ok: true; fields: ListingFields } | { ok: false; message: string; fieldErrors?: FieldErrors } {
   const title = (formData.get("title") as string)?.trim();
   const description = (formData.get("description") as string)?.trim();
   const priceRaw = formData.get("price") as string;
   const category = formData.get("category") as string;
   const condition = formData.get("condition") as string;
   const location = (formData.get("location") as string)?.trim();
-  const primaryImageUrl = (formData.get("primary_image_url") as string)?.trim();
-
-  if (!title || !priceRaw || !category) {
-    return { ok: false, message: "Title, price, and category are required." };
+  let images: string[] = [];
+  try {
+    const raw = JSON.parse((formData.get("image_urls") as string) || "[]");
+    if (Array.isArray(raw)) images = raw.filter((u): u is string => typeof u === "string");
+  } catch {
+    images = [];
   }
+  images = images.filter((u) => u.startsWith(IMAGE_PREFIX)).slice(0, MAX_PHOTOS);
+  const primaryImageUrl = images[0];
 
+  // Same rules the browser applied; anything that slips past comes back per field.
+  const fieldErrors = validateListing(
+    { title, category, price: priceRaw, location, description },
+    images.length,
+    currency,
+  );
+  if (hasErrors(fieldErrors)) {
+    return { ok: false, message: "Some fields need your attention.", fieldErrors };
+  }
   const price = parseFloat(priceRaw);
-  if (isNaN(price) || price <= 0) {
-    return { ok: false, message: "Please enter a valid price." };
-  }
 
   if (PROHIBITED.test(`${title} ${description ?? ""}`)) {
     return {
@@ -98,8 +124,23 @@ function parseListingForm(
         : null) as (typeof CONDITIONS)[number] | null,
       location: location || null,
       primaryImageUrl: primaryImageUrl || null,
+      images,
     },
   };
+}
+
+/** Replace a listing's gallery with `urls`, in order. */
+async function saveImages(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  listingId: string,
+  urls: string[],
+) {
+  await supabase.from("user_listing_images").delete().eq("listing_id", listingId);
+  if (!urls.length) return;
+  const { error } = await supabase
+    .from("user_listing_images")
+    .insert(urls.map((url, i) => ({ listing_id: listingId, url, sort_order: i })));
+  if (error) console.error("Saving listing images failed:", error.message);
 }
 
 /**
@@ -125,13 +166,14 @@ export async function createListing(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    return { status: "error", message: "You must be signed in to post a listing." };
-  }
+  if (!user) return SIGNED_OUT;
 
-  const parsed = parseListingForm(formData);
-  if (!parsed.ok) return { status: "error", message: parsed.message };
-  const { title, description, price, category, condition, location, primaryImageUrl } =
+  const region = await getRegion();
+  const currency = regionCurrency[region];
+
+  const parsed = parseListingForm(formData, currency);
+  if (!parsed.ok) return { status: "error", message: parsed.message, fieldErrors: parsed.fieldErrors };
+  const { title, description, price, category, condition, location, primaryImageUrl, images } =
     parsed.fields;
 
   // Check user's free tier status
@@ -147,8 +189,6 @@ export async function createListing(
   // they do NOT need to have sold their free listings first.
 
   // Seller region -> native currency + listing fee (US sellers price in USD).
-  const region = await getRegion();
-  const currency = regionCurrency[region];
   const listingFee = region === "virginia" ? LISTING_FEE_USD : LISTING_FEE_KES;
 
   // Create the listing (draft initially if fee required)
@@ -178,8 +218,14 @@ export async function createListing(
 
   if (error || !listing) {
     console.error("Create listing error:", error?.message);
-    return { status: "error", message: "Failed to create listing. Please try again." };
+    return {
+      status: "error",
+      message:
+        "Something went wrong on our side and your listing was not saved. Your details are still here. Try again, or reach us directly.",
+    };
   }
+
+  await saveImages(supabase, listing.id, images);
 
   // Increment free_listings_used counter
   if (isFree) {
@@ -201,7 +247,7 @@ export async function createListing(
     };
   }
 
-  redirect("/account/listings");
+  redirect("/account/listings?posted=1");
 }
 
 /**
@@ -301,26 +347,31 @@ export async function updateListing(
 ): Promise<ListingState> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { status: "error", message: "You must be signed in to edit a listing." };
+  if (!user) return SIGNED_OUT;
 
   const listingId = (formData.get("id") as string)?.trim();
   if (!listingId) return { status: "error", message: "Missing listing reference." };
-
-  const parsed = parseListingForm(formData);
-  if (!parsed.ok) return { status: "error", message: parsed.message };
-  const { title, description, price, category, condition, location, primaryImageUrl } =
-    parsed.fields;
 
   // Ownership is enforced twice: here for a clear error message, and by the
   // `user_id` filter on the update itself (plus RLS) so it cannot be bypassed.
   const { data: existing } = await supabase
     .from("user_listings")
-    .select("status, slug")
+    .select("status, slug, currency")
     .eq("id", listingId)
     .eq("user_id", user.id)
     .single();
 
-  if (!existing) return { status: "error", message: "Listing not found." };
+  if (!existing) {
+    return {
+      status: "error",
+      message: "This listing isn't in your account, so it can't be edited from here.",
+    };
+  }
+
+  const parsed = parseListingForm(formData, existing.currency ?? "KES");
+  if (!parsed.ok) return { status: "error", message: parsed.message, fieldErrors: parsed.fieldErrors };
+  const { title, description, price, category, condition, location, primaryImageUrl, images } =
+    parsed.fields;
   if (!(EDITABLE as readonly string[]).includes(existing.status)) {
     return {
       status: "error",
@@ -347,9 +398,14 @@ export async function updateListing(
 
   if (error) {
     console.error("Update listing error:", error.message);
-    return { status: "error", message: "Failed to save changes. Please try again." };
+    return {
+      status: "error",
+      message:
+        "Something went wrong on our side and your changes were not saved. Your edits are still here. Try again, or reach us directly.",
+    };
   }
 
+  await saveImages(supabase, listingId, images);
   revalidateListings(existing.slug);
-  redirect("/account/listings");
+  redirect(`/account/listings?updated=${listingId}`);
 }

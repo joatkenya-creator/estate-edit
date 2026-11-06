@@ -14,7 +14,7 @@ function FacebookIcon() {
 /** Per-item share row — WhatsApp (big in Kenya), Facebook, and copy-link. */
 export function ShareButtons({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
-  const text = encodeURIComponent(`${title} — ${url}`);
+  const text = encodeURIComponent(`${title}: ${url}`);
   const enc = encodeURIComponent(url);
 
   const cls =

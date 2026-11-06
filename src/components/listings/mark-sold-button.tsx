@@ -26,7 +26,7 @@ export function MarkSoldButton({
           else
             toast.success(
               isSold
-                ? "Relisted — back on the marketplace shortly."
+                ? "Relisted. Back on the marketplace shortly."
                 : "Marked as sold and removed from the marketplace.",
             );
         })
