@@ -55,9 +55,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!resolved) return { title: "Page not found", robots: { index: false, follow: true } };
 
   const { category, place, region, listings, city, duplicatesCity } = resolved;
-  const title = categoryMetaTitle(category, place);
+  const title = categoryMetaTitle(category, place, region);
   const description = clampDescription(
-    categoryMetaDescription(category, place, listings.length),
+    categoryMetaDescription(category, place, listings.length, region),
     160,
   );
   const path = `/marketplace/${category.slug}/${place.slug}`;

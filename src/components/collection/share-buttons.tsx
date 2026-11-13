@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MessageCircle, Link2, Check } from "lucide-react";
+import { whatsappUrl } from "@/lib/utils";
 
 function FacebookIcon() {
   return (
@@ -14,7 +15,6 @@ function FacebookIcon() {
 /** Per-item share row — WhatsApp (big in Kenya), Facebook, and copy-link. */
 export function ShareButtons({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
-  const text = encodeURIComponent(`${title} — ${url}`);
   const enc = encodeURIComponent(url);
 
   const cls =
@@ -24,7 +24,7 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
     <div className="mt-6 flex items-center gap-2">
       <span className="mr-1 text-xs uppercase tracking-[0.18em] text-muted-foreground">Share</span>
       <a
-        href={`https://wa.me/?text=${text}`}
+        href={whatsappUrl(`${title} — ${url}`)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Share on WhatsApp"

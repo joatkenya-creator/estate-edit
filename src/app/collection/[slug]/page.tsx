@@ -10,9 +10,9 @@ import { DeliveryBadge } from "@/components/commerce/delivery-badge";
 import { getAllAssetSlugs, getAssetBySlug, getCatalogueAssets, getDeliverySettings } from "@/lib/queries";
 import { divisionLabel, formatPriceRange, isPurchasable, siteConfig, type AssetDetail } from "@/lib/site";
 import { getRegion } from "@/lib/region.server";
-import { cn } from "@/lib/utils";
+import { cn, whatsappUrl } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { assetFallbackDescription, assetJsonLd, buildOpenGraph, clampDescription, clampTitle, siteUrlForRegion, SITE_URL } from "@/lib/seo";
+import { assetFallbackDescription, assetJsonLd, buildOpenGraph, clampDescription, clampTitle, siteUrlForRegion } from "@/lib/seo";
 
 // Region-specific pricing/availability — render per request.
 export const dynamic = "force-dynamic";
@@ -90,19 +90,27 @@ export default async function AssetPage({
         : [];
 
   const buyable = isPurchasable(asset);
-  const delivery = buyable ? await getDeliverySettings() : null;
+  // Independent reads, fetched together rather than one after another — each
+  // was a separate Supabase round trip on a cache miss.
+  const [delivery, region, catalogue] = await Promise.all([
+    buyable ? getDeliverySettings() : null,
+    getRegion(),
+    getCatalogueAssets(),
+  ]);
+
+  // The item's own market host (a USD item lives on us.estateedit.org), so
+  // shared and enquiry links point at its canonical URL, not the apex.
+  const assetUrl = `${siteUrlForRegion(asset.currency === "USD" ? "virginia" : "kenya")}/collection/${asset.slug}`;
 
   // Market-routed enquiry: Kenya buyers convert on WhatsApp; other markets go to
   // the contact form (captured as a lead in the CMS).
-  const region = await getRegion();
-  const enquireText = `Hi, I'm interested in "${asset.title}"${asset.category ? ` (${asset.category})` : ""} — ${SITE_URL}/collection/${asset.slug}`;
-  const whatsappHref = `https://wa.me/${siteConfig.phone.replace(/\D/g, "")}?text=${encodeURIComponent(enquireText)}`;
+  const enquireText = `Hi, I'm interested in "${asset.title}"${asset.category ? ` (${asset.category})` : ""} — ${assetUrl}`;
+  const whatsappHref = whatsappUrl(enquireText, siteConfig.phone);
 
   const productJsonLd = assetJsonLd(asset);
 
   // More internal links between asset pages: same category first, then fill
   // with the rest of the catalogue.
-  const catalogue = await getCatalogueAssets();
   const related = [...catalogue]
     .filter((item) => item.slug !== asset.slug)
     .sort((a, b) => Number(b.categoryKey === asset.categoryKey) - Number(a.categoryKey === asset.categoryKey))
@@ -261,7 +269,7 @@ export default async function AssetPage({
               </Button>
             </div>
 
-            <ShareButtons url={`${SITE_URL}/collection/${asset.slug}`} title={asset.title} />
+            <ShareButtons url={assetUrl} title={asset.title} />
           </div>
         </div>
       </section>

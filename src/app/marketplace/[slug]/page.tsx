@@ -62,14 +62,14 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (category) {
     const listings = await getCategoryListings(region, category);
     return {
-      title: { absolute: categoryMetaTitle(category) },
-      description: clampDescription(categoryMetaDescription(category, null, listings.length), 160),
+      title: { absolute: categoryMetaTitle(category, null, region) },
+      description: clampDescription(categoryMetaDescription(category, null, listings.length, region), 160),
       alternates: { canonical: `${origin}/marketplace/${category.slug}` },
       // An empty category is thin content — crawlable and linked, but not
       // offered to the index until a seller actually posts into it.
       robots: listings.length === 0 ? { index: false, follow: true } : undefined,
       openGraph: buildOpenGraph({
-        title: categoryMetaTitle(category),
+        title: categoryMetaTitle(category, null, region),
         description: category.intro,
         path: `/marketplace/${category.slug}`,
         region,
@@ -155,14 +155,26 @@ async function ListingDetail({ slug }: { slug: string }) {
   });
 
   const profile = listing.user_profiles;
-
+  const category = categoryByValue(listing.category);
   const supabase = await createClient();
+  const region = await getRegion();
+  const isVa = region === "virginia";
+
+  // Everything below depends only on the listing row, so it is fetched in one
+  // parallel batch instead of three sequential round trips (session ->
+  // same-category -> fill). Both marketplace reads hit the same cache entries
+  // as the category page and /marketplace.
   const [
     {
       data: { user },
     },
-    isVa,
-  ] = await Promise.all([supabase.auth.getUser(), getRegion().then((r) => r === "virginia")]);
+    categoryRows,
+    allRows,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    category ? getMarketplaceListings(region, category.value, "") : Promise.resolve([]),
+    getMarketplaceListings(region, "", ""),
+  ]);
   const isOwner = user?.id === listing.user_id;
 
   // Virginia sellers are contacted by email (no phone shown); Kenya keeps phone
@@ -196,7 +208,6 @@ async function ListingDetail({ slug }: { slug: string }) {
   };
   const origin = siteUrlForRegion(listing.currency === "USD" ? "virginia" : "kenya");
   const url = `${origin}/marketplace/${listing.slug}`;
-  const category = categoryByValue(listing.category);
   const place = resolvePlace(listing.location);
   const heading = listingSeoTitle(seo);
   const price = formatListingPrice(listing.price, listing.currency);
@@ -240,18 +251,10 @@ async function ListingDetail({ slug }: { slug: string }) {
   // Related listings: same category first (the genuinely comparable ones),
   // then anything else on the marketplace, so every listing page hands the
   // crawler four more listing URLs and the buyer four more options.
-  const region = isVa ? "virginia" : "kenya";
-  const sameCategory = category
-    ? (await getMarketplaceListings(region, category.value, "")).filter(
-        (l) => l.slug !== listing.slug,
-      )
-    : [];
-  const fill =
-    sameCategory.length >= 4
-      ? []
-      : (await getMarketplaceListings(region, "", "")).filter(
-          (l) => l.slug !== listing.slug && !sameCategory.some((s) => s.slug === l.slug),
-        );
+  const sameCategory = categoryRows.filter((l) => l.slug !== listing.slug);
+  const fill = allRows.filter(
+    (l) => l.slug !== listing.slug && !sameCategory.some((s) => s.slug === l.slug),
+  );
   const related = [...sameCategory, ...fill].slice(0, 4);
 
   return (

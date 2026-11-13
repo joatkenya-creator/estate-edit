@@ -171,23 +171,34 @@ function oneYearFromNow(): string {
  */
 export function assetJsonLd(asset: AssetDetail) {
   const hasPrice = asset.price != null && !asset.priceOnRequest;
-  if (!hasPrice) return null;
 
   // Each asset belongs to a single market — link to its own home domain, not
   // always the Kenya apex (see the matching canonical fix in
   // collection/[slug]/page.tsx).
   const assetOrigin = asset.currency === "USD" ? US_SITE_URL : SITE_URL;
   const url = `${assetOrigin}/collection/${asset.slug}`;
-  const image = asset.images[0]?.url ?? asset.imageUrl ?? OG_IMAGE;
+  const image = asset.images[0]?.url ?? asset.imageUrl;
 
-  return {
+  const product = {
     "@context": "https://schema.org",
     "@type": "Product",
+    "@id": `${url}#product`,
     name: asset.title,
     description: asset.description ?? assetFallbackDescription(asset),
-    image: [image],
+    url,
+    ...(image ? { image: [image] } : {}),
     category: asset.category,
     ...(asset.brand ? { brand: { "@type": "Brand", name: asset.brand } } : {}),
+  };
+
+  // Price on request: describe the product, but emit NO Offer — an Offer
+  // without price/priceCurrency is invalid, and inventing a price is worse.
+  // Google won't show a product rich result for it (it needs offers, review or
+  // aggregateRating); the block still identifies the page as a Product.
+  if (!hasPrice) return product;
+
+  return {
+    ...product,
     offers: {
       "@type": "Offer",
       url,

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { breadcrumbJsonLd, itemListJsonLd, siteUrlForRegion } from "@/lib/seo";
 import {
   MARKETPLACE_CATEGORIES,
+  MARKET_NAME,
   categoryHeading,
   type MarketplaceCategory,
   type Place,
@@ -45,7 +46,7 @@ export function CategoryBrowse({
   const origin = siteUrlForRegion(region);
   const basePath = `/marketplace/${category.slug}`;
   const path = place ? `${basePath}/${place.slug}` : basePath;
-  const heading = categoryHeading(category, place);
+  const heading = categoryHeading(category, place, region);
 
   const crumbs = [
     { name: "Home", path: "/" },
@@ -126,7 +127,7 @@ export function CategoryBrowse({
             <p className="mb-5 text-sm text-charcoal/55">
               {listings.length} {category.noun.toLowerCase()} listing
               {listings.length === 1 ? "" : "s"}
-              {place ? ` in ${place.label}` : " across Kenya"} — prices shown are set by the seller.
+              {place ? ` in ${place.label}` : ` across ${MARKET_NAME[region]}`} — prices shown are set by the seller.
             </p>
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {listings.map((listing, i) => (
@@ -173,7 +174,7 @@ export function CategoryBrowse({
                 href={basePath}
                 className="rounded-full border border-navy bg-white px-3.5 py-1.5 text-xs font-medium text-navy transition-colors hover:bg-navy hover:text-white"
               >
-                All {category.noun.toLowerCase()} in Kenya
+                All {category.noun.toLowerCase()} in {MARKET_NAME[region]}
               </Link>
             )}
             {siblingCategories.map((c) => (

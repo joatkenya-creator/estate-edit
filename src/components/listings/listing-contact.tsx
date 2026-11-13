@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { MessageCircle, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { whatsappUrl } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { listingEnquiryText, type SeoListing } from "@/lib/marketplace";
 
@@ -46,7 +47,7 @@ export function ListingContact({
   }, [listing.slug]);
 
   const message = encodeURIComponent(listingEnquiryText(listing, url));
-  const waHref = phone ? `https://wa.me/${phone.replace(/\D/g, "")}?text=${message}` : null;
+  const waHref = phone ? whatsappUrl(listingEnquiryText(listing, url), phone) : null;
   const telHref = phone ? `tel:${phone.replace(/\s/g, "")}` : null;
   const mailHref = email
     ? `mailto:${email}?subject=${encodeURIComponent(

@@ -32,7 +32,11 @@ export default function robots(): MetadataRoute.Robots {
         "/*?q=",
       ],
     },
+    // One sitemap lists both hosts. That cross-host submission is valid because
+    // this same robots.txt is served on us.estateedit.org and references it.
+    // No `host:` line: this file is served on BOTH hosts, and
+    // `Host: estateedit.org` on us.estateedit.org declares the Virginia store a
+    // mirror of the apex — the opposite of two separately indexed markets.
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

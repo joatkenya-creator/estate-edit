@@ -11,6 +11,7 @@
  *
  * Client-safe (no server-only imports) — the listing card and CTA row use it too.
  */
+import type { Region } from "./region";
 
 /* -------------------------------------------------------------------------- */
 /* Categories                                                                  */
@@ -424,25 +425,44 @@ export function listingEnquiryText(listing: SeoListing, url: string): string {
 /* Category / location page copy                                               */
 /* -------------------------------------------------------------------------- */
 
-/** "Furniture for Sale in Nairobi" / "Furniture for Sale in Kenya". */
-export function categoryHeading(category: MarketplaceCategory, place?: Place | null): string {
-  return `${category.noun} for Sale in ${place ? place.label : "Kenya"}`;
+/**
+ * The market a category page without a place speaks for. The same route
+ * serves both hosts, so us.estateedit.org/marketplace/furniture must say
+ * Virginia — it used to say "Kenya" on both (Ahrefs: us. pages titled
+ * "… for Sale in Kenya").
+ */
+export const MARKET_NAME: Record<Region, string> = { kenya: "Kenya", virginia: "Virginia" };
+
+/** "Furniture for Sale in Nairobi" / "Furniture for Sale in Kenya" / "… in Virginia". */
+export function categoryHeading(
+  category: MarketplaceCategory,
+  place?: Place | null,
+  region: Region = "kenya",
+): string {
+  return `${category.noun} for Sale in ${place ? place.label : MARKET_NAME[region]}`;
 }
 
-export function categoryMetaTitle(category: MarketplaceCategory, place?: Place | null): string {
+export function categoryMetaTitle(
+  category: MarketplaceCategory,
+  place?: Place | null,
+  region: Region = "kenya",
+): string {
   return place
     ? `${category.noun} for Sale in ${place.label} | Estate Edit Marketplace`
-    : `${category.noun} for Sale in Kenya | Curated Marketplace | Estate Edit`;
+    : withBrand(categoryHeading(category, null, region));
 }
 
 export function categoryMetaDescription(
   category: MarketplaceCategory,
   place: Place | null,
   count: number,
+  region: Region = "kenya",
 ): string {
-  const where = place ? place.label : "Kenya";
+  const where = place ? place.label : MARKET_NAME[region];
   const n = count > 0 ? `${count} listing${count === 1 ? "" : "s"}` : "listings";
-  return `Browse ${n} of ${category.noun.toLowerCase()} for sale in ${where} on The Estate Edit Marketplace. ${category.intro} Contact sellers directly by WhatsApp or phone.`;
+  // Virginia sellers are contacted by email (no phone is shown there).
+  const contact = region === "virginia" ? "by email" : "by WhatsApp or phone";
+  return `Browse ${n} of ${category.noun.toLowerCase()} for sale in ${where} on The Estate Edit Marketplace. ${category.intro} Contact sellers directly ${contact}.`;
 }
 
 /** Is this place a town/city in its own right, rather than a neighbourhood of one? */

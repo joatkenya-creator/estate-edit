@@ -146,3 +146,21 @@ assert.ok(listingSeoTitle(noLocation).endsWith("in Kenya"));
 assert.ok(!listingImageAlt(noLocation).includes("for sale in"));
 
 console.log("marketplace.check.ts: OK");
+
+/* --- category copy follows the market of the host -------------------------- */
+{
+  const { categoryMetaTitle, categoryMetaDescription, categoryHeading, MARKETPLACE_CATEGORIES } =
+    await import("./marketplace.ts");
+  const furniture = categoryBySlug("furniture")!;
+  // us.estateedit.org category pages were titled "… for Sale in Kenya".
+  assert.equal(categoryHeading(furniture, null, "virginia"), "Furniture for Sale in Virginia");
+  assert.equal(categoryHeading(furniture), "Furniture for Sale in Kenya");
+  assert.ok(!categoryMetaTitle(furniture, null, "virginia").includes("Kenya"));
+  assert.ok(!categoryMetaDescription(furniture, null, 0, "virginia").includes("Kenya"));
+  assert.ok(categoryMetaDescription(furniture, null, 0, "virginia").includes("by email"));
+  for (const c of MARKETPLACE_CATEGORIES) {
+    for (const r of ["kenya", "virginia"] as const) {
+      assert.ok(categoryMetaTitle(c, null, r).length <= 70, `title too long: ${categoryMetaTitle(c, null, r)}`);
+    }
+  }
+}
