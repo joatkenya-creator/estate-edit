@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Store } from "lucide-react";
+import { SearchX, Store } from "lucide-react";
 import { ListingCard } from "@/components/listings/listing-card";
 import { MarketplaceSearchForm } from "@/components/marketplace/search-form";
-import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
+import { NewArrivalsSignup, NOTIFY_ANCHOR } from "@/components/marketing/new-arrivals-signup";
+import { CategoryEmpty } from "@/components/marketplace/category-browse";
+import { EmptyState } from "@/components/states/states";
+import { alternativeQueries } from "@/lib/fuzzy-search";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { getRegion } from "@/lib/region.server";
 import { regionContent } from "@/lib/site";
 import { getMarketplaceListings } from "@/lib/queries";
 import { placesIn } from "@/lib/marketplace.server";
-import { MARKETPLACE_CATEGORIES, categoryBySlug, categoryByValue } from "@/lib/marketplace";
+import { MARKETPLACE_CATEGORIES, categoryBySlug, categoryByValue, categoryLabel } from "@/lib/marketplace";
 import {
   breadcrumbJsonLd,
   buildOpenGraph,
@@ -51,7 +54,7 @@ export async function generateMetadata({
 export default async function MarketplacePage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; q?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; exact?: string }>;
 }) {
   const params = await searchParams;
   const region = await getRegion();
@@ -60,7 +63,8 @@ export default async function MarketplacePage({
 
   // Legacy `?category=furniture` links (emails, old shares) still work; the
   // navigation now points at the crawlable /marketplace/<category> paths.
-  const listings = await getMarketplaceListings(region, params.category ?? "", params.q ?? "");
+  const q = params.q?.trim() ?? "";
+  let listings = await getMarketplaceListings(region, params.category ?? "", q);
   const activeCategory = categoryByValue(params.category) ?? categoryBySlug(params.category ?? "");
 
   // Only show a category chip if something is actually in it — an empty chip
@@ -71,6 +75,36 @@ export default async function MarketplacePage({
     : listings;
   const stockedAll = new Set(allListings.map((l) => l.category));
   const topPlaces = placesIn(allListings).slice(0, 8);
+
+  // Zero results for a search: fix the typo or synonym for them (unless they
+  // asked for their exact words), then fall back to suggested searches.
+  let correctedFrom: string | null = null;
+  let correctedTo: string | null = null;
+  if (q && listings.length === 0 && !params.exact) {
+    const vocabulary = [
+      ...allListings.map((l) => l.title),
+      ...MARKETPLACE_CATEGORIES.map((c) => c.label),
+      ...topPlaces.map((p) => p.place.label),
+    ];
+    for (const alt of alternativeQueries(q, vocabulary).slice(0, 4)) {
+      const found = await getMarketplaceListings(region, params.category ?? "", alt);
+      if (found.length) {
+        [listings, correctedFrom, correctedTo] = [found, q, alt];
+        break;
+      }
+    }
+  }
+  // Suggested searches when nothing matched: what is actually in stock, then where.
+  const suggestions = [
+    ...MARKETPLACE_CATEGORIES.filter((c) => stockedAll.has(c.value)).map((c) => ({
+      label: categoryLabel(c.value),
+      href: `/marketplace/${c.slug}`,
+    })),
+    ...topPlaces.map(({ place: p, topCategory }) => ({
+      label: `Near ${p.label}`,
+      href: topCategory ? `/marketplace/${topCategory.slug}/${p.slug}` : "/marketplace",
+    })),
+  ].slice(0, 3);
 
   return (
     <main className="min-h-screen bg-stone">
@@ -97,7 +131,7 @@ export default async function MarketplacePage({
             Furniture &amp; Curated Items for Sale in {place}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base">
-            Pieces listed directly by their owners — furniture, art, jewellery, vehicles and
+            Pieces listed directly by their owners: furniture, art, jewellery, vehicles and
             collectables. Every price is set by the seller, and you deal with them directly.
           </p>
         </div>
@@ -137,22 +171,65 @@ export default async function MarketplacePage({
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <div className="rounded-xl border border-border bg-white py-20 text-center shadow-sm">
-            <Store className="mx-auto mb-4 size-12 text-charcoal/20" />
-            <p className="font-medium text-navy">No listings match that search</p>
-            <p className="mt-1 text-sm text-charcoal/50">
-              Try a different term, or browse everything currently available.
-            </p>
-            <Button asChild className="mt-5 bg-navy text-white hover:bg-navy-soft">
-              <Link href="/marketplace">Browse all listings</Link>
-            </Button>
-          </div>
+          q ? (
+            <EmptyState
+              icon={<SearchX />}
+              title={`No listings match “${q}” right now.`}
+              body="Try one of these, or we can tell you when something matching is listed."
+              action={
+                <div className="flex flex-col items-center gap-5">
+                  {suggestions.length > 0 && (
+                    <ul aria-label="Suggested searches" className="flex flex-wrap justify-center gap-2">
+                      {suggestions.map((sug) => (
+                        <li key={sug.href + sug.label}>
+                          <Link
+                            href={sug.href}
+                            className="inline-flex rounded-full border border-border bg-white px-3.5 py-1.5 text-xs text-charcoal/75 transition-colors hover:border-navy hover:text-navy"
+                          >
+                            {sug.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <Button asChild className="h-11 bg-navy px-6 text-white hover:bg-navy-soft">
+                    <Link href={`#${NOTIFY_ANCHOR}`}>Get notified when a match is listed</Link>
+                  </Button>
+                </div>
+              }
+            />
+          ) : activeCategory ? (
+            <CategoryEmpty category={activeCategory} />
+          ) : (
+            <EmptyState
+              icon={<Store />}
+              title="No pieces listed yet."
+              body="Owners add new pieces every week."
+              action={{ label: "Post your first listing", href: "/sell" }}
+            />
+          )
         ) : (
           <>
+            {correctedTo && (
+              <p className="mb-2 text-sm text-charcoal/75" role="status">
+                Showing results for <em className="font-medium text-navy">{correctedTo}</em> instead
+                of <em>{correctedFrom}</em>.{" "}
+                <Link
+                  href={`/marketplace?${new URLSearchParams({
+                    ...(params.category ? { category: params.category } : {}),
+                    q: correctedFrom ?? "",
+                    exact: "1",
+                  })}`}
+                  className="text-navy underline underline-offset-2"
+                >
+                  Search for {correctedFrom} instead
+                </Link>
+              </p>
+            )}
             <p className="mb-4 text-sm text-charcoal/55">
               {listings.length} listing{listings.length === 1 ? "" : "s"}
               {activeCategory ? ` in ${activeCategory.label}` : ""}
-              {params.q ? ` matching “${params.q}”` : ""}
+              {q ? ` matching “${correctedTo ?? q}”` : ""}
             </p>
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {listings.map((listing, i) => (
@@ -227,7 +304,11 @@ export default async function MarketplacePage({
         </section>
       </div>
 
-      <NewArrivalsSignup source="marketplace" />
+      <NewArrivalsSignup
+        source={q && listings.length === 0 ? "marketplace-search" : "marketplace"}
+        searchTerm={q && listings.length === 0 ? q : undefined}
+        closing
+      />
     </main>
   );
 }

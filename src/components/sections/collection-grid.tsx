@@ -10,6 +10,8 @@ import {
   type CatalogueItem,
 } from "@/lib/site";
 import { CardAddToCart } from "@/components/collection/card-add-to-cart";
+import { EmptyState } from "@/components/states/states";
+import { NOTIFY_ANCHOR } from "@/components/marketing/new-arrivals-signup";
 
 const toneGradient: Record<CatalogueItem["tone"], string> = {
   navy: "linear-gradient(145deg,#001628 0%,#002349 55%,#0c3563 100%)",
@@ -162,9 +164,12 @@ export function CollectionGrid({ items }: { items: CatalogueItem[] }) {
         </motion.div>
 
         {filtered.length === 0 && (
-          <p className="py-20 text-center text-muted-foreground">
-            No lots match this filter. Try another category.
-          </p>
+          <EmptyState
+            className="mt-8"
+            title="No pieces in this category right now."
+            body="New lots arrive as each estate is catalogued."
+            action={{ label: "Get notified about new pieces", href: `#${NOTIFY_ANCHOR}` }}
+          />
         )}
       </div>
     </section>

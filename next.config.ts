@@ -63,12 +63,16 @@ const nextConfig: NextConfig = {
     // current iframe host — check the console and add it here.
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://js.paystack.co https://connect.facebook.net https://www.googletagmanager.com",
+      // 'unsafe-eval' in dev only: React's dev build uses eval() for debug
+      // callstacks. Production React never calls eval(), so prod stays strict.
+      `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://js.paystack.co https://connect.facebook.net https://www.googletagmanager.com`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https://czvrsproxqlpcnvbaltq.supabase.co https://images.unsplash.com https://www.facebook.com https://www.googletagmanager.com",
       "font-src 'self' data:",
       "connect-src 'self' https://czvrsproxqlpcnvbaltq.supabase.co https://api.paystack.co https://www.google-analytics.com https://analytics.google.com https://connect.facebook.net https://www.facebook.com",
-      "frame-src https://checkout.paystack.com https://js.paystack.co https://standard.paystack.co",
+      // TikTok/Instagram: /residences video tours, embedded as the platforms'
+      // own iframes (no embed.js), so frame-src is the only directive they need.
+      "frame-src https://checkout.paystack.com https://js.paystack.co https://standard.paystack.co https://www.tiktok.com https://www.instagram.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",

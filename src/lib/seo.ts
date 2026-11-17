@@ -15,6 +15,8 @@ import {
   resolvePlace,
   type SeoListing,
 } from "./marketplace";
+import type { Company } from "./companies";
+import { coverImage, type Residence } from "./residences";
 
 /** Canonical production origin (Kenya / primary market). */
 export const SITE_URL = "https://estateedit.org";
@@ -110,7 +112,7 @@ export function clampTitle(text: string, max = 48): string {
 /** Fallback description for a catalogue asset with no editor-written copy. */
 export function assetFallbackDescription(asset: Pick<AssetDetail, "title" | "category" | "currency">): string {
   const place = asset.currency === "USD" ? "Virginia" : "Nairobi";
-  return `${asset.title} — ${asset.category} available through ${siteConfig.name}, ${place}. Viewing by appointment; enquire in confidence.`;
+  return `${asset.title}: ${asset.category} available through ${siteConfig.name}, ${place}. Viewing by appointment; enquire in confidence.`;
 }
 
 /** Phone in E.164 (digits + leading +), required by schema.org. */
@@ -371,6 +373,95 @@ export function websiteJsonLd() {
         urlTemplate: `${SITE_URL}/marketplace?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Residences + the companies that list them                                   */
+/* -------------------------------------------------------------------------- */
+
+/** Organization for a developer/agency profile; RealEstateAgent when they sell. */
+export function companyJsonLd(company: Company) {
+  const url = `${SITE_URL}/developers/${company.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": company.roles.includes("agency") ? "RealEstateAgent" : "Organization",
+    "@id": `${url}#organization`,
+    name: company.name,
+    url,
+    description: company.shortDescription,
+    ...(company.logoUrl ? { logo: company.logoUrl } : {}),
+    ...(company.website || company.tiktok || company.instagram
+      ? { sameAs: [company.website, company.tiktok, company.instagram].filter(Boolean) }
+      : {}),
+    ...(company.phone ? { telephone: company.phone } : {}),
+    ...(company.email ? { email: company.email } : {}),
+    ...(company.yearFounded ? { foundingDate: String(company.yearFounded) } : {}),
+    areaServed: company.areas.map((name) => ({ "@type": "Place", name: `${name}, Kenya` })),
+  };
+}
+
+/**
+ * RealEstateListing with its Offer. The seller is the listing company, or The
+ * Estate Edit when it lists directly; only facts the row carries are emitted
+ * (no fabricated ratings or addresses). The Offer's `itemOffered` describes the
+ * home itself; rentals are a LeaseOut priced per month.
+ */
+export function residenceJsonLd(residence: Residence, listedBy?: Company) {
+  const url = `${SITE_URL}/residences/${residence.slug}`;
+  const image = residence.images?.length
+    ? residence.images.map((i) => `${SITE_URL}${i.url}`)
+    : coverImage(residence);
+  const rental = residence.status === "For rent";
+  const homeType = residence.propertyType === "Apartment" || residence.propertyType === "Penthouse" ? "Apartment" : "House";
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "@id": `${url}#listing`,
+    name: residence.name,
+    url,
+    datePosted: residence.dateListed,
+    ...(residence.seo || residence.description
+      ? { description: residence.seo?.description ?? residence.description }
+      : {}),
+    ...(image ? { image } : {}),
+    contentLocation: { "@type": "Place", name: `${residence.area}, Nairobi, Kenya` },
+    offers: {
+      "@type": "Offer",
+      price: residence.priceKes,
+      priceCurrency: "KES",
+      ...(rental
+        ? {
+            businessFunction: "https://purl.org/goodrelations/v1#LeaseOut",
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: residence.priceKes,
+              priceCurrency: "KES",
+              unitCode: "MON",
+            },
+          }
+        : {}),
+      availability:
+        residence.status === "Sold" ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
+      seller: listedBy
+        ? { "@id": `${SITE_URL}/developers/${listedBy.slug}#organization`, name: listedBy.name }
+        : { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: siteConfig.name },
+      itemOffered: {
+        "@type": homeType,
+        name: residence.name,
+        numberOfRooms: residence.bedrooms,
+        numberOfBathroomsTotal: residence.bathrooms,
+        ...(residence.floorAreaSqft
+          ? { floorSize: { "@type": "QuantitativeValue", value: residence.floorAreaSqft, unitCode: "FTK" } }
+          : {}),
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: residence.area,
+          addressLocality: "Nairobi",
+          addressCountry: "KE",
+        },
+      },
     },
   };
 }

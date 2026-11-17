@@ -1,11 +1,13 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
-import { motion } from "motion/react";
+import { MotionConfig, motion } from "motion/react";
 import { ArrowRight, MoveDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRegion } from "@/components/region/region-context";
 import { regionContent } from "@/lib/site";
+import { prefersLightweight } from "@/lib/utils";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -13,17 +15,22 @@ const ease = [0.22, 1, 0.36, 1] as const;
 // the still image (Christie's-style). Leave null to use the image.
 const HERO_VIDEO: string | null = null;
 
+const noop = () => () => {};
+
 export function Hero() {
   const { region } = useRegion();
   const content = regionContent[region];
+  // Data Saver or 2G: no background video and no entrance animation.
+  const light = useSyncExternalStore(noop, prefersLightweight, () => false);
   return (
+    <MotionConfig reducedMotion={light ? "always" : "user"}>
     <section
       id="top"
       className="relative isolate flex min-h-screen flex-col overflow-hidden gradient-navy"
     >
       {/* Full-bleed background media (image or video) */}
       <div className="absolute inset-0 -z-10">
-        {HERO_VIDEO ? (
+        {HERO_VIDEO && !light ? (
           <video
             className="size-full object-cover"
             autoPlay
@@ -127,5 +134,6 @@ export function Hero() {
         </motion.div>
       </div>
     </section>
+    </MotionConfig>
   );
 }

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -8,11 +9,14 @@ export function PageHero({
   title,
   subtitle,
   crumbs = [],
+  children,
 }: {
   eyebrow: string;
   title: string;
   subtitle?: string;
   crumbs?: Crumb[];
+  /** Extra content under the subtitle (e.g. price, contact links). */
+  children?: ReactNode;
 }) {
   return (
     <section className="relative isolate overflow-hidden gradient-navy">
@@ -21,13 +25,13 @@ export function PageHero({
       <div className="pointer-events-none absolute -left-24 bottom-0 hidden size-[24rem] rounded-full bg-crimson/10 blur-[120px] sm:block" />
 
       <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-36 sm:px-8 sm:pb-24 sm:pt-44">
-        <nav className="mb-6 flex items-center gap-2 text-xs text-white/55">
+        <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-xs text-white/55">
           <Link href="/" className="transition-colors hover:text-gold">
             Home
           </Link>
           {crumbs.map((c) => (
             <span key={c.label} className="flex items-center gap-2">
-              <ChevronRight className="size-3.5" />
+              <ChevronRight className="size-3.5" aria-hidden="true" />
               {c.href ? (
                 <Link href={c.href} className="transition-colors hover:text-gold">
                   {c.label}
@@ -48,6 +52,7 @@ export function PageHero({
             {subtitle}
           </p>
         )}
+        {children}
       </div>
     </section>
   );

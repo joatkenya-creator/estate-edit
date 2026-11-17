@@ -19,10 +19,11 @@ export function Process() {
           {/* connecting line (desktop) */}
           <div className="absolute left-0 right-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent lg:block" />
 
-          <ol className="grid gap-12 lg:grid-cols-5 lg:gap-6">
+          <ol className="grid list-none gap-12 lg:grid-cols-5 lg:gap-6">
             {processSteps.map((step, i) => (
               <Reveal as="li" key={step.index} delay={i} className="relative">
-                <div className="relative z-10 mb-6 flex size-14 items-center justify-center rounded-full border border-gold/40 bg-white font-display text-lg text-navy shadow-[0_10px_30px_-12px_rgba(0,35,73,0.3)]">
+                {/* The <ol> already numbers the steps for assistive tech; the badge is the visual number only. */}
+                <div aria-hidden className="relative z-10 mb-6 flex size-14 items-center justify-center rounded-full border border-gold/40 bg-white font-display text-lg text-navy shadow-[0_10px_30px_-12px_rgba(0,35,73,0.3)]">
                   {step.index}
                 </div>
                 <h3 className="font-display text-xl text-navy">{step.title}</h3>

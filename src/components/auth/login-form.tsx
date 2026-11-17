@@ -1,27 +1,45 @@
 "use client";
 
-import { useActionState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signIn, type AuthState } from "@/app/actions/auth";
+import { validateSignIn } from "@/lib/validation";
+import {
+  FieldError,
+  FormAlert,
+  useFieldErrors,
+  useOnline,
+  useSubmit,
+} from "@/components/states/form-states";
 
 const initial: AuthState = { status: "idle", message: "" };
 
 export function LoginForm({ next }: { next?: string }) {
-  const [state, action, pending] = useActionState(signIn, initial);
+  const [state, submit, pending] = useSubmit(signIn, initial);
+  const v = useFieldErrors(validateSignIn);
+  const online = useOnline();
+
+  useEffect(() => {
+    if (state.status === "error") v.showErrors(state.fieldErrors);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
-    <form action={action} className="space-y-5">
+    <form
+      {...v.formProps}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (v.validateAll(e.currentTarget)) submit(new FormData(e.currentTarget));
+      }}
+      className="space-y-5"
+    >
       {next && <input type="hidden" name="next" value={next} />}
 
-      {state.status === "error" && (
-        <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {state.message}
-        </p>
-      )}
+      {state.status === "error" && !state.fieldErrors && <FormAlert>{state.message}</FormAlert>}
 
       <div className="space-y-1.5">
         <Label htmlFor="email">Email address</Label>
@@ -30,9 +48,10 @@ export function LoginForm({ next }: { next?: string }) {
           name="email"
           type="email"
           autoComplete="email"
-          required
           placeholder="you@example.com"
+          {...v.a11y("email")}
         />
+        <FieldError name="email" message={v.errors.email} />
       </div>
 
       <div className="space-y-1.5">
@@ -50,25 +69,31 @@ export function LoginForm({ next }: { next?: string }) {
           name="password"
           type="password"
           autoComplete="current-password"
-          required
           placeholder="••••••••"
+          {...v.a11y("password")}
         />
+        <FieldError name="password" message={v.errors.password} />
       </div>
 
       <Button
         type="submit"
-        disabled={pending}
-        className="w-full bg-navy text-white hover:bg-navy-soft"
+        disabled={pending || !online}
+        className="h-10 w-full bg-navy text-white hover:bg-navy-soft"
       >
         {pending ? (
           <>
-            <Loader2 className="mr-2 size-4 animate-spin" />
+            <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
             Signing in…
           </>
         ) : (
           "Sign in"
         )}
       </Button>
+      {!online && (
+        <p role="status" className="text-center text-xs text-charcoal/60">
+          You&apos;re offline. Sign in needs a connection, so try again once you&apos;re back online.
+        </p>
+      )}
 
       <p className="text-center text-sm text-charcoal/60">
         Don&apos;t have an account?{" "}

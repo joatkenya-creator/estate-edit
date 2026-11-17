@@ -78,7 +78,7 @@ export function PayListingButton({
       });
       const data = (await res.json()) as { ok?: boolean; error?: string };
       if (res.ok && data.ok) {
-        toast.success("Payment confirmed — your listing is under review and goes live shortly.");
+        toast.success("Payment confirmed. Your listing is under review and goes live shortly.");
         window.location.href = "/account/listings";
         return;
       }

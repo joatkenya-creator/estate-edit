@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Eye, Calendar, ShieldCheck } from "lucide-react";
+import { MapPin, Eye, Calendar, ShieldCheck, ImageOff } from "lucide-react";
+import { StatePanel } from "@/components/states/states";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getRegion } from "@/lib/region.server";
-import { getListingBySlug, getMarketplaceListings } from "@/lib/queries";
+import { getListingBySlug, getListingImages, getMarketplaceListings } from "@/lib/queries";
 import { ListingCard } from "@/components/listings/listing-card";
 import { ListingContact } from "@/components/listings/listing-contact";
 import { ShareButtons } from "@/components/collection/share-buttons";
@@ -97,7 +98,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     description,
     alternates: { canonical: `${listingOrigin}/marketplace/${slug}` },
     openGraph: buildOpenGraph({
-      title: `${title} — ${formatListingPrice(listing.price, listing.currency)}`,
+      title: `${title}, ${formatListingPrice(listing.price, listing.currency)}`,
       description,
       path: `/marketplace/${slug}`,
       type: "article",
@@ -108,7 +109,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     }),
     twitter: {
       card: "summary_large_image",
-      title: `${title} — ${formatListingPrice(listing.price, listing.currency)}`,
+      title: `${title}, ${formatListingPrice(listing.price, listing.currency)}`,
       description,
       ...(listing.primary_image_url ? { images: [listing.primary_image_url] } : {}),
     },
@@ -135,7 +136,7 @@ export default async function MarketplaceSlugPage({ params }: { params: Params }
 
 async function ListingDetail({ slug }: { slug: string }) {
   const listing = await getListingBySlug(slug);
-  if (!listing) notFound();
+  if (!listing) return <ListingGone slug={slug} />;
 
   // Counts every human page load, signed in or not. Two things make that work:
   // the write goes through the service-role client (RLS only lets a listing's
@@ -156,6 +157,8 @@ async function ListingDetail({ slug }: { slug: string }) {
 
   const profile = listing.user_profiles;
   const category = categoryByValue(listing.category);
+  const gallery = await getListingImages(listing.id);
+
   const supabase = await createClient();
   const region = await getRegion();
   const isVa = region === "virginia";
@@ -245,7 +248,7 @@ async function ListingDetail({ slug }: { slug: string }) {
         year: "numeric",
       }),
     },
-    { label: "Availability", value: "Available — enquire with the seller" },
+    { label: "Availability", value: "Available, enquire with the seller" },
   ].filter(Boolean) as { label: string; value: string }[];
 
   // Related listings: same category first (the genuinely comparable ones),
@@ -300,13 +303,37 @@ async function ListingDetail({ slug }: { slug: string }) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex size-full items-center justify-center text-6xl text-charcoal/20">
-                📦
+              <div className="flex size-full flex-col items-center justify-center gap-2 text-charcoal/30">
+                <ImageOff className="size-10" strokeWidth={1.4} aria-hidden />
+                <span className="text-xs">No photo yet</span>
               </div>
             )}
           </div>
 
-          <ShareButtons url={url} title={`${heading} — ${price}`} />
+          {gallery.length > 1 && (
+            <ul className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6" aria-label="More photos">
+              {gallery.map((src, i) => (
+                <li key={src}>
+                  <a
+                    href={src}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="relative block aspect-square overflow-hidden rounded-lg bg-stone"
+                  >
+                    <Image
+                      src={src}
+                      alt={`${listingImageAlt(seo)}, photo ${i + 1} of ${gallery.length}`}
+                      fill
+                      sizes="(min-width: 640px) 100px, 25vw"
+                      className="object-cover"
+                    />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <ShareButtons url={url} title={`${heading}, ${price}`} />
 
           <div className="mt-6 space-y-6">
             {listing.description && (
@@ -469,6 +496,47 @@ async function ListingDetail({ slug }: { slug: string }) {
           )}
         </section>
       )}
+    </main>
+  );
+}
+
+/**
+ * A listing that was live and has since sold or been withdrawn. Its URL may
+ * still be shared on WhatsApp or indexed, so say what happened and point at
+ * the same category instead of a bare 404. (Metadata already noindexes it.)
+ * Unknown slugs still get the real 404.
+ */
+async function ListingGone({ slug }: { slug: string }) {
+  let category: string | null = null;
+  try {
+    const { data } = await createAdminClient()
+      .from("user_listings")
+      .select("category, status")
+      .eq("slug", slug)
+      .in("status", ["sold", "withdrawn"])
+      .maybeSingle();
+    category = data?.category ?? null;
+  } catch {
+    category = null;
+  }
+  if (!category) notFound();
+  const cat = categoryByValue(category);
+
+  return (
+    <main className="flex-1 bg-stone">
+      <div className="px-5 pb-24 pt-36 sm:pt-44">
+        <StatePanel
+          eyebrow="No longer available"
+          title="This piece has been sold or removed by its owner."
+          primary={{
+            label: "See similar pieces",
+            href: cat ? `/marketplace/${cat.slug}` : "/marketplace",
+          }}
+          secondary={{ label: "Browse the whole Marketplace", href: "/marketplace" }}
+        >
+          <p>Similar pieces are listed every week.</p>
+        </StatePanel>
+      </div>
     </main>
   );
 }

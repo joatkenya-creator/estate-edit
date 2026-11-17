@@ -1,11 +1,17 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { hasErrors, normalizePhone, validateInquiry, type FieldErrors } from "@/lib/validation";
 
 export type InquiryState = {
   status: "idle" | "success" | "error";
   message: string;
+  /** Per-field problems, shown inline under each field. */
+  fieldErrors?: FieldErrors;
 };
+
+const OUR_SIDE =
+  "Something went wrong on our side and your request was not sent. Your details are still here. Try again, or reach us directly.";
 
 const INQUIRY_TYPES = ["consultation", "asset_review"] as const;
 const SEGMENTS = [
@@ -43,20 +49,21 @@ export async function submitInquiry(
   _prev: InquiryState,
   formData: FormData,
 ): Promise<InquiryState> {
-  const fullName = clean(formData.get("full_name"));
-  const email = clean(formData.get("email"));
-  const phone = clean(formData.get("phone"));
-  const message = clean(formData.get("message"));
-
-  if (!fullName || !email || !phone || !message) {
-    return {
-      status: "error",
-      message: "Please complete name, email, phone, and a short message.",
-    };
+  // Same rules the browser applied; anything that slips past comes back per field.
+  const fieldErrors = validateInquiry(
+    Object.fromEntries(["full_name", "email", "phone", "client_segment", "service_division", "message", "consent"].map(
+      (k) => [k, clean(formData.get(k)) ?? undefined],
+    )),
+    // The sell-with-us form has no "I am a..." question.
+    clean(formData.get("source")) !== "sell_with_us",
+  );
+  if (hasErrors(fieldErrors)) {
+    return { status: "error", message: "Some fields need your attention.", fieldErrors };
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { status: "error", message: "Please enter a valid email address." };
-  }
+  const fullName = clean(formData.get("full_name"))!;
+  const email = clean(formData.get("email"))!;
+  const phone = normalizePhone(clean(formData.get("phone")))!;
+  const message = clean(formData.get("message"))!;
 
   const inquiryType = pick(clean(formData.get("inquiry_type")), INQUIRY_TYPES) ?? "consultation";
 
@@ -68,6 +75,7 @@ export async function submitInquiry(
   const assetSlug = clean(formData.get("asset_slug"));
   const assetTitle = clean(formData.get("asset_title"));
   const assetCategory = clean(formData.get("asset_category"));
+  const assetListedBy = clean(formData.get("asset_listed_by"));
   const hasAsset = Boolean(assetSlug || assetTitle);
 
   // Optional explicit source (e.g. the "Sell with us" form) + first-touch UTM.
@@ -109,7 +117,11 @@ export async function submitInquiry(
                     slug: assetSlug,
                     title: assetTitle,
                     category: assetCategory,
-                    url: assetSlug ? `/collection/${assetSlug}` : null,
+                    // Residence leads also record the listing company to route them to.
+                    ...(assetListedBy ? { listed_by: assetListedBy } : {}),
+                    url: assetSlug
+                      ? `/${assetCategory === "Residence" ? "residences" : "collection"}/${assetSlug}`
+                      : null,
                   },
                 }
               : {}),
@@ -124,10 +136,7 @@ export async function submitInquiry(
 
     if (error) {
       console.error("Inquiry insert failed:", error.message);
-      return {
-        status: "error",
-        message: "Something went wrong submitting your request. Please try again or call us.",
-      };
+      return { status: "error", message: OUR_SIDE };
     }
 
     return {
@@ -139,6 +148,6 @@ export async function submitInquiry(
     };
   } catch (err) {
     console.error("Inquiry action error:", err);
-    return { status: "error", message: "Unexpected error. Please try again." };
+    return { status: "error", message: OUR_SIDE };
   }
 }

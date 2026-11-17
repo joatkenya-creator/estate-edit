@@ -87,7 +87,7 @@ export default async function PaymentsPage() {
                       {payment.currency || "KES"} {Number(payment.amount).toLocaleString()}
                     </td>
                     <td className="hidden px-6 py-4 text-xs text-charcoal/50 sm:table-cell">
-                      {payment.mpesa_transaction_id ?? "—"}
+                      {payment.mpesa_transaction_id ?? "Not recorded"}
                     </td>
                     <td className="px-6 py-4">
                       <span

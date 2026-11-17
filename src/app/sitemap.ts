@@ -2,9 +2,12 @@ import type { MetadataRoute } from "next";
 import { getAllAssetSlugsWithMarket, getListingSeoIndex } from "@/lib/queries";
 import { SITE_URL, US_SITE_URL, siteUrlForRegion } from "@/lib/seo";
 import { areaSlug } from "@/lib/region";
-import { regionContent } from "@/lib/site";
+import { regionContent, RESIDENCES_LIVE, DEVELOPMENTS_LIVE } from "@/lib/site";
 import { isRegion } from "@/lib/region";
 import { categoryByValue, cityOf, resolvePlace } from "@/lib/marketplace";
+import { getResidences } from "@/lib/residences";
+import { getCompanies } from "@/lib/companies";
+import { developmentHref, getDevelopments } from "@/lib/developments";
 
 // Regenerate periodically so newly published assets appear without a redeploy.
 export const revalidate = 3600;
@@ -180,6 +183,42 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Nairobi residences and the companies listing them — Kenya-only like the
+  // guides (no Virginia counterpart).
+  const residenceEntries: MetadataRoute.Sitemap = !RESIDENCES_LIVE ? [] : [
+    ...["/residences", "/developers"].map((path) => ({
+      url: `${SITE_URL}${path}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })),
+    ...getResidences().map((r) => ({
+      url: `${SITE_URL}/residences/${r.slug}`,
+      lastModified: new Date(r.dateListed),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
+    ...getCompanies().map((c) => ({
+      url: `${SITE_URL}/developers/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
+  ];
+
+  // New developments and their unit-type pages (Kenya-only).
+  const developmentEntries: MetadataRoute.Sitemap = !DEVELOPMENTS_LIVE ? [] : [
+    { url: `${SITE_URL}/developments`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+    ...getDevelopments().flatMap((d) =>
+      [developmentHref(d), ...d.unitTypes.map((u) => developmentHref(d, u))].map((path) => ({
+        url: `${SITE_URL}${path}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      })),
+    ),
+  ];
+
   // Area landing pages — each locality belongs to a single market (like
   // catalogue items), so no cross-region hreflang alternates.
   const areaEntries: MetadataRoute.Sitemap = (["kenya", "virginia"] as const).flatMap((region) =>
@@ -198,6 +237,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...categoryEntries,
     ...placeEntries,
     ...guideEntries,
+    ...residenceEntries,
+    ...developmentEntries,
     ...areaEntries,
   ];
 }

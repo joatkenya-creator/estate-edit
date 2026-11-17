@@ -42,7 +42,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
   {
     slug: "furniture", value: "furniture", label: "Furniture", noun: "Furniture", primary: true,
     intro:
-      "Beds, dining sets, sofas, wardrobes and occasional furniture listed directly by their owners — inspect the piece and deal with the seller.",
+      "Beds, dining sets, sofas, wardrobes and occasional furniture listed directly by their owners. Inspect the piece and deal with the seller.",
   },
   {
     slug: "fine-art", value: "fine_art", label: "Fine Art", noun: "Fine Art", primary: true,
@@ -58,7 +58,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
   },
   {
     slug: "collectibles", value: "collectibles", label: "Collectibles", noun: "Collectibles", primary: true,
-    intro: "Rare, vintage and collectable objects — from ceramics and books to memorabilia.",
+    intro: "Rare, vintage and collectable objects, from ceramics and books to memorabilia.",
   },
   {
     slug: "designer", value: "designer", label: "Designer", noun: "Designer Pieces", primary: true,
@@ -384,7 +384,7 @@ export function listingMetaDescription(listing: SeoListing): string {
   const place = listingPlaceLabel(listing);
   const price = formatListingPrice(listing.price, listing.currency);
 
-  const lead = `${title} for sale in ${place} — ${price}.`;
+  const lead = `${title} for sale in ${place}: ${price}.`;
   const detail = descriptionSnippet(listing.description, title);
   const cta = "Photos and seller contact on The Estate Edit Marketplace.";
 
@@ -415,7 +415,7 @@ export function listingImageAlt(listing: SeoListing): string {
 
 /** Prefilled WhatsApp / email enquiry text, so the seller knows what it's about. */
 export function listingEnquiryText(listing: SeoListing, url: string): string {
-  return `Hi, I saw your listing on The Estate Edit — "${listing.title}" at ${formatListingPrice(
+  return `Hi, I saw your listing on The Estate Edit: "${listing.title}" at ${formatListingPrice(
     listing.price,
     listing.currency,
   )}. Is it still available? ${url}`;

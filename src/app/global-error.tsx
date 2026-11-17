@@ -8,10 +8,10 @@
  */
 export default function GlobalError({
   error,
-  reset,
+  unstable_retry,
 }: {
   error: Error & { digest?: string };
-  reset?: () => void;
+  unstable_retry?: () => void;
 }) {
   return (
     <html lang="en">
@@ -53,12 +53,12 @@ export default function GlobalError({
             Something went wrong
           </h1>
           <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.6, margin: "0 0 2rem" }}>
-            An unexpected error occurred. Please try again, or return to the homepage. Our team is
-            always reachable if you need assistance.
+            Something went wrong on our side and the site didn&apos;t load. Try again, or reach us
+            on +254 142 378 150 or info@estateedit.org.
           </p>
           <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center", flexWrap: "wrap" }}>
             <button
-              onClick={() => (reset ? reset() : window.location.reload())}
+              onClick={() => (unstable_retry ? unstable_retry() : window.location.reload())}
               style={{
                 cursor: "pointer",
                 border: "none",

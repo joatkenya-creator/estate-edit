@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Store } from "lucide-react";
+import { EmptyState } from "@/components/states/states";
 import { ListingCard } from "@/components/listings/listing-card";
 import { NewArrivalsSignup } from "@/components/marketing/new-arrivals-signup";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Button } from "@/components/ui/button";
 import { breadcrumbJsonLd, itemListJsonLd, siteUrlForRegion } from "@/lib/seo";
 import {
   MARKETPLACE_CATEGORIES,
@@ -15,6 +15,30 @@ import {
 import { placesIn } from "@/lib/marketplace.server";
 import { type MarketplaceListing } from "@/lib/queries";
 import { type Region } from "@/lib/region";
+
+/** "List a vehicle": the one next step on an empty category. */
+const ONE: Record<string, string> = {
+  vehicles: "a vehicle",
+  "fine-art": "a piece of art",
+  collectibles: "a collectible",
+  designer: "a designer piece",
+  antiques: "an antique",
+  lighting: "a light",
+  rugs: "a rug",
+};
+
+/** Empty category (or category + place): why it's empty, then "List a …" with the category preselected. */
+export function CategoryEmpty({ category, place }: { category: MarketplaceCategory; place?: Place | null }) {
+  const thing = ONE[category.slug] ?? category.noun.toLowerCase();
+  return (
+    <EmptyState
+      icon={<Store />}
+      title={`No ${category.noun.toLowerCase()} listed${place ? ` in ${place.label}` : ""} yet.`}
+      body="Owners add new pieces every week."
+      action={{ label: `List ${thing}`, href: `/sell/post?category=${category.value}` }}
+    />
+  );
+}
 
 /**
  * Shared body for /marketplace/<category> and /marketplace/<category>/<area>.
@@ -109,25 +133,13 @@ export function CategoryBrowse({
 
       <div className="mx-auto max-w-7xl px-4 pb-12 pt-8 sm:px-6">
         {listings.length === 0 ? (
-          <div className="rounded-xl border border-border bg-white py-20 text-center shadow-sm">
-            <Store className="mx-auto mb-4 size-12 text-charcoal/20" />
-            <p className="font-medium text-navy">
-              No {category.noun.toLowerCase()} listed
-              {place ? ` in ${place.label}` : ""} right now
-            </p>
-            <p className="mt-1 text-sm text-charcoal/50">
-              New items are posted regularly — browse everything currently available.
-            </p>
-            <Button asChild className="mt-5 bg-navy text-white hover:bg-navy-soft">
-              <Link href="/marketplace">Browse the Marketplace</Link>
-            </Button>
-          </div>
+          <CategoryEmpty category={category} place={place} />
         ) : (
           <>
             <p className="mb-5 text-sm text-charcoal/55">
               {listings.length} {category.noun.toLowerCase()} listing
               {listings.length === 1 ? "" : "s"}
-              {place ? ` in ${place.label}` : ` across ${MARKET_NAME[region]}`} — prices shown are set by the seller.
+              {place ? ` in ${place.label}` : ` across ${MARKET_NAME[region]}`}. Prices shown are set by the seller.
             </p>
             <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
               {listings.map((listing, i) => (
@@ -190,7 +202,7 @@ export function CategoryBrowse({
         </section>
       </div>
 
-      <NewArrivalsSignup source={`marketplace-${path.replace(/\//g, "-")}`} />
+      <NewArrivalsSignup source={`marketplace-${path.replace(/\//g, "-")}`} closing />
     </main>
   );
 }

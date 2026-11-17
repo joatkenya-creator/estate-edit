@@ -35,7 +35,7 @@ export async function generateMetadata({
   // Short editor-written descriptions read as thin content (Ahrefs flags
   // under ~100 chars) — keep the editor's words but follow them with the
   // templated description, then clamp the long end.
-  const own = asset.description?.trim().replace(/.?$/, ".") ?? "";
+  const own = asset.description?.trim().replace(/\.?$/, ".") ?? "";
   const rawDescription =
     own.length >= 110 ? own : `${own} ${assetFallbackDescription(asset)}`.trim();
   const description = clampDescription(rawDescription);
@@ -104,7 +104,7 @@ export default async function AssetPage({
 
   // Market-routed enquiry: Kenya buyers convert on WhatsApp; other markets go to
   // the contact form (captured as a lead in the CMS).
-  const enquireText = `Hi, I'm interested in "${asset.title}"${asset.category ? ` (${asset.category})` : ""} — ${assetUrl}`;
+  const enquireText = `Hi, I'm interested in "${asset.title}"${asset.category ? ` (${asset.category})` : ""}. ${assetUrl}`;
   const whatsappHref = whatsappUrl(enquireText, siteConfig.phone);
 
   const productJsonLd = assetJsonLd(asset);

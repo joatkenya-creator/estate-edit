@@ -30,11 +30,6 @@ export const regionShort: Record<Region, string> = {
   virginia: "US",
 };
 
-export const regionFlag: Record<Region, string> = {
-  kenya: "🇰🇪",
-  virginia: "🇺🇸",
-};
-
 /** Production host each market is served on (Virginia = the `us.` subdomain). */
 export const regionHost: Record<Region, string> = {
   kenya: "estateedit.org",

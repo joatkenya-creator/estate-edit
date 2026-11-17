@@ -99,7 +99,7 @@ export default async function SellPage() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
-                  <Link href="/auth/login">Sign in</Link>
+                  <Link href="/auth/login?next=/sell/post">Sign in</Link>
                 </Button>
               </>
             )}
