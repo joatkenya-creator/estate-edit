@@ -22,6 +22,8 @@
   --color-stone: var(--stone);
   --color-stone-deep: var(--stone-deep);
   --color-charcoal: var(--charcoal);
+  --color-lotus-green: var(--lotus-green);
+  --color-lotus-pink: var(--lotus-pink);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -76,6 +78,10 @@
   --stone: #f6f4f1;
   --stone-deep: #ece8e2;
   --charcoal: #1a1a1a;
+  /* Kings Lotus accents (brief 6). ponytail: approximations of the brochure,
+     swap for Kings' brand values when they send them (brief 12 #9). */
+  --lotus-green: #1f4d3a;
+  --lotus-pink: #d9718f;
 
   /* Editorial light theme */
   --background: #ffffff;

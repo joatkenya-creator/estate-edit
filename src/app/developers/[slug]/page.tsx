@@ -10,6 +10,8 @@ import { VideoEmbed } from "@/components/residences/video-embed";
 import { CompanyLogo, RoleTags, VerifiedMark } from "@/components/residences/residence-ui";
 import { ROLE_LABEL, getCompany } from "@/lib/companies";
 import { residencesForCompany } from "@/lib/residences";
+import { developmentHref, getDevelopments } from "@/lib/developments";
+import { DEVELOPMENTS_LIVE } from "@/lib/site";
 import { SITE_URL, breadcrumbJsonLd, buildOpenGraph, clampTitle, companyJsonLd } from "@/lib/seo";
 
 type Props = {
@@ -45,8 +47,13 @@ export default async function CompanyPage({ params, searchParams }: Props) {
   const items = tab === "developed" ? developed : listed;
   const path = `/developers/${company.slug}`;
 
+  // Published developments only, and only once /developments is live.
+  const projects = DEVELOPMENTS_LIVE ? getDevelopments().filter((d) => d.developer === company.slug) : [];
+
   const stats = [
-    { label: "Active listings", value: String(active) },
+    projects.length
+      ? { label: "Projects", value: String(projects.length) }
+      : { label: "Active listings", value: String(active) },
     { label: "Areas covered", value: String(company.areas.length) },
     ...(company.yearFounded ? [{ label: "Founded", value: String(company.yearFounded) }] : []),
   ];
@@ -117,6 +124,22 @@ export default async function CompanyPage({ params, searchParams }: Props) {
             <h2 className="font-display text-3xl font-light text-navy">About {company.name}</h2>
             <p className="mt-4 leading-relaxed text-charcoal/80 text-pretty">{company.about}</p>
             <p className="mt-4 text-sm text-muted-foreground">Works in {company.areas.join(", ")}.</p>
+            {company.address && <p className="mt-2 text-sm text-muted-foreground">Head office: {company.address}</p>}
+            {projects.length > 0 && (
+              <>
+                <h2 className="mt-10 font-display text-3xl font-light text-navy">Projects</h2>
+                <ul className="mt-4 space-y-2">
+                  {projects.map((d) => (
+                    <li key={d.slug}>
+                      <Link href={developmentHref(d)} className="font-medium text-navy underline-offset-4 hover:text-gold hover:underline">
+                        {d.name}
+                      </Link>
+                      <span className="text-sm text-muted-foreground"> · {d.locationName}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
           <dl className={cn("grid h-fit gap-px overflow-hidden rounded-xl border border-border bg-border", stats.length === 3 ? "grid-cols-3" : "grid-cols-2")}>
             {stats.map((s) => (

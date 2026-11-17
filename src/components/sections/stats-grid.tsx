@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import type { Metric } from "@/lib/site";
 
@@ -15,10 +15,14 @@ function format(n: number, decimals = 0) {
 function CountUp({ to, prefix = "", suffix = "", decimals = 0 }: Metric) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [value, setValue] = useState(0);
+  const reduce = useReducedMotion();
+  // Start at the real figure so the server HTML (crawlers, link previews,
+  // no-JS) says "300+", not "0+". The browser rewinds to 0 only to animate.
+  const [value, setValue] = useState(to);
 
   useEffect(() => {
-    if (!inView) return;
+    if (reduce) return setValue(to);
+    if (!inView) return setValue(0);
     const duration = 1600;
     let raf = 0;
     let start = 0;
@@ -31,14 +35,21 @@ function CountUp({ to, prefix = "", suffix = "", decimals = 0 }: Metric) {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [inView, to]);
+  }, [inView, reduce, to]);
 
   return (
-    <span ref={ref}>
-      {prefix}
-      {format(value, decimals)}
-      {suffix}
-    </span>
+    <>
+      <span ref={ref} aria-hidden="true">
+        {prefix}
+        {format(value, decimals)}
+        {suffix}
+      </span>
+      <span className="sr-only">
+        {prefix}
+        {format(to, decimals)}
+        {suffix}
+      </span>
+    </>
   );
 }
 

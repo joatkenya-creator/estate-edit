@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { siteConfig, regionContent, RESIDENCES_LIVE } from "@/lib/site";
+import { siteConfig, regionContent, RESIDENCES_LIVE, DEVELOPMENTS_LIVE } from "@/lib/site";
 import { areaSlug } from "@/lib/region";
 import { useRegion } from "@/components/region/region-context";
 
@@ -71,17 +71,21 @@ export function SiteFooter() {
   // "Areas Served" is region-localised (Kenya neighbourhoods vs affluent Virginia areas).
   // Residences (and the developers listing them) are Nairobi-only, so these
   // links only show on the Kenya storefront.
-  const services =
-    region === "kenya" && RESIDENCES_LIVE
-      ? {
-          ...SERVICES,
-          links: SERVICES.links.flatMap((link) =>
-            link.href === "/expat-services"
-              ? [link, { label: "Residences", href: "/residences" }, { label: "Developers & Agencies", href: "/developers" }]
-              : [link],
-          ),
-        }
-      : SERVICES;
+  const property =
+    region === "kenya"
+      ? [
+          ...(DEVELOPMENTS_LIVE ? [{ label: "New Developments", href: "/developments" }] : []),
+          ...(RESIDENCES_LIVE
+            ? [{ label: "Residences", href: "/residences" }, { label: "Developers & Agencies", href: "/developers" }]
+            : []),
+        ]
+      : [];
+  const services = property.length
+    ? {
+        ...SERVICES,
+        links: SERVICES.links.flatMap((link) => (link.href === "/expat-services" ? [link, ...property] : [link])),
+      }
+    : SERVICES;
 
   const columns = [
     services,

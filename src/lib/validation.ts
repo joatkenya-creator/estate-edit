@@ -36,6 +36,46 @@ function emailError(raw: string | undefined | null): string | undefined {
   if (!EMAIL.test(v(raw))) return "Enter an email address like name@example.com.";
 }
 
+/* Buyer enquiry (new developments, brief 7.6). Values are what's stored in inquiries.metadata. */
+export const BUYER_TYPES = [
+  { value: "own_use", label: "Buying a home to live in" },
+  { value: "investor", label: "Investor" },
+  { value: "diaspora", label: "Buying from abroad (diaspora)" },
+  { value: "agent", label: "Agent" },
+] as const;
+export const ENQUIRY_TYPES = [
+  { value: "price_list", label: "Price list" },
+  { value: "brochure", label: "Brochure" },
+  { value: "viewing", label: "Site viewing" },
+  { value: "virtual_viewing", label: "Virtual viewing" },
+  { value: "payment_plan", label: "Payment plan" },
+  { value: "reservation", label: "Request to reserve" },
+  { value: "general", label: "General question" },
+] as const;
+export const CONTACT_METHODS = [
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "phone", label: "Phone call" },
+  { value: "email", label: "Email" },
+] as const;
+export const VIEWING_ENQUIRIES = ["viewing", "virtual_viewing"];
+
+const isOption = (list: readonly { value: string }[], x: string | undefined | null) => list.some((o) => o.value === x);
+
+export function validateBuyerEnquiry(d: Values): FieldErrors {
+  const e: FieldErrors = {};
+  if (v(d.full_name).length < 2) e.full_name = "Enter your full name.";
+  const em = emailError(d.email);
+  if (em) e.email = em;
+  if (!normalizePhone(d.phone)) e.phone = PHONE_HINT;
+  if (!isOption(BUYER_TYPES, d.buyer_type)) e.buyer_type = "Choose the option that best describes you.";
+  if (!isOption(ENQUIRY_TYPES, d.enquiry_type)) e.enquiry_type = "Choose what you would like from us.";
+  if (!isOption(CONTACT_METHODS, d.preferred_contact)) e.preferred_contact = "Choose how we should contact you.";
+  if (d.preferred_date && !/^\d{4}-\d{2}-\d{2}$/.test(v(d.preferred_date))) e.preferred_date = "Choose a date.";
+  if (v(d.message).length > 2000) e.message = "Keep your message under 2,000 characters.";
+  if (d.consent !== "on") e.consent = "Tick this box so we can contact you about your enquiry.";
+  return e;
+}
+
 /** `askSegment`: the form shows the "I am a..." question (the consign form doesn't). */
 export function validateInquiry(d: Values, askSegment = true): FieldErrors {
   const e: FieldErrors = {};

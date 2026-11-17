@@ -6,7 +6,6 @@ import { type Region, regionCurrency } from "@/lib/region";
 import {
   services as staticServices,
   statMetrics as staticMetrics,
-  testimonials as staticTestimonials,
   featuredAssets as staticAssets,
   assetCategoryLabel,
   defaultDeliverySettings,
@@ -14,7 +13,6 @@ import {
   regionContent,
   type Service,
   type Metric,
-  type Testimonial,
   type FeaturedAsset,
   type CatalogueItem,
   type AssetDetail,
@@ -101,43 +99,6 @@ export async function getStats(): Promise<Metric[]> {
   // Virginia: fixed localised stats (no KES client-value figure). Kenya: CMS.
   if ((await getRegion()) === "virginia") return regionContent.virginia.stats;
   return getCachedKenyaStats();
-}
-
-/**
- * All current testimonials (DB and static fallback) are Kenya clients — the
- * `testimonials` table has no region column to filter by. Rather than show
- * Nairobi social proof to Virginia visitors, withhold the section there until
- * real Virginia quotes exist.
- */
-const getCachedTestimonials = unstable_cache(
-  async (): Promise<Testimonial[]> => {
-    try {
-      const supabase = createPublicClient();
-      const { data, error } = await supabase
-        .from("testimonials")
-        .select("quote, author_name, author_role, location")
-        .eq("_status", "published")
-        .order("sort_order");
-
-      if (error || !data?.length) return staticTestimonials;
-
-      return data.map((t) => ({
-        quote: t.quote ?? "",
-        author: t.author_name ?? "",
-        role: t.author_role ?? "",
-        location: t.location ?? "",
-      }));
-    } catch {
-      return staticTestimonials;
-    }
-  },
-  ["testimonials"],
-  { revalidate: 600 },
-);
-
-export async function getTestimonials(): Promise<Testimonial[]> {
-  if ((await getRegion()) === "virginia") return [];
-  return getCachedTestimonials();
 }
 
 const tones: FeaturedAsset["tone"][] = ["navy", "charcoal", "crimson", "gold"];

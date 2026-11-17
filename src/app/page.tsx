@@ -2,12 +2,12 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { Pillars } from "@/components/sections/pillars";
+import { DevelopmentBand } from "@/components/sections/development-band";
 import { Stats } from "@/components/sections/stats";
 import { FeaturedAssets } from "@/components/sections/featured-assets";
 import { MarketplaceTeaser } from "@/components/sections/marketplace-teaser";
 import { Process } from "@/components/sections/process";
 import { Clients } from "@/components/sections/clients";
-import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 import { ListingCardSkeleton, LotCardSkeleton } from "@/components/states/states";
 import { getRegion } from "@/lib/region.server";
@@ -51,6 +51,7 @@ export default function Home() {
   return (
     <main className="flex-1">
       <Hero />
+      <DevelopmentBand />
       <Pillars />
       <Stats />
       <Suspense fallback={<GridFallback kind="lots" />}>
@@ -61,7 +62,6 @@ export default function Home() {
       </Suspense>
       <Process />
       <Clients />
-      <Testimonials />
       <Contact />
     </main>
   );

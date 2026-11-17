@@ -31,12 +31,26 @@ export const serviceLinks = [
 /**
  * Launch switch for /residences and /developers. While false, both routes 404
  * (see their layout.tsx) and the header, footer and sitemap drop their links.
- * Flip to true to launch.
+ * Live under `next dev` so it can be previewed locally; replace with `true` to launch.
  */
-export const RESIDENCES_LIVE: boolean = false;
+export const RESIDENCES_LIVE: boolean = process.env.NODE_ENV === "development";
+
+/**
+ * Launch switch for /developments (Kings Lotus), same rules as RESIDENCES_LIVE.
+ * Keep false in production until Kings resolves brief 2.5 (location above all)
+ * and approves every Lotus page (brief 14).
+ */
+export const DEVELOPMENTS_LIVE: boolean = process.env.NODE_ENV === "development";
+
+/**
+ * WhatsApp line for development enquiries (brief 6: The Estate Edit's line or
+ * Kings' sales line, still to decide). Digits only, international format.
+ */
+export const DEVELOPMENTS_WHATSAPP = siteConfig.phone.replace(/\D/g, "");
 
 /** `kenyaOnly` links are hidden on the Virginia storefront (Nairobi-only content). */
 export const navLinks = [
+  ...(DEVELOPMENTS_LIVE ? ([{ label: "New Developments", href: "/developments", kenyaOnly: true }] as const) : []),
   ...(RESIDENCES_LIVE
     ? ([
         { label: "Residences", href: "/residences", kenyaOnly: true },
@@ -502,37 +516,6 @@ export const clientTypes = [
   { title: "Embassies", description: "Diplomatic relocations handled with discretion." },
   { title: "Corporations", description: "Fleet, office, and warehouse liquidation at scale." },
 ] as const;
-
-export type Testimonial = {
-  quote: string;
-  author: string;
-  role: string;
-  location: string;
-};
-
-export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "They turned an overwhelming family estate into a calm, dignified process, and realised far more than we expected.",
-    author: "A. Mwangi",
-    role: "Estate Executor",
-    location: "Muthaiga",
-  },
-  {
-    quote:
-      "Relocating our regional office could have been chaos. The Estate Edit liquidated everything with total discretion.",
-    author: "Country Director",
-    role: "Multinational Corporation",
-    location: "Westlands",
-  },
-  {
-    quote:
-      "As an expatriate family leaving Nairobi, they handled our entire household sale and move. White-glove from start to finish.",
-    author: "The Bauer Family",
-    role: "Expatriate Departure",
-    location: "Runda",
-  },
-];
 
 export const clientSegments = [
   { value: "individual", label: "High-Net-Worth Individual / Luxury Homeowner" },

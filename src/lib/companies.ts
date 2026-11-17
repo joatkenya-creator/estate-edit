@@ -1,7 +1,7 @@
 /**
  * Developers and agencies that list residences on `/residences`.
  *
- * SAMPLE DATA: all three companies are fictional. The shape mirrors a future
+ * The shape mirrors a future
  * DB row (flat, typed, keyed by `slug`); components only use the getters below,
  * so swapping the array for a query later doesn't touch them.
  *
@@ -23,6 +23,10 @@ export interface Company {
   website?: string;
   phone?: string;
   email?: string;
+  /** Registered name, used in attribution and consent text. */
+  legalName?: string;
+  /** Head office, shown on the profile. */
+  address?: string;
   tiktok?: string;
   instagram?: string;
   /** Sample of TikTok/Instagram video URLs shown on the profile; the rest live on their socials. */
@@ -37,44 +41,22 @@ export const ROLE_LABEL: Record<CompanyRole, string> = { developer: "Developer",
 
 const companies: Company[] = [
   {
-    slug: "kijani-ridge-developments",
-    name: "Kijani Ridge Developments",
+    // From the Kings Lotus brochure and drawing title blocks (brief 2.1).
+    // about/shortDescription: replace with Kings-approved copy (brief 12 #11).
+    slug: "kings-developers",
+    name: "Kings Developers",
+    legalName: "Kings Developers Limited",
     shortDescription:
-      "Builds low-density family homes on large garden plots, with an emphasis on natural stone, timber and mature landscaping.",
+      "Kings Developers Limited, \"enhancing lifestyle\": a Nairobi property developer headquartered on Karen Road, Karen.",
     about:
-      "Kijani Ridge Developments designs and builds a small number of detached homes each year, mostly on half-acre to two-acre plots. Every project is planned around existing trees and drainage, and finished with locally quarried stone and sustainably sourced hardwood. They sell through selected agencies rather than directly.",
+      "Kings Developers Limited is a property developer headquartered at Royal Group Headquarters, Karen Road, opposite The Water Front, Karen, Nairobi. Its first project marketed by The Estate Edit is Kings Lotus.",
     roles: ["developer"],
-    website: "https://example.com/kijani-ridge",
-    areas: ["Karen", "Runda", "Muthaiga"],
-    verified: true,
-    yearFounded: 2009,
-  },
-  {
-    slug: "mvule-and-hart-realty",
-    name: "Mvule & Hart Realty",
-    shortDescription:
-      "A boutique agency representing private sellers of distinguished homes across Nairobi's established neighbourhoods.",
-    about:
-      "Mvule & Hart Realty is a small brokerage that handles the sale of established family homes, from valuation and staging through to handover. They work with private owners and with developers who prefer not to run their own sales teams.",
-    roles: ["agency"],
-    phone: "+254 700 000 001",
-    email: "hello@example.com",
-    areas: ["Lavington", "Kilimani", "Westlands", "Karen"],
+    website: "https://www.kingsdevelopers.com",
+    phone: "+254 700 090 060",
+    email: "sales@kingsdevelopers.com",
+    address: "Royal Group Headquarters, Karen Road, opposite The Water Front, Karen, Nairobi. P.O. Box 18215-00500",
+    areas: ["Ongata Rongai"],
     verified: false,
-  },
-  {
-    slug: "savanna-crest-homes",
-    name: "Savanna Crest Homes",
-    shortDescription:
-      "Develops and sells contemporary apartments, penthouses and townhouses, from off-plan through to completed units.",
-    about:
-      "Savanna Crest Homes develops mid-rise apartment buildings and gated townhouse communities, and sells the units through its own in-house sales team. Completed buildings are managed by the company for the first two years after handover.",
-    roles: ["developer", "agency"],
-    website: "https://example.com/savanna-crest",
-    phone: "+254 700 000 002",
-    areas: ["Westlands", "Kilimani", "Lavington", "Runda"],
-    verified: true,
-    yearFounded: 2014,
   },
   {
     slug: "luxury-creations",
@@ -106,7 +88,7 @@ export function getCompany(slug: string): Company | undefined {
   return companies.find((c) => c.slug === slug);
 }
 
-/** "Mvule & Hart Realty" -> "MH" — the badge shown when there's no logo. */
+/** "Kings Developers" -> "KD" — the badge shown when there's no logo. */
 export function companyInitials(name: string): string {
   const words = name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w));
   return words

@@ -2,8 +2,8 @@
  * Luxury residences for sale in Nairobi (`/residences`), listed by several
  * developers and agencies (see ./companies.ts).
  *
- * SAMPLE DATA: the listings and prices below are placeholders for the page
- * template, not real stock. The shape mirrors a future DB/CMS row (flat, typed,
+ * Empty until real stock arrives; /residences shows an empty state meanwhile.
+ * The shape mirrors a future DB/CMS row (flat, typed,
  * keyed by `slug`); components only use the getters, so the arrays can become
  * queries later without touching them.
  *
@@ -60,59 +60,8 @@ export interface VideoTour {
   url?: string;
 }
 
-const residences: Residence[] = [
-  {
-    slug: "acacia-house", name: "Acacia House", area: "Karen", propertyType: "House",
-    bedrooms: 5, bathrooms: 6, sizeLabel: "1.5 acres", priceKes: 185_000_000, status: "For sale",
-    listedBy: "mvule-and-hart-realty", developer: "kijani-ridge-developments", dateListed: "2026-08-02",
-    description:
-      "A single-storey stone house set back from the road behind mature acacias, with a covered veranda running the length of the garden side, a separate guest cottage and staff quarters.",
-  },
-  {
-    slug: "ridgeway-residence", name: "The Ridgeway Residence", area: "Runda", propertyType: "House",
-    bedrooms: 6, bathrooms: 7, sizeLabel: "1 acre", priceKes: 240_000_000, status: "For sale",
-    listedBy: "mvule-and-hart-realty", dateListed: "2026-06-18",
-  },
-  {
-    slug: "muthaiga-garden-estate", name: "Muthaiga Garden Estate", area: "Muthaiga", propertyType: "House",
-    bedrooms: 7, bathrooms: 8, sizeLabel: "2 acres", priceKes: 320_000_000, status: "For sale",
-    listedBy: "mvule-and-hart-realty", developer: "kijani-ridge-developments", dateListed: "2026-07-21",
-    description:
-      "A two-storey family home on two landscaped acres, with formal reception rooms, a library, a heated pool and a walled kitchen garden.",
-  },
-  {
-    slug: "jacaranda-townhouse", name: "Jacaranda Townhouse", area: "Lavington", propertyType: "Townhouse",
-    bedrooms: 4, bathrooms: 5, sizeLabel: "gated community", priceKes: 95_000_000, status: "For sale",
-    listedBy: "savanna-crest-homes", developer: "savanna-crest-homes", dateListed: "2026-09-05",
-  },
-  {
-    slug: "argwings-penthouse", name: "Argwings Penthouse", area: "Kilimani", propertyType: "Penthouse",
-    bedrooms: 4, bathrooms: 4, sizeLabel: "420 m²", priceKes: 68_000_000, status: "For sale",
-    listedBy: "savanna-crest-homes", developer: "savanna-crest-homes", dateListed: "2026-08-27",
-    description:
-      "A full-floor penthouse with a wraparound terrace, private lift lobby and open views across the city towards the Ngong Hills.",
-  },
-  {
-    slug: "riverside-sky-apartment", name: "Riverside Sky Apartment", area: "Westlands", propertyType: "Apartment",
-    bedrooms: 3, bathrooms: 3, sizeLabel: "260 m²", priceKes: 42_000_000, status: "New listing",
-    listedBy: "savanna-crest-homes", developer: "savanna-crest-homes", dateListed: "2026-10-12",
-  },
-  {
-    slug: "ngong-view-villa", name: "Ngong View Villa", area: "Karen", propertyType: "Villa",
-    bedrooms: 6, bathrooms: 7, sizeLabel: "2.5 acres", priceKes: 210_000_000, status: "New listing",
-    listedBy: "mvule-and-hart-realty", dateListed: "2026-10-03",
-  },
-  {
-    slug: "runda-grove-house", name: "Runda Grove House", area: "Runda", propertyType: "House",
-    bedrooms: 5, bathrooms: 6, sizeLabel: "0.75 acres", priceKes: 165_000_000, status: "For sale",
-    listedBy: "savanna-crest-homes", dateListed: "2026-07-09",
-  },
-  {
-    slug: "lavington-courtyard-home", name: "Lavington Courtyard Home", area: "Lavington", propertyType: "House",
-    bedrooms: 5, bathrooms: 5, sizeLabel: "0.5 acres", priceKes: 120_000_000, status: "Under offer",
-    listedBy: "mvule-and-hart-realty", dateListed: "2026-05-30",
-  },
-];
+// Kings units go here once Kings shares unit-level availability (brief 7.5).
+const residences: Residence[] = [];
 
 /** Featured tours for the "On film" section: the Luxury Creations sample on their profile. */
 export const filmCompany = getCompany("luxury-creations")!;

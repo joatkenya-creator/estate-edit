@@ -4,7 +4,7 @@
 // here that would fail quietly (a real buyer told their number is wrong, or a
 // "no results" page that should have found something).
 import assert from "node:assert/strict";
-import { normalizePhone, validateInquiry, validateListing } from "./validation.ts";
+import { normalizePhone, validateBuyerEnquiry, validateInquiry, validateListing } from "./validation.ts";
 import { alternativeQueries, levenshtein } from "./fuzzy-search.ts";
 
 assert.equal(normalizePhone("0712 345 678"), "+254712345678");
@@ -38,5 +38,17 @@ assert.ok(alternativeQueries("couch", vocab).includes("sofa"));
 assert.ok(alternativeQueries("tv", vocab).includes("television"));
 assert.deepEqual(alternativeQueries("table", vocab), [], "a correct word needs no fix");
 assert.deepEqual(alternativeQueries("xqzv", vocab), [], "nonsense gets no suggestion");
+
+// Buyer enquiry (developments): diaspora numbers pass, unknown options and dates fail.
+const buyer = {
+  full_name: "Jane Wanjiru", email: "jane@example.com", phone: "+44 7700 900123",
+  buyer_type: "diaspora", enquiry_type: "viewing", preferred_contact: "whatsapp", consent: "on",
+};
+assert.deepEqual(validateBuyerEnquiry(buyer), {}, "a complete diaspora enquiry is valid");
+assert.deepEqual(validateBuyerEnquiry({ ...buyer, preferred_date: "2026-12-01" }), {});
+assert.ok(validateBuyerEnquiry({ ...buyer, buyer_type: "landlord" }).buyer_type, "unknown buyer type");
+assert.ok(validateBuyerEnquiry({ ...buyer, enquiry_type: "deposit" }).enquiry_type, "no online deposits");
+assert.ok(validateBuyerEnquiry({ ...buyer, preferred_date: "next week" }).preferred_date);
+assert.ok(validateBuyerEnquiry({ ...buyer, consent: undefined }).consent);
 
 console.log("validation.check: ok");

@@ -109,8 +109,26 @@ export default function ResidencesPage() {
         </div>
       </section>
 
-      {/* 2. Listings — filters, sort and page all live in the URL. */}
-      <ResidenceBrowser items={residences} heading="Available residences" />
+      {/* 2. Listings — filters, sort and page all live in the URL. Empty until real stock arrives. */}
+      {residences.length ? (
+        <ResidenceBrowser items={residences} heading="Available residences" />
+      ) : (
+        <section id="listings" className="bg-white py-20 sm:py-24">
+          <div className="mx-auto max-w-2xl px-5 text-center sm:px-8">
+            <h2 className="font-display text-3xl font-light text-navy sm:text-4xl">New residences are being added</h2>
+            <p className="mt-4 text-charcoal/75 text-pretty">
+              In the meantime, see our new developments: every home type with its floor plan, room sizes and 3D
+              animation.
+            </p>
+            <Button asChild size="lg" className="group mt-8 h-13 bg-navy px-8 text-base text-white hover:bg-navy-soft">
+              <Link href="/developments">
+                See new developments
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+      )}
 
       {/* 3. On film */}
       <section className="gradient-navy py-20 sm:py-24">
