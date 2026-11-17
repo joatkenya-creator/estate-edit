@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { VideoEmbed } from "@/components/residences/video-embed";
 import { ResidenceBrowser } from "@/components/residences/residence-browser";
-import { filmCompany, getResidences, videoTours } from "@/lib/residences";
+import { FeaturedResidenceCard } from "@/components/residences/residence-card";
+import { filmCompany, getFeaturedResidence, getResidences, videoTours } from "@/lib/residences";
 import { OG_IMAGE, SITE_URL, breadcrumbJsonLd, buildOpenGraph } from "@/lib/seo";
 
 const PATH = "/residences";
@@ -42,6 +43,7 @@ export default function ResidencesPage() {
   const residences = getResidences();
   // The hero features the first residence that has its own filmed tour.
   const featured = residences.find((r) => r.videoUrl);
+  const spotlight = getFeaturedResidence();
 
   return (
     <main className="flex-1">
@@ -109,10 +111,22 @@ export default function ResidencesPage() {
         </div>
       </section>
 
-      {/* 2. Listings — filters, sort and page all live in the URL. Empty until real stock arrives. */}
-      {residences.length ? (
+      {/* 2. Featured residence, then the full listings once there's more than one. */}
+      {spotlight && (
+        <section id={residences.length > 1 ? "featured" : "listings"} className="bg-white py-20 sm:py-24">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <FeaturedResidenceCard
+              residence={spotlight}
+              eyebrow={spotlight.status === "For rent" ? "Featured residence · To rent" : "Featured residence"}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* Listings — filters, sort and page all live in the URL. */}
+      {residences.length > 1 ? (
         <ResidenceBrowser items={residences} heading="Available residences" />
-      ) : (
+      ) : spotlight ? null : (
         <section id="listings" className="bg-white py-20 sm:py-24">
           <div className="mx-auto max-w-2xl px-5 text-center sm:px-8">
             <h2 className="font-display text-3xl font-light text-navy sm:text-4xl">New residences are being added</h2>

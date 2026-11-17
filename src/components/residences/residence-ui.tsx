@@ -81,12 +81,14 @@ export function RoleTags({ company, dark = false }: { company: Company; dark?: b
 
 const statusStyles: Record<ResidenceStatus, string> = {
   "For sale": "bg-white/90 text-navy",
+  "For rent": "bg-gold text-navy",
   "New listing": "bg-gold text-navy",
   "Under offer": "bg-navy text-white ring-1 ring-white/30",
   Sold: "bg-crimson text-white",
 };
 
-export function StatusBadge({ status, className }: { status: ResidenceStatus; className?: string }) {
+/** `label` overrides the text (e.g. "For rent · Furnished"); `status` still picks the colour. */
+export function StatusBadge({ status, label, className }: { status: ResidenceStatus; label?: string; className?: string }) {
   return (
     <span
       className={cn(
@@ -95,7 +97,7 @@ export function StatusBadge({ status, className }: { status: ResidenceStatus; cl
         className,
       )}
     >
-      {status}
+      {label ?? status}
     </span>
   );
 }

@@ -5,8 +5,11 @@ import { CategoryGrid } from "@/components/sections/category-grid";
 import { RelatedServices } from "@/components/sections/related-services";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Reveal } from "@/components/motion/reveal";
+import { FeaturedResidenceCard } from "@/components/residences/residence-card";
 import { buildOpenGraph, regionAlternates } from "@/lib/seo";
 import { getRegion } from "@/lib/region.server";
+import { getFeaturedResidence } from "@/lib/residences";
+import { RESIDENCES_LIVE } from "@/lib/site";
 
 const title = "Expatriate Relocation Services in Kenya";
 const description =
@@ -62,7 +65,10 @@ const support = [
   { icon: Compass, title: "Relocation Support", description: "A single point of contact for your entire transition." },
 ];
 
-export default function ExpatServicesPage() {
+export default async function ExpatServicesPage() {
+  // Nairobi homes: Kenya storefront only, and only while /residences is live (else the link 404s).
+  const home = RESIDENCES_LIVE && (await getRegion()) === "kenya" ? getFeaturedResidence() : undefined;
+
   return (
     <main className="flex-1">
       <PageHero
@@ -102,6 +108,14 @@ export default function ExpatServicesPage() {
           })}
         </div>
       </section>
+
+      {home && (
+        <section className="bg-white pb-24 sm:pb-28">
+          <div className="mx-auto max-w-7xl px-5 sm:px-8">
+            <FeaturedResidenceCard residence={home} eyebrow="Featured expat home" />
+          </div>
+        </section>
+      )}
 
       <CategoryGrid
         eyebrow="Relocation Support"

@@ -1,8 +1,7 @@
 /**
- * Luxury residences for sale in Nairobi (`/residences`), listed by several
- * developers and agencies (see ./companies.ts).
+ * Residences in Nairobi (`/residences`), for sale or to rent, listed by several
+ * developers and agencies (see ./companies.ts) or directly by The Estate Edit.
  *
- * Empty until real stock arrives; /residences shows an empty state meanwhile.
  * The shape mirrors a future DB/CMS row (flat, typed,
  * keyed by `slug`); components only use the getters, so the arrays can become
  * queries later without touching them.
@@ -11,8 +10,8 @@
  */
 import { getCompanies, getCompany, type Company } from "./companies.ts";
 
-export type ResidenceStatus = "For sale" | "New listing" | "Under offer" | "Sold";
-export const RESIDENCE_STATUSES: ResidenceStatus[] = ["For sale", "New listing", "Under offer", "Sold"];
+export type ResidenceStatus = "For sale" | "For rent" | "New listing" | "Under offer" | "Sold";
+export const RESIDENCE_STATUSES: ResidenceStatus[] = ["For sale", "For rent", "New listing", "Under offer", "Sold"];
 
 export type PropertyType = "House" | "Villa" | "Townhouse" | "Apartment" | "Penthouse" | "BnB";
 export const PROPERTY_TYPES: PropertyType[] = ["House", "Villa", "Townhouse", "Apartment", "Penthouse", "BnB"];
@@ -24,6 +23,7 @@ export const RESIDENCE_AREAS = [
   "Lavington",
   "Kilimani",
   "Westlands",
+  "Kiambu Road",
 ] as const;
 
 export type ResidenceArea = (typeof RESIDENCE_AREAS)[number];
@@ -36,22 +36,37 @@ export interface Residence {
   bathrooms: number;
   /** e.g. "1.5 acres", "420 m²", "gated community" */
   sizeLabel: string;
-  /** Whole shillings. */
+  /** Floor area for structured data, when known. */
+  floorAreaSqft?: number;
+  /** Whole shillings; per month when `status` is "For rent". */
   priceKes: number;
   status: ResidenceStatus;
   /** TikTok or Instagram URL; empty = placeholder. */
   videoUrl?: string;
   /** Optional still; empty = placeholder. Superseded by `images` when both exist. */
   imageUrl?: string;
-  /** Company slug — who is selling/listing it. */
-  listedBy: string;
+  /** Company slug — who is selling/listing it. Absent = listed directly by The Estate Edit. */
+  listedBy?: string;
   /** Company slug — who built it. May equal `listedBy`. */
   developer?: string;
   propertyType: PropertyType;
-  images?: string[];
+  /** First image is the cover. */
+  images?: { url: string; alt: string }[];
   description?: string;
   /** ISO date, e.g. "2026-09-14". */
   dateListed: string;
+  /** The one residence spotlighted on /residences (and /expat-services). */
+  featured?: boolean;
+  furnished?: boolean;
+  /** Rentals: lease terms shown in the key facts. */
+  lease?: { term: string; includes: string[]; powerBackup?: string };
+  /** Overrides for the generated <title> (before the site suffix) and meta description. */
+  seo?: { title: string; description: string };
+  /** Detail-page copy: a headline and intro for the hero, then free sections. */
+  headline?: string;
+  intro?: string;
+  sections?: { title: string; body?: string; items?: { label?: string; text: string }[] }[];
+  goodFor?: string[];
 }
 
 export interface VideoTour {
@@ -60,8 +75,84 @@ export interface VideoTour {
   url?: string;
 }
 
+const FJ = "/residences/fourways-junction";
+
 // Kings units go here once Kings shares unit-level availability (brief 7.5).
-const residences: Residence[] = [];
+const residences: Residence[] = [
+  {
+    slug: "fourways-junction-2-bedroom-kiambu-road",
+    name: "Elegantly Furnished 2-Bedroom Apartment, Fourways Junction, Kiambu Road",
+    area: "Kiambu Road",
+    propertyType: "Apartment",
+    bedrooms: 2,
+    bathrooms: 2,
+    sizeLabel: "860 sq ft (approx. 80 m²)",
+    floorAreaSqft: 860,
+    priceKes: 100_000,
+    status: "For rent",
+    furnished: true,
+    featured: true,
+    dateListed: "2026-11-17",
+    lease: {
+      term: "12-month lease",
+      includes: ["90 Mbps fibre internet", "Service charge (HOA)", "Water"],
+      powerBackup: "Covers lights and internet",
+    },
+    seo: {
+      title: "Furnished 2-Bedroom Apartment for Rent, Kiambu Road (Fourways Junction)",
+      description:
+        "Fully furnished 2-bed, 2-bath near UN Gigiri & top international schools. KSh 100,000/month incl. fibre, water & service charge. Veteran-owned.",
+    },
+    headline: "A furnished two-bedroom made for the expat year in Nairobi",
+    intro:
+      "A calm, fully furnished two-bedroom in Fourways Junction, a secure gated estate off Kiambu Road. Bring a suitcase and move in: fibre internet, water and service charge are already in the rent, and backup power keeps the lights and Wi-Fi on.",
+    sections: [
+      {
+        title: "Honest rent, owned by a veteran",
+        body: "This home belongs to a US military veteran who has lived overseas and knows what it is like to arrive somewhere new and be quoted the “foreigner price”. Rent is a flat KES 100,000 a month for a 12-month lease, with internet, water and service charge included. No surprise add-ons, no expat markup.",
+      },
+      {
+        title: "Inside the apartment",
+        items: [
+          { label: "Living room", text: "Generous seating, a smart flat-screen TV and two walls of windows" },
+          { label: "Dining area", text: "A table for four, close to the kitchen" },
+          { label: "Kitchen", text: "Fridge, gas cooker with oven, microwave, coffee maker and a full set of cookware and glassware" },
+          { label: "Master suite", text: "Ensuite bathroom, queen bed and full-height built-in wardrobes" },
+          { label: "Second bedroom", text: "Twin beds, good for children, a guest or a housemate" },
+          { text: "Two bathrooms, a utility area with a washing machine, and a private balcony overlooking the estate" },
+        ],
+      },
+      {
+        title: "Everything close by",
+        items: [
+          { label: "Diplomatic & work", text: "UN Complex Gigiri, with quick routes to Westlands and the CBD" },
+          { label: "International schools", text: "Braeburn Garden Estate, SABIS International, Brookhouse Runda, Potterhouse School" },
+          { label: "Shopping & leisure", text: "Ridgeways Mall, Two Rivers Mall, Village Market, Windsor Golf & Country Club, Muthaiga Golf Club, Karura Forest" },
+          { label: "Health", text: "AAR Hospital nearby" },
+          { label: "Security", text: "Gated estate with 24/7 security" },
+        ],
+      },
+    ],
+    goodFor: ["Diplomats & UN staff", "Expat families", "Corporate relocations", "NGO professionals"],
+    images: [
+      { url: `${FJ}/living-room.webp`, alt: "Furnished living room with sofas, coffee tables, a smart flat-screen TV on a wall unit and two large windows" },
+      { url: `${FJ}/living-dining.webp`, alt: "Living area with a dining table and chairs by the front door, sofas and an armchair around a rug" },
+      { url: `${FJ}/living-room-2.webp`, alt: "Living room seen from the dining table: armchair, sofas, TV unit and full-height windows with the balcony door" },
+      { url: `${FJ}/living-room-3.webp`, alt: "Living room sofas and coffee tables under two curtained windows" },
+      { url: `${FJ}/kitchen.webp`, alt: "Tiled kitchen with fitted cabinets, gas cooker with oven, microwave, coffee maker and a window over the sink" },
+      { url: `${FJ}/kitchen-cupboard.webp`, alt: "Open kitchen cupboard stocked with glasses, a jug, a cafetière and mugs, with the coffee maker below" },
+      { url: `${FJ}/master-bedroom.webp`, alt: "Master bedroom with a queen bed, bedside lamp and a large curtained window" },
+      { url: `${FJ}/master-bedroom-wardrobes.webp`, alt: "Master bedroom seen from the door, with full-height built-in wardrobes along one wall" },
+      { url: `${FJ}/master-bedroom-2.webp`, alt: "Queen bed in the master bedroom with a laundry basket by the window" },
+      { url: `${FJ}/twin-bedroom.webp`, alt: "Second bedroom with two single beds, a shared bedside table and lamp, and a rug" },
+      { url: `${FJ}/twin-bedroom-2.webp`, alt: "Twin bedroom made up with fresh linen under a wide window" },
+      { url: `${FJ}/bathroom-1.webp`, alt: "Bathroom with a shower, toilet and basin, lit by a window" },
+      { url: `${FJ}/bathroom-2.webp`, alt: "Second bathroom with a tiled shower, mosaic feature strip, toilet and basin" },
+      { url: `${FJ}/laundry.webp`, alt: "Utility area with a top-loading washing machine beside a window" },
+      { url: `${FJ}/hallway.webp`, alt: "Hallway with wooden floors leading to the bedrooms, with a wall mirror" },
+    ],
+  },
+];
 
 /** Featured tours for the "On film" section: the Luxury Creations sample on their profile. */
 export const filmCompany = getCompany("luxury-creations")!;
@@ -83,7 +174,7 @@ export function validateListings(items: Residence[], companyList: Company[]): vo
   for (const r of items) {
     if (seen.has(r.slug)) errors.push(`Residence "${r.slug}": duplicate slug`);
     seen.add(r.slug);
-    if (!known.has(r.listedBy)) errors.push(`Residence "${r.slug}": listedBy "${r.listedBy}" is not a known company`);
+    if (r.listedBy && !known.has(r.listedBy)) errors.push(`Residence "${r.slug}": listedBy "${r.listedBy}" is not a known company`);
     if (r.developer && !known.has(r.developer)) {
       errors.push(`Residence "${r.slug}": developer "${r.developer}" is not a known company`);
     }
@@ -109,6 +200,10 @@ export function getResidence(slug: string): Residence | undefined {
   return residences.find((r) => r.slug === slug);
 }
 
+export function getFeaturedResidence(): Residence | undefined {
+  return residences.find((r) => r.featured);
+}
+
 /** Every company slug a residence involves (listing company + developer). */
 export function involves(r: Residence, companySlug: string): boolean {
   return r.listedBy === companySlug || r.developer === companySlug;
@@ -125,12 +220,18 @@ export function residencesForCompany(companySlug: string, items: Residence[] = r
 
 /** The contact form pre-fills from these and records the lead's source as `asset:<slug>`. */
 export function enquireHref(r: Residence): string {
-  const params = new URLSearchParams({ asset: r.slug, title: r.name, category: "Residence", listedBy: r.listedBy });
+  const params = new URLSearchParams({ asset: r.slug, title: r.name, category: r.status === "For rent" ? "Rental" : "Residence" });
+  if (r.listedBy) params.set("listedBy", r.listedBy);
   return `/contact?${params.toString()}`;
 }
 
 export function coverImage(r: Residence): string | undefined {
-  return r.images?.[0] ?? r.imageUrl;
+  return r.images?.[0]?.url ?? r.imageUrl;
+}
+
+/** The card/hero tag: "For rent · Furnished", else the status. */
+export function listingTag(r: Pick<Residence, "status" | "furnished">): string {
+  return r.status === "For rent" && r.furnished ? "For rent · Furnished" : r.status;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -142,6 +243,11 @@ const kesFormatter = new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }
 /** "KES 185,000,000" */
 export function formatKes(amount: number): string {
   return `KES ${kesFormatter.format(amount)}`;
+}
+
+/** "KES 185,000,000", or "KES 100,000 / month" for a rental. */
+export function formatPrice(r: Pick<Residence, "priceKes" | "status">): string {
+  return r.status === "For rent" ? `${formatKes(r.priceKes)} / month` : formatKes(r.priceKes);
 }
 
 /** "5 bed · 6 bath · 1.5 acres" */

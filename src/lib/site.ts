@@ -1,6 +1,5 @@
 /**
  * Static site content for The Estate Edit.
- *
  * This mirrors the shape of the Supabase tables (services, site_stats,
  * testimonials, assets, …) so individual sections can later be swapped to
  * live database queries without changing their markup.
@@ -33,7 +32,7 @@ export const serviceLinks = [
  * (see their layout.tsx) and the header, footer and sitemap drop their links.
  * Live under `next dev` so it can be previewed locally; replace with `true` to launch.
  */
-export const RESIDENCES_LIVE: boolean = process.env.NODE_ENV === "development";
+export const RESIDENCES_LIVE: boolean = true;
 
 /**
  * Launch switch for /developments (Kings Lotus), same rules as RESIDENCES_LIVE.

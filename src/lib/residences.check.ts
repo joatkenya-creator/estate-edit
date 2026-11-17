@@ -12,6 +12,8 @@ import {
   companyOptions,
   filterResidences,
   formatKes,
+  formatPrice,
+  listingTag,
   formatSpecs,
   mostRestrictiveFilter,
   parseResidenceQuery,
@@ -25,7 +27,10 @@ import {
   type ResidenceQuery,
 } from "./residences.ts";
 
-assert.equal(getResidences().length, 0, "live list is empty until real stock arrives");
+validateListings(getResidences(), getCompanies()); // live data is valid (also runs on import)
+assert.equal(getResidences().filter((r) => r.featured).length, 1, "exactly one featured residence");
+assert.equal(formatPrice({ priceKes: 100_000, status: "For rent" }), "KES 100,000 / month", "rent shows per month");
+assert.equal(listingTag({ status: "For rent", furnished: true }), "For rent · Furnished");
 
 // Fixtures: the retired sample listings, remapped onto the real companies.
 const residences: Residence[] = [

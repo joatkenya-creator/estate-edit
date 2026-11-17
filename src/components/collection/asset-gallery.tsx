@@ -30,11 +30,15 @@ export function AssetGallery({
   tone,
   status,
   title,
+  aspect = "aspect-[4/5]",
 }: {
   images: AssetImage[];
   tone: AssetDetail["tone"];
-  status: AssetDetail["status"];
+  /** Omit to hide the status pill. */
+  status?: AssetDetail["status"];
   title: string;
+  /** Main-image frame, e.g. "aspect-[4/3]" for landscape-led galleries. */
+  aspect?: string;
 }) {
   const [active, setActive] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -69,7 +73,7 @@ export function AssetGallery({
 
   if (count === 0) {
     return (
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+      <div className={cn("relative overflow-hidden rounded-2xl", aspect)}>
         <div className="absolute inset-0" style={{ background: toneGradient[tone] }} />
         <span className="absolute inset-0 flex items-center justify-center font-display text-8xl text-white/10">
           EE
@@ -85,7 +89,7 @@ export function AssetGallery({
         type="button"
         onClick={() => setLightboxOpen(true)}
         aria-label="View image full screen"
-        className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl"
+        className={cn("group relative block w-full overflow-hidden rounded-2xl", aspect)}
       >
         <div className="absolute inset-0" style={{ background: toneGradient[tone] }} />
         <Image
@@ -97,14 +101,16 @@ export function AssetGallery({
           sizes="(max-width: 1024px) 100vw, 50vw"
           className="object-cover"
         />
-        <span
-          className={cn(
-            "absolute right-4 top-4 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-widest",
-            statusStyles[status],
-          )}
-        >
-          {status}
-        </span>
+        {status && (
+          <span
+            className={cn(
+              "absolute right-4 top-4 rounded-full px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-widest",
+              statusStyles[status],
+            )}
+          >
+            {status}
+          </span>
+        )}
         <span className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1 text-[0.65rem] font-medium uppercase tracking-widest text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
           <ZoomIn className="size-3.5" />
           {hasMultiple ? `View all ${count}` : "View"}
