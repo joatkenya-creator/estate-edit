@@ -67,6 +67,12 @@ export interface Residence {
   intro?: string;
   sections?: { title: string; body?: string; items?: { label?: string; text: string }[] }[];
   goodFor?: string[];
+  /** Hero only: a word shown after the price, e.g. "only" -> "KES 100,000 only / month". */
+  priceQualifier?: string;
+  /** Hero only: replaces the grey listing-name line under the intro. */
+  valueLine?: { lead: string; text: string; note?: string };
+  /** Hero only: "Included in the rent" chips above the CTAs. */
+  includedHighlights?: string[];
 }
 
 export interface VideoTour {
@@ -134,6 +140,13 @@ const residences: Residence[] = [
       },
     ],
     goodFor: ["Diplomats & UN staff", "Expat families", "Corporate relocations", "NGO professionals"],
+    priceQualifier: "only",
+    valueLine: {
+      lead: "All of this for only KES 100,000 a month:",
+      text: "fully furnished 2 bed, 2 bath · 90 Mbps fibre · water · service charge · backup power · 24/7 gated security.",
+      note: "No agent games, no expat markup.",
+    },
+    includedHighlights: ["Fully furnished", "90 Mbps fibre", "Water", "Service charge", "Backup power", "24/7 security"],
     images: [
       { url: `${FJ}/living-room.webp`, alt: "Furnished living room with sofas, coffee tables, a smart flat-screen TV on a wall unit and two large windows" },
       { url: `${FJ}/living-dining.webp`, alt: "Living area with a dining table and chairs by the front door, sofas and an armchair around a rug" },

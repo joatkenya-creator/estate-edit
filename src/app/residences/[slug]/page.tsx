@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Check, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -17,6 +17,7 @@ import {
   areaHref,
   coverImage,
   enquireHref,
+  formatKes,
   formatPrice,
   formatListedDate,
   formatSpecs,
@@ -204,11 +205,46 @@ export default async function ResidencePage({ params }: { params: Promise<{ slug
           { label: r.name },
         ]}
       >
-        {r.headline && <p className="mt-6 max-w-2xl text-sm text-white/60">{r.name}</p>}
+        {r.valueLine ? (
+          <div className="mt-6 max-w-2xl space-y-1.5 text-sm leading-relaxed text-white/75 sm:text-base">
+            <p>
+              <strong className="font-semibold text-white">{r.valueLine.lead}</strong> {r.valueLine.text}
+            </p>
+            {r.valueLine.note && <p>{r.valueLine.note}</p>}
+          </div>
+        ) : (
+          r.headline && <p className="mt-6 max-w-2xl text-sm text-white/60">{r.name}</p>
+        )}
         <div className="mt-8 flex flex-wrap items-center gap-4">
-          <p className="font-display text-3xl font-semibold text-white">{formatPrice(r)}</p>
+          <p className="font-display text-3xl font-semibold text-white">
+            {r.priceQualifier ? (
+              <>
+                {formatKes(r.priceKes)}
+                <span className="ml-1.5 text-[0.7em] font-normal italic text-gold-soft">{r.priceQualifier}</span>
+                {rental && " / month"}
+              </>
+            ) : (
+              formatPrice(r)
+            )}
+          </p>
           <StatusBadge status={r.status} label={listingTag(r)} />
         </div>
+        {r.includedHighlights && (
+          <div className="mt-6">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">Included in the rent</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {r.includedHighlights.map((h) => (
+                <li
+                  key={h}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-gold-soft/70 bg-navy/40 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-widest text-white/90"
+                >
+                  <Check className="size-3.5 text-gold-soft" aria-hidden="true" />
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="mt-8">
           <Ctas residence={r} dark />
         </div>
