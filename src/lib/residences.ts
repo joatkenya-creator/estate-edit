@@ -67,8 +67,9 @@ export interface Residence {
   intro?: string;
   sections?: { title: string; body?: string; items?: { label?: string; text: string }[] }[];
   goodFor?: string[];
-  /** Hero only: a word shown after the price, e.g. "only" -> "KES 100,000 only / month". */
-  priceQualifier?: string;
+  /** Hero only: accent words around the price, e.g. "Only KES 110,000 / month, negotiable". */
+  pricePrefix?: string;
+  priceNote?: string;
   /** Hero only: replaces the grey listing-name line under the intro. */
   valueLine?: { lead: string; text: string; note?: string };
   /** Hero only: "Included in the rent" chips above the CTAs. */
@@ -87,14 +88,14 @@ const FJ = "/residences/fourways-junction";
 const residences: Residence[] = [
   {
     slug: "fourways-junction-2-bedroom-kiambu-road",
-    name: "Elegantly Furnished 2-Bedroom Apartment, Fourways Junction, Kiambu Road",
+    name: "Elegant, Fully Furnished 2-Bedroom Apartment, Fourways Junction, Kiambu Road",
     area: "Kiambu Road",
     propertyType: "Apartment",
     bedrooms: 2,
     bathrooms: 2,
     sizeLabel: "860 sq ft (approx. 80 m²)",
     floorAreaSqft: 860,
-    priceKes: 100_000,
+    priceKes: 110_000,
     status: "For rent",
     furnished: true,
     featured: true,
@@ -107,7 +108,7 @@ const residences: Residence[] = [
     seo: {
       title: "Furnished 2-Bedroom Apartment for Rent, Kiambu Road (Fourways Junction)",
       description:
-        "Fully furnished 2-bed, 2-bath near UN Gigiri & top international schools. KSh 100,000/month incl. fibre, water & service charge. Veteran-owned.",
+        "Fully furnished 2-bed, 2-bath near UN Gigiri & top international schools. KSh 110,000/month (negotiable) incl. fibre, water & service charge. Veteran-owned.",
     },
     headline: "A furnished two-bedroom made for the expat year in Nairobi",
     intro:
@@ -115,7 +116,7 @@ const residences: Residence[] = [
     sections: [
       {
         title: "Honest rent, owned by a veteran",
-        body: "This home belongs to a US military veteran who has lived overseas and knows what it is like to arrive somewhere new and be quoted the “foreigner price”. Rent is a flat KES 100,000 a month for a 12-month lease, with internet, water and service charge included. No surprise add-ons, no expat markup.",
+        body: "This home belongs to a US military veteran who has lived overseas and knows what it is like to arrive somewhere new and be quoted the “foreigner price”. Rent is KES 110,000 a month, negotiable, for a 12-month lease, with internet, water and service charge included. No surprise add-ons, no expat markup.",
       },
       {
         title: "Inside the apartment",
@@ -140,9 +141,10 @@ const residences: Residence[] = [
       },
     ],
     goodFor: ["Diplomats & UN staff", "Expat families", "Corporate relocations", "NGO professionals"],
-    priceQualifier: "only",
+    pricePrefix: "Only",
+    priceNote: "negotiable",
     valueLine: {
-      lead: "All of this for only KES 100,000 a month:",
+      lead: "All of this for only KES 110,000 a month:",
       text: "fully furnished 2 bed, 2 bath · 90 Mbps fibre · water · service charge · backup power · 24/7 gated security.",
       note: "No agent games, no expat markup.",
     },

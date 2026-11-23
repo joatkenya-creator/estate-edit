@@ -17,7 +17,6 @@ import {
   areaHref,
   coverImage,
   enquireHref,
-  formatKes,
   formatPrice,
   formatListedDate,
   formatSpecs,
@@ -217,11 +216,11 @@ export default async function ResidencePage({ params }: { params: Promise<{ slug
         )}
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <p className="font-display text-3xl font-semibold text-white">
-            {r.priceQualifier ? (
+            {r.pricePrefix || r.priceNote ? (
               <>
-                {formatKes(r.priceKes)}
-                <span className="ml-1.5 text-[0.7em] font-normal italic text-gold-soft">{r.priceQualifier}</span>
-                {rental && " / month"}
+                {r.pricePrefix && <><span className="text-[0.7em] font-normal italic text-gold-soft">{r.pricePrefix}</span> </>}
+                {formatPrice(r)}
+                {r.priceNote && <span className="text-[0.7em] font-normal italic text-gold-soft">, {r.priceNote}</span>}
               </>
             ) : (
               formatPrice(r)
