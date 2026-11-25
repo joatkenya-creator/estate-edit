@@ -210,11 +210,11 @@ const residences: Residence[] = [
     featured: true,
     whatsapp: true,
     dateListed: "2026-11-25",
-    imageUrl: `${KA}/poster.jpg`,
+    imageUrl: `${KA}/poster-view.jpg`,
     tour: {
       teaserBase: `${KA}/teaser`,
-      poster: `${KA}/poster.jpg`,
-      ogImage: `${KA}/og.jpg`,
+      poster: `${KA}/poster-view.jpg`,
+      ogImage: `${KA}/og-view.jpg`,
       captions: `${KA}/kings-apollo-tour.en.vtt`,
       fullVideoUrl: process.env.NEXT_PUBLIC_KINGS_APOLLO_FULL_VIDEO_URL || undefined,
       youtubeId: "Dnf2vgW3be4",
@@ -269,7 +269,7 @@ const residences: Residence[] = [
       },
       {
         title: "Buying or renting from abroad",
-        body: "Relocating to Kenya, already living here, or buying from the diaspora: start with the full video tour, then call or WhatsApp +254 142 378 150. We can walk the unit with you on a live video call, and share prices and terms as soon as Kings confirms them.",
+        body: "Relocating to Kenya, already living here, or buying from the diaspora: start with the full video tour, then call or WhatsApp +254 142 378 150. We can walk the unit with you on a live video call.",
       },
     ],
     goodFor: ["Expat families", "Relocating to Nairobi", "Diaspora buyers", "Families with children"],
