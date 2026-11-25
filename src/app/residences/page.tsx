@@ -4,9 +4,10 @@ import { ArrowRight, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { VideoEmbed } from "@/components/residences/video-embed";
+import { TourVideo } from "@/components/residences/tour-video";
 import { ResidenceBrowser } from "@/components/residences/residence-browser";
 import { FeaturedResidenceCard } from "@/components/residences/residence-card";
-import { filmCompany, getFeaturedResidence, getResidences, videoTours } from "@/lib/residences";
+import { filmCompany, getFeaturedResidences, getResidences, videoTours } from "@/lib/residences";
 import { OG_IMAGE, SITE_URL, breadcrumbJsonLd, buildOpenGraph } from "@/lib/seo";
 
 const PATH = "/residences";
@@ -42,8 +43,8 @@ export const dynamic = "force-dynamic";
 export default function ResidencesPage() {
   const residences = getResidences();
   // The hero features the first residence that has its own filmed tour.
-  const featured = residences.find((r) => r.videoUrl);
-  const spotlight = getFeaturedResidence();
+  const featured = residences.find((r) => r.tour) ?? residences.find((r) => r.videoUrl);
+  const spotlights = getFeaturedResidences();
 
   return (
     <main className="flex-1">
@@ -103,22 +104,35 @@ export default function ResidencesPage() {
             </div>
           </div>
 
-          <VideoEmbed
-            url={featured?.videoUrl}
-            title={featured ? `${featured.name}: video tour` : "Featured tour"}
-            className="mx-auto max-w-xs lg:mr-0"
-          />
+          {featured?.tour ? (
+            <div>
+              <p className="eyebrow mb-3">Featured tour</p>
+              <TourVideo tour={featured.tour} title={`${featured.name}: video tour`} className="[&>p]:text-white/60 [&_a]:text-white" />
+              <Link href={`/residences/${featured.slug}`} className="mt-1 inline-block text-sm text-white underline underline-offset-4 hover:text-gold">
+                {featured.name}
+              </Link>
+            </div>
+          ) : (
+            <VideoEmbed
+              url={featured?.videoUrl}
+              title={featured ? `${featured.name}: video tour` : "Featured tour"}
+              className="mx-auto max-w-xs lg:mr-0"
+            />
+          )}
         </div>
       </section>
 
       {/* 2. Featured residence, then the full listings once there's more than one. */}
-      {spotlight && (
+      {spotlights.length > 0 && (
         <section id={residences.length > 1 ? "featured" : "listings"} className="bg-white py-20 sm:py-24">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8">
-            <FeaturedResidenceCard
-              residence={spotlight}
-              eyebrow={spotlight.status === "For rent" ? "Featured residence · To rent" : "Featured residence"}
-            />
+          <div className="mx-auto max-w-7xl space-y-10 px-5 sm:px-8">
+            {spotlights.map((s) => (
+              <FeaturedResidenceCard
+                key={s.slug}
+                residence={s}
+                eyebrow={s.status === "For rent" ? "Featured residence · To rent" : s.alsoToLet ? "Featured residence · For sale or to let" : "Featured residence"}
+              />
+            ))}
           </div>
         </section>
       )}
@@ -126,7 +140,7 @@ export default function ResidencesPage() {
       {/* Listings — filters, sort and page all live in the URL. */}
       {residences.length > 1 ? (
         <ResidenceBrowser items={residences} heading="Available residences" />
-      ) : spotlight ? null : (
+      ) : spotlights.length ? null : (
         <section id="listings" className="bg-white py-20 sm:py-24">
           <div className="mx-auto max-w-2xl px-5 text-center sm:px-8">
             <h2 className="font-display text-3xl font-light text-navy sm:text-4xl">New residences are being added</h2>

@@ -142,7 +142,7 @@ export function ListingsPageSkeleton() {
  */
 export function FeaturedResidenceCard({ residence: r, eyebrow }: { residence: Residence; eyebrow: string }) {
   const href = `/residences/${r.slug}`;
-  const cover = r.images?.[0];
+  const cover = coverImage(r);
   const facts = [
     formatSpecs(r),
     ...(r.lease ? [r.lease.term, `Rent includes: ${r.lease.includes.join(" · ")}`] : []),
@@ -152,7 +152,7 @@ export function FeaturedResidenceCard({ residence: r, eyebrow }: { residence: Re
     <article className="grid overflow-hidden rounded-2xl border border-border bg-white shadow-sm lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
       <Link href={href} tabIndex={-1} aria-hidden="true" className="relative block aspect-[4/3] bg-navy-deep lg:aspect-auto lg:min-h-[26rem]">
         {cover ? (
-          <Image src={cover.url} alt="" fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" />
+          <Image src={cover} alt="" fill sizes="(min-width: 1024px) 58vw, 100vw" className="object-cover" />
         ) : (
           <MediaPlaceholder />
         )}

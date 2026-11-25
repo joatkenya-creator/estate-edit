@@ -69,10 +69,12 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https://czvrsproxqlpcnvbaltq.supabase.co https://images.unsplash.com https://www.facebook.com https://www.googletagmanager.com",
       "font-src 'self' data:",
+      // Kings Apollo full tour: MP4 in Supabase Storage (videos bucket).
+      "media-src 'self' https://czvrsproxqlpcnvbaltq.supabase.co",
       "connect-src 'self' https://czvrsproxqlpcnvbaltq.supabase.co https://api.paystack.co https://www.google-analytics.com https://analytics.google.com https://connect.facebook.net https://www.facebook.com",
       // TikTok/Instagram: /residences video tours, embedded as the platforms'
       // own iframes (no embed.js), so frame-src is the only directive they need.
-      "frame-src https://checkout.paystack.com https://js.paystack.co https://standard.paystack.co https://www.tiktok.com https://www.instagram.com",
+      "frame-src https://checkout.paystack.com https://js.paystack.co https://standard.paystack.co https://www.tiktok.com https://www.instagram.com https://www.youtube-nocookie.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",

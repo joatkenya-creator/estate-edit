@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowRight, Check, Phone } from "lucide-react";
+import { ArrowRight, Check, MessageCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/site/page-hero";
 import { JsonLd } from "@/components/seo/json-ld";
 import { AssetGallery } from "@/components/collection/asset-gallery";
 import { VideoEmbed } from "@/components/residences/video-embed";
+import { TourVideo } from "@/components/residences/tour-video";
 import { ResidenceCard } from "@/components/residences/residence-card";
 import { CompanyLogo, MediaPlaceholder, StatusBadge, VerifiedMark } from "@/components/residences/residence-ui";
 import { getCompany, type Company } from "@/lib/companies";
-import { siteConfig } from "@/lib/site";
+import { DEVELOPMENTS_WHATSAPP, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import {
   areaHref,
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const path = `/residences/${r.slug}`;
   const title = r.seo?.title ?? clampTitle(`${r.name}, ${r.area}`);
   const description = metaDescription(r, r.listedBy ? getCompany(r.listedBy) : undefined);
-  const cover = r.images?.[0];
+  const cover = r.tour ? { url: r.tour.ogImage, alt: r.name } : r.images?.[0];
   return {
     title,
     description,
@@ -63,6 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 function Media({ residence: r }: { residence: Residence }) {
+  if (r.tour) return <TourVideo tour={r.tour} title={`${r.name}: video tour`} />;
   if (r.videoUrl) {
     return <VideoEmbed url={r.videoUrl} title={`${r.name}: video tour`} className="mx-auto max-w-sm" />;
   }
@@ -95,6 +97,26 @@ function Ctas({ residence: r, dark = false }: { residence: Residence; dark?: boo
           Book a private viewing: {siteConfig.phone}
         </a>
       </Button>
+      {r.whatsapp && (
+        <Button
+          asChild
+          size="lg"
+          variant="outline"
+          className={cn(
+            "group h-auto min-h-13 w-full whitespace-normal px-7 py-3 text-base sm:w-auto",
+            dark ? "border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white" : "border-navy/30 text-navy hover:bg-navy/5",
+          )}
+        >
+          <a
+            href={`https://wa.me/${DEVELOPMENTS_WHATSAPP}?text=${encodeURIComponent(`Hi, I'm interested in ${r.name}.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle className="size-4" aria-hidden="true" />
+            WhatsApp us
+          </a>
+        </Button>
+      )}
       <Button
         asChild
         size="lg"
@@ -167,11 +189,12 @@ export default async function ResidencePage({ params }: { params: Promise<{ slug
   const inArea = others.filter((o) => o.area === r.area && !fromCompany.includes(o)).slice(0, 3);
 
   const facts = [
-    ["Type", r.furnished ? `${r.propertyType}, fully furnished` : r.propertyType],
+    ["Type", r.furnishing ? `${r.propertyType}, ${r.furnishing.toLowerCase()}` : r.furnished ? `${r.propertyType}, fully furnished` : r.propertyType],
     ["Bedrooms", String(r.bedrooms)],
-    ["Bathrooms", String(r.bathrooms)],
-    ["Size", r.sizeLabel],
+    ...(r.bathrooms !== undefined ? [["Bathrooms", String(r.bathrooms)]] : []),
+    ...(r.sizeLabel ? [["Size", r.sizeLabel]] : []),
     ["Neighbourhood", r.area],
+    ...(r.alsoToLet ? [["Offered", "For sale or to let"]] : []),
     ...(r.lease
       ? [
           ["Lease", r.lease.term],
@@ -289,6 +312,11 @@ export default async function ResidencePage({ params }: { params: Promise<{ slug
               </>
             )}
 
+            {developer && !listedBy && (
+              <div className="mt-10 grid gap-4 sm:grid-cols-2">
+                <CompanyPanel label="Developer" company={developer} />
+              </div>
+            )}
             {listedBy && (
               <div className="mt-10 grid gap-4 sm:grid-cols-2">
                 {!developer || developer.slug === listedBy.slug ? (

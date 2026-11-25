@@ -14,6 +14,7 @@ import {
   formatKes,
   formatPrice,
   listingTag,
+  hasStatus,
   formatSpecs,
   mostRestrictiveFilter,
   parseResidenceQuery,
@@ -28,7 +29,19 @@ import {
 } from "./residences.ts";
 
 validateListings(getResidences(), getCompanies()); // live data is valid (also runs on import)
-assert.equal(getResidences().filter((r) => r.featured).length, 1, "exactly one featured residence");
+assert.ok(getResidences().filter((r) => r.featured).length >= 1, "at least one featured residence");
+assert.equal(formatPrice({ priceKes: undefined, status: "For sale" }), "Price on request", "no invented prices");
+assert.equal(formatSpecs({ bedrooms: 3 }), "3 bed", "unconfirmed specs are hidden");
+assert.equal(listingTag({ status: "For sale", alsoToLet: true }), "For sale · To let");
+assert.ok(hasStatus({ status: "For sale", alsoToLet: true }, "For rent"), "sale + let shows under the rent filter");
+assert.ok(!hasStatus({ status: "For sale" }, "For rent"));
+assert.ok(!JSON.stringify(getResidences()).toLowerCase().includes("autism"), "banned phrase");
+{
+  const unpriced = { slug: "zz-unpriced", name: "U", area: "Kileleshwa", propertyType: "Apartment", bedrooms: 3, status: "For sale", dateListed: "2026-01-01" } as Residence;
+  const priced = { ...unpriced, slug: "aa-priced", priceKes: 1 } as Residence;
+  assert.deepEqual(sortResidences([unpriced, priced], "price-desc").map((r) => r.slug), ["aa-priced", "zz-unpriced"], "price on request sorts last");
+  assert.deepEqual(sortResidences([unpriced, priced], "price-asc").map((r) => r.slug), ["aa-priced", "zz-unpriced"]);
+}
 assert.equal(formatPrice({ priceKes: 100_000, status: "For rent" }), "KES 100,000 / month", "rent shows per month");
 assert.equal(listingTag({ status: "For rent", furnished: true }), "For rent · Furnished");
 
@@ -132,7 +145,7 @@ assert.ok(
 assert.ok(filterResidences(residences, q({ beds: 5 })).every((r) => r.bedrooms >= 5), "beds is a minimum");
 assert.deepEqual(slugs(filterResidences(residences, q({ price: "under-50m" }))), ["riverside-sky-apartment"]);
 assert.ok(
-  filterResidences(residences, q({ price: "100-200m" })).every((r) => r.priceKes >= 100_000_000 && r.priceKes < 200_000_000),
+  filterResidences(residences, q({ price: "100-200m" })).every((r) => r.priceKes! >= 100_000_000 && r.priceKes! < 200_000_000),
   "price bands are [min, max)",
 );
 assert.deepEqual(slugs(filterResidences(residences, q({ status: "Under offer" }))), ["lavington-courtyard-home"]);
@@ -150,7 +163,7 @@ assert.equal(newest[0].slug, "riverside-sky-apartment", "newest first by dateLis
 assert.ok(newest.every((r, i) => i === 0 || newest[i - 1].dateListed >= r.dateListed));
 const high = sortResidences(residences, "price-desc");
 assert.equal(high[0].slug, "muthaiga-garden-estate");
-assert.ok(high.every((r, i) => i === 0 || high[i - 1].priceKes >= r.priceKes));
+assert.ok(high.every((r, i) => i === 0 || high[i - 1].priceKes! >= r.priceKes!));
 assert.equal(sortResidences(residences, "price-asc")[0].slug, "riverside-sky-apartment");
 assert.equal(residences[0].slug, "acacia-house", "sorting must not mutate the source list");
 const tie = [{ ...residences[0], slug: "b" }, { ...residences[0], slug: "a" }];

@@ -427,11 +427,24 @@ export function residenceJsonLd(residence: Residence, listedBy?: Company) {
       : {}),
     ...(image ? { image } : {}),
     contentLocation: { "@type": "Place", name: `${residence.area}, Nairobi, Kenya` },
+    ...(residence.tour
+      ? {
+          subjectOf: {
+            "@type": "VideoObject",
+            name: `${residence.name}: video tour`,
+            description: residence.seo?.description ?? residence.name,
+            thumbnailUrl: `${SITE_URL}${residence.tour.poster}`,
+            uploadDate: residence.tour.uploadDate,
+            duration: residence.tour.duration,
+            embedUrl: `https://www.youtube.com/embed/${residence.tour.youtubeId}`,
+            ...(residence.tour.fullVideoUrl ? { contentUrl: residence.tour.fullVideoUrl } : {}),
+          },
+        }
+      : {}),
     offers: {
       "@type": "Offer",
-      price: residence.priceKes,
-      priceCurrency: "KES",
-      ...(rental
+      ...(residence.priceKes !== undefined ? { price: residence.priceKes, priceCurrency: "KES" } : {}),
+      ...(rental && residence.priceKes !== undefined
         ? {
             businessFunction: "https://purl.org/goodrelations/v1#LeaseOut",
             priceSpecification: {
@@ -451,7 +464,7 @@ export function residenceJsonLd(residence: Residence, listedBy?: Company) {
         "@type": homeType,
         name: residence.name,
         numberOfRooms: residence.bedrooms,
-        numberOfBathroomsTotal: residence.bathrooms,
+        ...(residence.bathrooms !== undefined ? { numberOfBathroomsTotal: residence.bathrooms } : {}),
         ...(residence.floorAreaSqft
           ? { floorSize: { "@type": "QuantitativeValue", value: residence.floorAreaSqft, unitCode: "FTK" } }
           : {}),

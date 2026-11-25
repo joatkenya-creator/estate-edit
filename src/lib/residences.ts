@@ -22,6 +22,7 @@ export const RESIDENCE_AREAS = [
   "Muthaiga",
   "Lavington",
   "Kilimani",
+  "Kileleshwa",
   "Westlands",
   "Kiambu Road",
 ] as const;
@@ -33,14 +34,17 @@ export interface Residence {
   name: string;
   area: ResidenceArea;
   bedrooms: number;
-  bathrooms: number;
-  /** e.g. "1.5 acres", "420 m²", "gated community" */
-  sizeLabel: string;
+  /** Absent = not confirmed yet; hidden. */
+  bathrooms?: number;
+  /** e.g. "1.5 acres", "420 m²", "gated community". Absent = hidden. */
+  sizeLabel?: string;
   /** Floor area for structured data, when known. */
   floorAreaSqft?: number;
-  /** Whole shillings; per month when `status` is "For rent". */
-  priceKes: number;
+  /** Whole shillings; per month when `status` is "For rent". Absent = "Price on request". */
+  priceKes?: number;
   status: ResidenceStatus;
+  /** A "For sale" home that is also offered to let. */
+  alsoToLet?: boolean;
   /** TikTok or Instagram URL; empty = placeholder. */
   videoUrl?: string;
   /** Optional still; empty = placeholder. Superseded by `images` when both exist. */
@@ -55,9 +59,15 @@ export interface Residence {
   description?: string;
   /** ISO date, e.g. "2026-09-14". */
   dateListed: string;
-  /** The one residence spotlighted on /residences (and /expat-services). */
+  /** Spotlighted on /residences; the first one also on /expat-services. */
   featured?: boolean;
   furnished?: boolean;
+  /** Overrides the furnished wording, e.g. "Furnished & unfurnished options". */
+  furnishing?: string;
+  /** Landscape walkthrough we host (teaser loop + full tour); shown instead of `videoUrl`. */
+  tour?: ResidenceTour;
+  /** Adds a WhatsApp button (site phone) next to the call button. */
+  whatsapp?: boolean;
   /** Rentals: lease terms shown in the key facts. */
   lease?: { term: string; includes: string[]; powerBackup?: string };
   /** Overrides for the generated <title> (before the site suffix) and meta description. */
@@ -76,6 +86,22 @@ export interface Residence {
   includedHighlights?: string[];
 }
 
+export interface ResidenceTour {
+  /** Silent loop: this path + ".mp4" and ".webm". */
+  teaserBase: string;
+  /** 1920x1080 JPG (cover + video poster). */
+  poster: string;
+  /** 1200x630 JPG for Open Graph. */
+  ogImage: string;
+  captions: string;
+  /** Full tour MP4 in Supabase Storage; absent = play the YouTube copy. */
+  fullVideoUrl?: string;
+  youtubeId: string;
+  /** ISO 8601, e.g. "PT8M2S". */
+  duration: string;
+  uploadDate: string;
+}
+
 export interface VideoTour {
   title: string;
   platform: "tiktok" | "instagram";
@@ -84,7 +110,8 @@ export interface VideoTour {
 
 const FJ = "/residences/fourways-junction";
 
-// Kings units go here once Kings shares unit-level availability (brief 7.5).
+const KA = "/videos/kings-apollo";
+
 const residences: Residence[] = [
   {
     slug: "fourways-junction-2-bedroom-kiambu-road",
@@ -167,6 +194,86 @@ const residences: Residence[] = [
       { url: `${FJ}/hallway.webp`, alt: "Hallway with wooden floors leading to the bedrooms, with a wall mirror" },
     ],
   },
+  {
+    // TODO(kings): sale price, rent, size, bathroom count, service charge, exact address,
+    // title / payment plan and completion are NOT confirmed. Leave them unset: the price
+    // renders as "Price on request" and the rest is hidden. Never fill in estimates.
+    slug: "kings-apollo-tower-kileleshwa-3-bedroom-dsq",
+    name: "Kings Apollo Tower: 3-Bedroom Apartment with DSQ, Kileleshwa",
+    area: "Kileleshwa",
+    propertyType: "Apartment",
+    bedrooms: 3,
+    status: "For sale",
+    alsoToLet: true,
+    furnishing: "Furnished & unfurnished options",
+    developer: "kings-developers",
+    featured: true,
+    whatsapp: true,
+    dateListed: "2026-11-25",
+    imageUrl: `${KA}/poster.jpg`,
+    tour: {
+      teaserBase: `${KA}/teaser`,
+      poster: `${KA}/poster.jpg`,
+      ogImage: `${KA}/og.jpg`,
+      captions: `${KA}/kings-apollo-tour.en.vtt`,
+      fullVideoUrl: process.env.NEXT_PUBLIC_KINGS_APOLLO_FULL_VIDEO_URL || undefined,
+      youtubeId: "Dnf2vgW3be4",
+      duration: "PT8M2S",
+      uploadDate: "2026-11-25",
+    },
+    seo: {
+      title: "Kings Apollo Tower, Kileleshwa: 3-Bedroom + DSQ for Sale or to Let",
+      description:
+        "Full video tour of a 3-bed + DSQ on the 12th floor of Kings Apollo, Kileleshwa: whole-building backup power, 2 parking spots, sauna, theatre. Sale or let.",
+    },
+    headline: "Three bedrooms, a view from every room, and the power stays on",
+    intro:
+      "Unit 1206, on the 12th floor of Kings Apollo in Kileleshwa: open-plan living, a balcony with room to sit out, three bedrooms and a DSQ with its own entrance. A backup generator runs both towers, so a brownout does not stop your day. For sale or to let, furnished or unfurnished.",
+    valueLine: {
+      lead: "Watch the full walkthrough before you visit.",
+      text: "Eight minutes, filmed in the building, from the generator room to the 12th-floor balcony.",
+      note: "Living abroad? We can walk the unit with you on a live WhatsApp video call.",
+    },
+    sections: [
+      {
+        title: "Built for Nairobi life",
+        items: [
+          { label: "Backup power", text: "A large generator powers the entire building, both towers, with a separate generator for the lift" },
+          { label: "Parking", text: "Three levels of parking and two parking spots per unit" },
+          { label: "Two towers", text: "Kings Apollo is two residential towers, built by Kings Developers" },
+        ],
+      },
+      {
+        title: "Room for the whole family",
+        body: "Space for you and your family to get away, and room for your children to breathe.",
+        items: [
+          { label: "Wellness", text: "Sauna and steam room" },
+          { label: "Children", text: "A children's play area" },
+          { label: "Outdoors", text: "A jogging track with garden terrace views" },
+          { label: "Theatre", text: "A private residents' theatre with surround sound, for a family movie night or one for the whole complex" },
+        ],
+      },
+      {
+        title: "Inside unit 1206",
+        items: [
+          { label: "Living", text: "Open-plan living, a balcony with room for a seating set or a swing chair, and views from every room" },
+          {
+            label: "Kitchen",
+            text: "Plenty of counter and cabinet space, a five-burner gas stove and a double sink with an extender. A microwave and an oven are included. A fridge is not included; there is space for your own",
+          },
+          { label: "Laundry", text: "A laundry area with space for a washer and a dryer" },
+          { label: "Bedrooms", text: "Three spacious bedrooms with sliding glass windows and built-in closets" },
+          { label: "En-suites", text: "Soaking bathtub, walk-in shower, and a toilet with bidet spray" },
+          { label: "DSQ", text: "Its own entrance, room for a bed, and a bathroom with a shower" },
+        ],
+      },
+      {
+        title: "Buying or renting from abroad",
+        body: "Relocating to Kenya, already living here, or buying from the diaspora: start with the full video tour, then call or WhatsApp +254 142 378 150. We can walk the unit with you on a live video call, and share prices and terms as soon as Kings confirms them.",
+      },
+    ],
+    goodFor: ["Expat families", "Relocating to Nairobi", "Diaspora buyers", "Families with children"],
+  },
 ];
 
 /** Featured tours for the "On film" section: the Luxury Creations sample on their profile. */
@@ -215,8 +322,14 @@ export function getResidence(slug: string): Residence | undefined {
   return residences.find((r) => r.slug === slug);
 }
 
+/** The first featured residence: the /expat-services spot. */
 export function getFeaturedResidence(): Residence | undefined {
   return residences.find((r) => r.featured);
+}
+
+/** Every featured residence, spotlighted on /residences. */
+export function getFeaturedResidences(): Residence[] {
+  return residences.filter((r) => r.featured);
 }
 
 /** Every company slug a residence involves (listing company + developer). */
@@ -244,9 +357,16 @@ export function coverImage(r: Residence): string | undefined {
   return r.images?.[0]?.url ?? r.imageUrl;
 }
 
-/** The card/hero tag: "For rent · Furnished", else the status. */
-export function listingTag(r: Pick<Residence, "status" | "furnished">): string {
-  return r.status === "For rent" && r.furnished ? "For rent · Furnished" : r.status;
+/** The card/hero tag: "For rent · Furnished", "For sale · To let", else the status. */
+export function listingTag(r: Pick<Residence, "status" | "furnished" | "alsoToLet">): string {
+  if (r.status === "For rent" && r.furnished) return "For rent · Furnished";
+  if (r.status === "For sale" && r.alsoToLet) return "For sale · To let";
+  return r.status;
+}
+
+/** The status filter: a sale listing that is also to let matches "For rent" too. */
+export function hasStatus(r: Pick<Residence, "status" | "alsoToLet">, status: ResidenceStatus): boolean {
+  return r.status === status || (status === "For rent" && r.status === "For sale" && !!r.alsoToLet);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -260,14 +380,15 @@ export function formatKes(amount: number): string {
   return `KES ${kesFormatter.format(amount)}`;
 }
 
-/** "KES 185,000,000", or "KES 100,000 / month" for a rental. */
+/** "KES 185,000,000", "KES 100,000 / month" for a rental, or "Price on request". */
 export function formatPrice(r: Pick<Residence, "priceKes" | "status">): string {
+  if (r.priceKes === undefined) return "Price on request";
   return r.status === "For rent" ? `${formatKes(r.priceKes)} / month` : formatKes(r.priceKes);
 }
 
-/** "5 bed · 6 bath · 1.5 acres" */
+/** "5 bed · 6 bath · 1.5 acres"; unconfirmed parts are left out. */
 export function formatSpecs(r: Pick<Residence, "bedrooms" | "bathrooms" | "sizeLabel">): string {
-  return `${r.bedrooms} bed · ${r.bathrooms} bath · ${r.sizeLabel}`;
+  return [`${r.bedrooms} bed`, r.bathrooms !== undefined && `${r.bathrooms} bath`, r.sizeLabel].filter(Boolean).join(" · ");
 }
 
 /** "14 September 2026" */
@@ -375,19 +496,20 @@ export function filterResidences(items: Residence[], q: ResidenceQuery): Residen
       (!q.company || involves(r, q.company)) &&
       (!q.type || r.propertyType === q.type) &&
       (!q.beds || r.bedrooms >= q.beds) &&
-      (!band || (r.priceKes >= band.min && r.priceKes < band.max)) &&
-      (!q.status || r.status === q.status),
+      (!band || (r.priceKes !== undefined && r.priceKes >= band.min && r.priceKes < band.max)) &&
+      (!q.status || hasStatus(r, q.status)),
   );
 }
 
-/** New array; ties break on slug so the order is stable between renders. */
+/** New array; "Price on request" sorts last on price; ties break on slug so the order is stable. */
 export function sortResidences(items: Residence[], sort: ResidenceSort): Residence[] {
   const bySlug = (a: Residence, b: Residence) => a.slug.localeCompare(b.slug);
+  const unpriced = (r: Residence) => (r.priceKes === undefined ? 1 : 0);
   return [...items].sort((a, b) => {
     const diff =
-      sort === "price-desc" ? b.priceKes - a.priceKes
-      : sort === "price-asc" ? a.priceKes - b.priceKes
-      : b.dateListed.localeCompare(a.dateListed);
+      sort === "newest" ? b.dateListed.localeCompare(a.dateListed)
+      : unpriced(a) - unpriced(b) ||
+        (sort === "price-desc" ? (b.priceKes ?? 0) - (a.priceKes ?? 0) : (a.priceKes ?? 0) - (b.priceKes ?? 0));
     return diff || bySlug(a, b);
   });
 }
